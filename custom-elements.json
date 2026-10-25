@@ -1,0 +1,35 @@
+{
+	"schemaVersion": "1.0.0",
+	"readme": "",
+	"modules": [
+		{
+			"kind": "javascript-module",
+			"path": "form-multi-switch.js",
+			"declarations": [
+				{
+					"kind": "class",
+					"description": "Progressively enhance native radio groups into accessible light-DOM segmented controls.",
+					"name": "FormMultiSwitchElement",
+					"members": [],
+					"events": [],
+					"attributes": [],
+					"superclass": {
+						"name": "HTMLElement"
+					},
+					"tagName": "form-multi-switch",
+					"customElement": true
+				}
+			],
+			"exports": [
+				{
+					"kind": "js",
+					"name": "FormMultiSwitchElement",
+					"declaration": {
+						"name": "FormMultiSwitchElement",
+						"module": "form-multi-switch.js"
+					}
+				}
+			]
+		}
+	]
+}
