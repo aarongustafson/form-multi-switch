@@ -4,8 +4,8 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>form-multi-switch: manual registration</title>
-		<link rel="stylesheet" href="./styles.css" />
 		<link rel="stylesheet" href="../form-multi-switch.css" />
+		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<h1>Register the class yourself</h1>
@@ -13,28 +13,54 @@
 			This working preview imports the local class module. The package
 			hasn’t been published, so this page doesn’t request it from a CDN.
 		</p>
-		<form-multi-switch>
-			<fieldset>
-				<legend>Reading layout</legend>
-				<label
-					><input
-						type="radio"
-						name="layout"
-						value="list"
-						checked
-					/>List</label
-				>
-				<label
-					><input
-						type="radio"
-						name="layout"
-						value="grid"
-					/>Grid</label
-				>
-			</fieldset>
-		</form-multi-switch>
-		<pre><code>import { FormMultiSwitchElement } from '../form-multi-switch.js';
-customElements.define('form-multi-switch', FormMultiSwitchElement);</code></pre>
+		<div class="demo-section">
+			<h2>Import without automatic registration</h2>
+			<div class="code-demo-pair">
+				<pre><code>&lt;form-multi-switch&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Reading layout&lt;/legend&gt;
+    &lt;label&gt;&lt;input type="radio" name="layout"
+      value="list" checked&gt;List&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="layout"
+      value="grid"&gt;Grid&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="layout"
+      value="table"&gt;Table&lt;/label&gt;
+  &lt;/fieldset&gt;
+&lt;/form-multi-switch&gt;
+
+import { FormMultiSwitchElement } from '../form-multi-switch.js';
+<mark>customElements.define('form-multi-switch', FormMultiSwitchElement);</mark></code></pre>
+				<div class="demo">
+					<form-multi-switch>
+						<fieldset>
+							<legend>Reading layout</legend>
+							<label
+								><input
+									type="radio"
+									name="layout"
+									value="list"
+									checked
+								/>List</label
+							>
+							<label
+								><input
+									type="radio"
+									name="layout"
+									value="grid"
+								/>Grid</label
+							>
+							<label
+								><input
+									type="radio"
+									name="layout"
+									value="table"
+								/>Table</label
+							>
+						</fieldset>
+					</form-multi-switch>
+				</div>
+			</div>
+		</div>
 		<p>
 			After publication, you can use a pinned CDN import and load the
 			matching stylesheet separately:

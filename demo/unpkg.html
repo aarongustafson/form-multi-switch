@@ -4,8 +4,8 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>form-multi-switch: automatic registration</title>
-		<link rel="stylesheet" href="./styles.css" />
 		<link rel="stylesheet" href="../form-multi-switch.css" />
+		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<h1>Import the registration module</h1>
@@ -13,14 +13,31 @@
 			This preview imports the local definition helper, which registers
 			the element automatically. Calling the helper again is safe.
 		</p>
-		<form-multi-switch
-			name="view"
-			label="View"
-			choices='[{"label":"List","value":"list"},{"label":"Grid","value":"grid"}]'
-			value="list"
-		></form-multi-switch>
-		<pre><code>import { defineFormMultiSwitch } from '../define.js';
-defineFormMultiSwitch();</code></pre>
+		<div class="demo-section">
+			<h2>Import the guarded definition helper</h2>
+			<div class="code-demo-pair">
+				<pre><code>&lt;form-multi-switch
+  name="view" label="View"
+  choices='[
+    {"label":"List","value":"list"},
+    {"label":"Grid","value":"grid"},
+    {"label":"Table","value":"table"}
+  ]'
+  value="list"
+&gt;&lt;/form-multi-switch&gt;
+
+<mark>import { defineFormMultiSwitch } from '../define.js';
+defineFormMultiSwitch();</mark></code></pre>
+				<div class="demo">
+					<form-multi-switch
+						name="view"
+						label="View"
+						choices='[{"label":"List","value":"list"},{"label":"Grid","value":"grid"},{"label":"Table","value":"table"}]'
+						value="list"
+					></form-multi-switch>
+				</div>
+			</div>
+		</div>
 		<p>
 			The package hasn’t been published. After publication, you can pin
 			the registration module on unpkg and load its stylesheet separately:

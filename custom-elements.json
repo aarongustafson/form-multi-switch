@@ -195,7 +195,7 @@
 						},
 						{
 							"name": "--multi-switch-border",
-							"default": "currentColor"
+							"default": "ButtonBorder"
 						},
 						{
 							"name": "--multi-switch-background",

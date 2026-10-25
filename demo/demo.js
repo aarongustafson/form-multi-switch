@@ -7,6 +7,7 @@ configured.configure({
 	choices: [
 		{ label: 'Comfortable', value: 'comfortable' },
 		{ label: 'Compact', value: 'compact' },
+		{ label: 'Condensed', value: 'condensed' },
 	],
 	value: 'comfortable',
 });

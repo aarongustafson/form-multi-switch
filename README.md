@@ -285,14 +285,26 @@ Load the supplied stylesheet, then override its custom properties:
 form-multi-switch {
   --multi-switch-radius: 999px;
   --multi-switch-padding: 0.6em 1em;
-  --multi-switch-border: currentColor;
+  --multi-switch-border: #173f63;
   --multi-switch-selected-background: #173f63;
   --multi-switch-selected-color: #fff;
 }
 ```
 
 Other properties are `--multi-switch-background`, `--multi-switch-color`, and
-`--multi-switch-focus-color`. Defaults use system colors.
+`--multi-switch-focus-color`. Defaults use system colors. The border defaults to
+`ButtonBorder`, independently of the selected text color, so all choices keep a
+connected outline. Adjacent segments share one border rather than doubling it.
+
+The host establishes a named `multi-switch` inline-size container. At widths of
+at least `20rem`, the default stylesheet keeps choices in one row. Below that
+width, it stacks them into one connected column and rounds the top and bottom
+endpoints. Choices don’t wrap into partial rows. This follows the component’s
+available width, not the viewport width.
+
+See [the restyling demos](demo/index.html#restyling) for a branded pill and an
+underline treatment, with CSS beside each live example. Load your overrides
+after the component stylesheet.
 
 The component marks these light-DOM elements after initialization:
 
@@ -408,7 +420,8 @@ emulator can’t reliably reproduce. Also test real keyboard navigation and
 screen-reader interaction with your target browsers and assistive technologies.
 
 The component uses Custom Elements, ES modules, AbortController, MutationObserver,
-and modern CSS, including logical properties and `clip-path`. It doesn’t include
+and modern CSS, including size container queries, logical properties, and
+`clip-path`. It doesn’t include
 polyfills or claim support for legacy browsers.
 
 ## License

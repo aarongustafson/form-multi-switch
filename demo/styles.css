@@ -1,38 +1,116 @@
 :root {
 	color-scheme: light dark;
-	font-family: system-ui, sans-serif;
-	line-height: 1.6;
-	background: Canvas;
-	color: CanvasText;
 }
 
 body {
-	max-inline-size: 65rem;
-	margin-inline: auto;
-	padding: 1.5rem;
-}
-
-section {
-	margin-block: 2rem;
-	padding: 1.25rem;
-	border: 1px solid GrayText;
-	border-radius: 0.5rem;
-}
-
-h1,
-h2 {
-	line-height: 1.25;
-}
-
-pre {
+	font-family:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+		Cantarell, sans-serif;
+	line-height: 1.6;
+	color: CanvasText;
+	background: Canvas;
+	max-width: 1400px;
+	margin: 0 auto;
 	padding: 1rem;
-	overflow: auto;
-	background: ButtonFace;
-	color: ButtonText;
+}
+
+h1 {
+	font-size: 2rem;
+	margin-block: 0 0.5rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-block: 2rem 1rem;
+	border-bottom: 2px solid;
+	padding-bottom: 0.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-block: 0 0.5rem;
+}
+
+p {
+	margin-block: 0.5rem;
+}
+
+header {
+	margin-block-end: 2rem;
+}
+
+header p {
+	font-size: 1.1rem;
+}
+
+a {
+	color: LinkText;
+	text-decoration-skip-ink: auto;
 }
 
 code {
+	background: ButtonFace;
+	color: ButtonText;
+	padding: 0.125rem 0.25rem;
+	border-radius: 3px;
 	font-family: ui-monospace, monospace;
+	font-size: 0.9em;
+}
+
+.demo-section {
+	margin-block: 2rem;
+	padding: 1.5rem;
+	background: ButtonFace;
+	border: 1px solid ButtonBorder;
+	border-radius: 8px;
+}
+
+.demo-section > p {
+	margin-block-end: 1rem;
+}
+
+.code-demo-pair {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+	align-items: start;
+	margin-block: 1rem;
+}
+
+.code-demo-pair > * {
+	min-inline-size: 0;
+}
+
+pre {
+	background: Field;
+	color: FieldText;
+	padding: 1rem;
+	border-radius: 6px;
+	overflow: auto;
+	margin: 0;
+	font-size: 0.875rem;
+	line-height: 1.4;
+}
+
+pre code {
+	background: none;
+	color: inherit;
+	padding: 0;
+	font-size: inherit;
+}
+
+pre code mark {
+	background: Mark;
+	color: MarkText;
+	border-radius: 2px;
+}
+
+.demo {
+	background: Canvas;
+	color: CanvasText;
+	padding: 1rem;
+	border: 1px solid ButtonBorder;
+	border-radius: 6px;
 }
 
 form-multi-switch {
@@ -52,10 +130,37 @@ button {
 
 output {
 	display: block;
+	overflow-wrap: anywhere;
 }
 
 .pill {
 	--multi-switch-radius: 999px;
+}
+
+.branded {
+	--multi-switch-border: #173f63;
+	--multi-switch-background: #eef4ff;
+	--multi-switch-color: #173f63;
+	--multi-switch-selected-background: #173f63;
+	--multi-switch-selected-color: #fff;
+	--multi-switch-focus-color: #173f63;
+}
+
+.underline {
+	--multi-switch-radius: 0;
+	--multi-switch-border: transparent;
+	--multi-switch-selected-background: Canvas;
+	--multi-switch-selected-color: CanvasText;
+}
+
+.underline [data-multi-switch-choice] {
+	border-block-end: 2px solid GrayText;
+}
+
+.underline [data-multi-switch-choice][data-selected] {
+	border-block-end: 4px solid currentColor;
+	box-shadow: none;
+	font-weight: 700;
 }
 
 .icons [data-multi-switch-choice]::before {
@@ -66,6 +171,10 @@ output {
 	mask: var(--choice-icon) center / contain no-repeat;
 }
 
+.icons [data-value='system'] {
+	--choice-icon: url('./monitor.svg');
+}
+
 .icons [data-value='light'] {
 	--choice-icon: url('./sun.svg');
 }
@@ -74,8 +183,23 @@ output {
 	--choice-icon: url('./moon.svg');
 }
 
+#event-log {
+	min-block-size: 8em;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
 footer {
-	margin-block-start: 2rem;
+	margin-block-start: 3rem;
+	padding-block-start: 2rem;
+	border-top: 2px solid ButtonBorder;
+	color: GrayText;
+}
+
+@media (min-width: 48rem) {
+	.code-demo-pair {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
 }
 
 @media (max-width: 30rem) {
@@ -83,7 +207,7 @@ footer {
 		padding: 0.5rem;
 	}
 
-	section {
+	.demo-section {
 		padding: 0.75rem;
 	}
 }

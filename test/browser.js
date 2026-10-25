@@ -26,6 +26,104 @@ async function setup() {
 
 const tests = [
 	[
+		'Selected and unselected segments share one connected border',
+		async () => {
+			fixture.style.inlineSize = '45rem';
+			const { inputs } = await setup();
+			const first = inputs[0].labels[0];
+			const second = inputs[1].labels[0];
+			const firstStyle = getComputedStyle(first);
+			const secondStyle = getComputedStyle(second);
+			assert(
+				firstStyle.borderTopColor === secondStyle.borderTopColor,
+				'Selection changed the shared border color.',
+			);
+			const overlap =
+				first.getBoundingClientRect().right -
+				second.getBoundingClientRect().left;
+			assert(
+				Math.abs(overlap - parseFloat(firstStyle.borderRightWidth)) <
+					0.5,
+				'Adjacent segments must share a single border, not double it.',
+			);
+			fixture.style.removeProperty('inline-size');
+		},
+	],
+	[
+		'Narrow controls stack as one connected item instead of wrapping',
+		async () => {
+			fixture.style.inlineSize = '15rem';
+			const { inputs } = await setup();
+			const labels = inputs.map((input) => input.labels[0]);
+			const boxes = labels.map((label) => label.getBoundingClientRect());
+			assert(
+				boxes.every(
+					(box) =>
+						Math.abs(box.left - boxes[0].left) < 0.5 &&
+						Math.abs(box.width - boxes[0].width) < 0.5,
+				),
+				'Narrow choices did not form one full-width column.',
+			);
+			assert(
+				boxes.every(
+					(box, index) =>
+						index === 0 ||
+						Math.abs(boxes[index - 1].bottom - box.top - 1) < 0.5,
+				),
+				'Stacked choices did not share their borders.',
+			);
+			const first = getComputedStyle(labels[0]);
+			const last = getComputedStyle(labels.at(-1));
+			assert(
+				parseFloat(first.borderStartStartRadius) > 0 &&
+					parseFloat(first.borderStartEndRadius) > 0 &&
+					parseFloat(last.borderEndStartRadius) > 0 &&
+					parseFloat(last.borderEndEndRadius) > 0,
+				'Stacked corners did not follow the top and bottom endpoints.',
+			);
+			fixture.style.removeProperty('inline-size');
+		},
+	],
+	[
+		'Wrapped choices keep shared borders in both directions and layouts',
+		async () => {
+			fixture.innerHTML = `<form-multi-switch>
+				<fieldset><legend>Reading width</legend>
+					<div><input id="wrapped-narrow" type="radio" name="wrapped-width" value="narrow" checked><label for="wrapped-narrow">Narrow</label></div>
+					<div><input id="wrapped-standard" type="radio" name="wrapped-width" value="standard"><label for="wrapped-standard">Standard</label></div>
+					<div><input id="wrapped-wide" type="radio" name="wrapped-width" value="wide"><label for="wrapped-wide">Wide</label></div>
+				</fieldset>
+			</form-multi-switch>`;
+			const control = fixture.querySelector('form-multi-switch');
+			await control.ready;
+			for (const direction of ['ltr', 'rtl']) {
+				control.dir = direction;
+				for (const width of [720, 240]) {
+					fixture.style.inlineSize = `${width}px`;
+					const boxes = [
+						...control.querySelectorAll(
+							'[data-multi-switch-choice]',
+						),
+					].map((label) => label.getBoundingClientRect());
+					for (let index = 1; index < boxes.length; index += 1) {
+						const previous = boxes[index - 1];
+						const current = boxes[index];
+						const overlap =
+							width < 320
+								? previous.bottom - current.top
+								: direction === 'rtl'
+									? current.right - previous.left
+									: previous.right - current.left;
+						assert(
+							Math.abs(overlap - 1) < 0.5,
+							`Wrapper borders separated at ${width}px in ${direction}.`,
+						);
+					}
+				}
+			}
+		},
+	],
+	[
 		'Canceled activation restores the selected styling',
 		async () => {
 			const { control, inputs } = await setup();
@@ -149,6 +247,7 @@ for (const [name, run] of tests) {
 		item.textContent = `FAIL: ${name}: ${error.message}`;
 		console.error(error);
 	}
+	fixture.style.removeProperty('inline-size');
 	results.append(item);
 }
 fixture.replaceChildren();
