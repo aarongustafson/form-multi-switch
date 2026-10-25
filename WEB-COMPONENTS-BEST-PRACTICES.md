@@ -1,214 +1,52 @@
-# Web Components Best Practices
+# Work with the native radio group
 
-This template incorporates best practices from Google's [Custom Element Best Practices](https://web.dev/articles/custom-elements-best-practices) guide. This document explains the patterns used in the template and why they're important.
+Use the [README](README.md) for configuration, styling, and event examples.
+These constraints explain what you should preserve when extending the component.
 
-## Shadow DOM
+## Keep the native semantics
 
-### ✅ Create shadow root in constructor
+Keep the fieldset, legend, inputs, and associated labels in light DOM. They give
+your group its name, keyboard behavior, constraint validation, submission value,
+and reset defaults. Don’t replace them with buttons or add ARIA switch roles.
 
-The shadow root is created in the `constructor()`:
+Use visually hidden inputs, not `display: none`, and keep a visible focus
+indicator on each input’s associated segment. Retain a text name when you use
+decorative icons.
 
-```javascript
-constructor() {
-  super();
-  this.attachShadow({ mode: 'open' });
-}
-```
+## Enhance only when ready
 
-**Why?** The constructor is when you have exclusive knowledge of your element. Setting up implementation details here means you don't need to guard against situations where your element is detached and reattached.
+Leave authored controls in their ordinary presentation until configuration and
+optional module initialization succeed. Use the host’s readiness state to gate
+styling. Configuration-generated controls can’t offer a no-JavaScript fallback;
+choose authored markup when you need one.
 
-### ✅ Support the `hidden` attribute
+Keep component-generated text translatable by taking labels from your markup
+or configuration. Treat configured labels as text, never HTML.
 
-The template includes proper support for the `hidden` attribute:
+## Keep current values separate from defaults
 
-```css
-:host {
-  display: block;
-}
+Use the component’s `value` property to change the current selection without
+changing reset defaults or dispatching user-interaction events. Use the initial
+`value` attribute or `configure()` when you intend to establish a reset default.
 
-:host([hidden]) {
-  display: none;
-}
-```
+Let native input/change events propagate. Don’t synthesize keyboard behavior
+that the radio inputs already supply.
 
-**Why?** Custom elements with a default `display` style will override the lower specificity built-in `hidden` attribute. Always add `:host([hidden]) { display: none }` to ensure `hidden` works as expected.
+## Release resources
 
-### ✅ Use `<slot>` for content projection
+Use the initializer’s AbortSignal for event listeners and cancelable work.
+Return a synchronous cleanup function when you create resources that the signal
+doesn’t release. Expect initialization to run again after refresh or reconnection.
 
-The template uses `<slot>` to allow users to pass content:
+Ignore obsolete asynchronous results. Don’t reveal enhanced UI after a failed,
+aborted, or superseded attempt.
 
-```html
-<slot></slot>
-```
+## Test in a browser
 
-**Why?** This makes your component more composable. When custom elements aren't supported, nested content remains visible and accessible (progressive enhancement).
+Write a failing regression test before changing behavior. Use the unit suite for
+configuration, lifecycle, and event contracts, and [the browser tests](test/browser.html)
+for native cancellation, validation, focus, and submission.
 
-## Attributes and Properties
-
-### ✅ Property/Attribute Reflection
-
-Properties and attributes are kept in sync:
-
-```javascript
-get exampleAttribute() {
-  return this.getAttribute('example-attribute');
-}
-
-set exampleAttribute(value) {
-  if (value === null || value === undefined) {
-    this.removeAttribute('example-attribute');
-  } else {
-    this.setAttribute('example-attribute', value);
-  }
-}
-```
-
-**Why?** Users can interact with your element either declaratively (HTML attributes) or imperatively (JavaScript properties). Keeping them in sync prevents confusion and bugs.
-
-### ✅ Avoid Reentrancy in `attributeChangedCallback`
-
-The `attributeChangedCallback` only handles side effects, not the full state update:
-
-```javascript
-attributeChangedCallback(name, oldValue, newValue) {
-  if (oldValue === newValue) return;
-  
-  switch (name) {
-    case 'example-attribute':
-      // Only handle side effects here
-      // The property getter reads from the attribute
-      break;
-  }
-}
-```
-
-**Why?** If `attributeChangedCallback` also sets the property, and the property setter reflects to the attribute, you create an infinite loop. Instead, let the property getter read from the attribute directly.
-
-### ✅ Lazy Property Upgrade
-
-The `_upgradeProperty()` method handles properties set before the element was defined:
-
-```javascript
-_upgradeProperty(prop) {
-  if (Object.prototype.hasOwnProperty.call(this, prop)) {
-    const value = this[prop];
-    delete this[prop];
-    this[prop] = value;
-  }
-}
-```
-
-Called in `connectedCallback()`:
-
-```javascript
-connectedCallback() {
-  this._upgradeProperty('exampleAttribute');
-  // ...
-}
-```
-
-**Why?** Frameworks may set properties on your element before its definition loads. This pattern preserves those early-set values.
-
-### ✅ Don't Override Global Attributes
-
-Always check if global attributes are already set before applying defaults:
-
-```javascript
-connectedCallback() {
-  if (!this.hasAttribute('role')) {
-    // Only set if not already defined
-    // this.setAttribute('role', 'group');
-  }
-  if (!this.hasAttribute('tabindex')) {
-    // this.setAttribute('tabindex', 0);
-  }
-}
-```
-
-**Why?** Developers using your element may need to override `role`, `tabindex`, etc. for accessibility. Always respect their choices.
-
-## Events
-
-### ✅ Dispatch Events for Internal State Changes
-
-Dispatch events when your component's state changes internally:
-
-```javascript
-// Dispatch when component changes its own state
-this.dispatchEvent(new CustomEvent('component-name:change', {
-  detail: { value: newValue },
-  bubbles: true,
-  composed: true
-}));
-```
-
-### ❌ Don't Dispatch Events for Host-Set Properties
-
-**Don't** dispatch events when the host sets a property:
-
-```javascript
-// ❌ BAD - creates infinite loops
-set myProperty(value) {
-  this.setAttribute('my-property', value);
-  this.dispatchEvent(new CustomEvent('change')); // DON'T DO THIS
-}
-```
-
-**Why?** The host already knows it set the property. Dispatching an event can cause infinite loops with data binding systems.
-
-## Rich Data (Objects/Arrays)
-
-### ✅ Accept Rich Data as Properties Only
-
-```javascript
-// ✅ Good - rich data as property
-set items(value) {
-  this._items = value;
-  this.render();
-}
-
-// ❌ Bad - trying to accept objects as attributes
-set items(value) {
-  this.setAttribute('items', JSON.stringify(value)); // Don't do this
-}
-```
-
-**Why?** Serializing objects to strings is expensive and loses references. HTML attributes work best for primitive values.
-
-## Implementation Notes
-
-### Template Placeholders
-
-This is a template repository. Before use:
-
-1. Run `npm run setup` to replace placeholders
-2. Or manually replace:
-   - `COMPONENT-NAME` → your element name (e.g., `my-button`)
-   - `ComponentNameElement` → your class name (e.g., `MyButtonElement`)
-   - `COMPONENT_DESCRIPTION` → your description
-
-### Testing
-
-The test file demonstrates all the best practices:
-
-- Shadow DOM creation
-- Hidden attribute support
-- Property/attribute reflection
-- Lazy property upgrade
-
-Run tests with:
-
-```bash
-npm test          # Watch mode
-npm run test:run  # Single run
-```
-
-## Further Reading
-
-- [Custom Element Best Practices](https://web.dev/articles/custom-elements-best-practices) - Google Web Fundamentals
-- [Custom Elements Everywhere](https://custom-elements-everywhere.com/) - Framework compatibility
-- [Open Web Components](https://open-wc.org/) - Tools and recommendations
-
-## License
-
-MIT - See [LICENSE](LICENSE)
+Check keyboard navigation, forced colors, zoom, right-to-left layout, and
+assistive-technology behavior in the browsers your project supports. A passing
+DOM-emulator test isn’t evidence for all of those behaviors.

@@ -1,6 +1,7 @@
 import { FormMultiSwitchElement } from './form-multi-switch.js';
 
-export function defineComponentName(tagName = 'form-multi-switch') {
+export function defineFormMultiSwitch() {
+	const tagName = 'form-multi-switch';
 	const hasWindow = typeof window !== 'undefined';
 	const registry = hasWindow ? window.customElements : undefined;
 
@@ -8,11 +9,17 @@ export function defineComponentName(tagName = 'form-multi-switch') {
 		return false;
 	}
 
-	if (!registry.get(tagName)) {
+	const existing = registry.get(tagName);
+	if (existing && existing !== FormMultiSwitchElement) {
+		throw new Error(
+			`${tagName} is already registered with a different class.`,
+		);
+	}
+	if (!existing) {
 		registry.define(tagName, FormMultiSwitchElement);
 	}
 
 	return true;
 }
 
-defineComponentName();
+defineFormMultiSwitch();

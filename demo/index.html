@@ -1,95 +1,354 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<meta charset="UTF-8" />
+		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>&lt;form-multi-switch&gt; Web Component Demo</title>
+		<title>form-multi-switch: real-world examples</title>
 		<link rel="stylesheet" href="./styles.css" />
-		<style>
-			/* Demo-specific styles */
-		</style>
+		<link rel="stylesheet" href="../form-multi-switch.css" />
+		<script type="module" src="./demo.js"></script>
 	</head>
 	<body>
 		<header>
-			<h1>&lt;form-multi-switch&gt;</h1>
+			<h1><code>&lt;form-multi-switch&gt;</code></h1>
 			<p>
-				Progressively enhance native radio groups into accessible light-DOM segmented controls. See the
-				<a
-					href="https://github.com/aarongustafson/form-multi-switch/blob/main/README.md"
-					>README</a
-				>
-				for installation and API documentation.
+				Native radio groups, presented as segmented controls. Use Tab to
+				reach a group, arrow keys to change its selection, and Space to
+				select.
 			</p>
+			<p>
+				<a href="../README.md">Read the API</a> ·
+				<a href="./esm.html">Manual registration</a> ·
+				<a href="./unpkg.html">Automatic registration</a> ·
+				<a href="../test/browser.html">Browser tests</a>
+			</p>
+			<noscript
+				><p>
+					JavaScript is disabled. The authored radio groups below
+					still work; attribute- and JavaScript-generated groups are
+					unavailable.
+				</p></noscript
+			>
 		</header>
-
 		<main>
-			<!-- Basic Example -->
 			<section>
-				<h2>Basic Example</h2>
-				<p>A simple demonstration of the component.</p>
-
-				<div class="demo-section">
-					<h3>Basic Usage</h3>
-					<p>Description of this example.</p>
-					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch&gt;
-  &lt;p&gt;Content goes here&lt;/p&gt;
-&lt;/form-multi-switch&gt;</code></pre>
-						<div class="demo">
-							<form-multi-switch>
-								<p>Content goes here</p>
-							</form-multi-switch>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<!-- Example with Attributes -->
-			<section>
-				<h2>Example with Attributes</h2>
-				<p>Demonstrating component attributes.</p>
-
-				<div class="demo-section">
-					<h3>Using Attributes</h3>
-					<p>Description of this example with attributes.</p>
-					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch example-attribute="value"&gt;
-  &lt;p&gt;Content with attributes&lt;/p&gt;
-&lt;/form-multi-switch&gt;</code></pre>
-						<div class="demo">
-							<form-multi-switch example-attribute="value">
-								<p>Content with attributes</p>
-							</form-multi-switch>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<!-- API Reference -->
-			<section class="api-reference">
-				<h2>API Reference</h2>
+				<h2>Choose delivery speed with native form controls</h2>
 				<p>
-					For complete documentation of attributes, events, and
-					browser support, see the
-					<a
-						href="https://github.com/aarongustafson/form-multi-switch/blob/main/README.md"
-						>README</a
-					>.
+					This group starts as ordinary HTML. Submit it to inspect its
+					form value, or reset it to restore Standard. Overnight is
+					unavailable.
+				</p>
+				<form id="delivery-form">
+					<form-multi-switch id="delivery" class="pill">
+						<fieldset>
+							<legend>Delivery speed</legend>
+							<label
+								><input
+									type="radio"
+									name="delivery"
+									value="standard"
+									checked
+								/>Standard</label
+							>
+							<label
+								><input
+									type="radio"
+									name="delivery"
+									value="express"
+								/>Express</label
+							>
+							<label
+								><input
+									type="radio"
+									name="delivery"
+									value="overnight"
+									disabled
+								/>Overnight</label
+							>
+						</fieldset>
+					</form-multi-switch>
+					<p>
+						<button type="submit">Inspect submission</button>
+						<button type="reset">Reset delivery</button>
+					</p>
+					<output aria-live="polite"
+						>Submit to inspect the selected delivery value.</output
+					>
+				</form>
+				<pre><code>&lt;form-multi-switch&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Delivery speed&lt;/legend&gt;
+    &lt;label&gt;&lt;input type="radio" name="delivery"
+      value="standard" checked&gt;Standard&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="delivery"
+      value="express"&gt;Express&lt;/label&gt;
+  &lt;/fieldset&gt;
+&lt;/form-multi-switch&gt;</code></pre>
+			</section>
+
+			<section>
+				<h2>Configure a billing control in markup</h2>
+				<p>
+					The attributes generate a fieldset, legend, and radio
+					choices. This example requires JavaScript to create its
+					inputs.
+				</p>
+				<form-multi-switch
+					id="billing"
+					name="billing"
+					label="Billing frequency"
+					choices='[{"label":"Monthly","value":"monthly"},{"label":"Annually","value":"annual"}]'
+					value="annual"
+					class="pill"
+				></form-multi-switch>
+				<pre><code>&lt;form-multi-switch
+  name="billing"
+  label="Billing frequency"
+  choices='[{"label":"Monthly","value":"monthly"},
+    {"label":"Annually","value":"annual"}]'
+  value="annual"
+&gt;&lt;/form-multi-switch&gt;</code></pre>
+			</section>
+
+			<section>
+				<h2>Generate a control from application data</h2>
+				<p>
+					This control uses <code>configure()</code>. The button
+					changes its current selection without changing its default
+					or firing an interaction event.
+				</p>
+				<form-multi-switch id="js-density"></form-multi-switch>
+				<p>
+					<button id="set-density" type="button">
+					hidden type="button">
+						Set Compact through the API
+					</button>
+				</p>
+				<pre><code>control.configure({
+  name: 'density',
+  label: 'Display density',
+  choices: [
+    { label: 'Comfortable', value: 'comfortable' },
+    { label: 'Compact', value: 'compact' }
+  ],
+  value: 'comfortable'
+});</code></pre>
+			</section>
+
+			<section>
+				<h2>Keep icon-only choices named</h2>
+				<p>
+					The symbols are decorative CSS masks. Each radio retains its
+					Light or Dark text label for assistive technology. This
+					control only demonstrates selection; it does not change the
+					page theme.
+				</p>
+				<form-multi-switch
+					id="icons"
+					name="appearance"
+					label="Appearance preview"
+					choices='[{"label":"Light","value":"light"},{"label":"Dark","value":"dark"}]'
+					value="light"
+					icon-only
+					class="icons pill"
+				></form-multi-switch>
+				<p>
+					The first and last markers round the appropriate ends even
+					when the radios use separate wrappers, as in this authored
+					example:
+				</p>
+				<form-multi-switch id="wrapped" class="pill">
+					<fieldset>
+						<legend>Reading width</legend>
+						<div>
+							<input
+								id="width-narrow"
+								type="radio"
+								name="width"
+								value="narrow"
+								checked
+							/><label for="width-narrow">Narrow</label>
+						</div>
+						<div>
+							<input
+								id="width-wide"
+								type="radio"
+								name="width"
+								value="wide"
+							/><label for="width-wide">Wide</label>
+						</div>
+					</fieldset>
+				</form-multi-switch>
+			</section>
+
+			<section>
+				<h2>Use native required and disabled states</h2>
+				<form id="required-form">
+					<form-multi-switch id="required" required>
+						<fieldset>
+							<legend>Contact preference (required)</legend>
+							<label
+								><input
+									type="radio"
+									name="contact"
+									value="email"
+									required
+								/>Email</label
+							>
+							<label
+								><input
+									type="radio"
+									name="contact"
+									value="phone"
+									required
+								/>Phone</label
+							>
+						</fieldset>
+					</form-multi-switch>
+					<p><button type="submit">Validate preference</button></p>
+					<output aria-live="polite"
+						>Choose a preference before submitting.</output
+					>
+				</form>
+				<form-multi-switch id="disabled">
+					<fieldset disabled>
+						<legend>Unavailable export formats</legend>
+						<label
+							><input
+								type="radio"
+								name="format"
+								value="csv"
+								checked
+							/>CSV</label
+						>
+						<label
+							><input
+								type="radio"
+								name="format"
+								value="json"
+							/>JSON</label
+						>
+					</fieldset>
+				</form-multi-switch>
+			</section>
+
+			<section>
+				<h2>Supply translated labels and right-to-left content</h2>
+				<form-multi-switch
+					lang="fr"
+					name="densite"
+					label="Densité"
+					choices='[{"label":"Aérée","value":"comfortable"},{"label":"Compacte","value":"compact"}]'
+					value="comfortable"
+				></form-multi-switch>
+				<form-multi-switch dir="rtl" lang="ar" class="pill">
+					<fieldset>
+						<legend>حجم النص</legend>
+						<label
+							><input
+								type="radio"
+								name="text-size"
+								value="small"
+							/>صغير</label
+						>
+						<label
+							><input
+								type="radio"
+								name="text-size"
+								value="large"
+								checked
+							/>كبير</label
+						>
+					</fieldset>
+				</form-multi-switch>
+			</section>
+
+			<section
+				data-error-message="The preview behavior could not load. You can still select an ordinary radio."
+			>
+				<h2>Wait for the application behavior</h2>
+				<p>
+					On reload, the ordinary radios remain usable during an 800ms
+					initialization delay. Once ready, this control changes the
+					preview spacing.
+				</p>
+				<form-multi-switch id="behavior" script="./density-behavior.js">
+					<fieldset>
+						<legend>Preview spacing</legend>
+						<label
+							><input
+								type="radio"
+								name="preview-density"
+								value="comfortable"
+								checked
+							/>Comfortable</label
+						>
+						<label
+							><input
+								type="radio"
+								name="preview-density"
+								value="compact"
+							/>Compact</label
+						>
+					</fieldset>
+				</form-multi-switch>
+				<p data-status aria-live="polite">Loading preview behavior…</p>
+				<ul data-preview>
+					<li>First saved report</li>
+					<li>Second saved report</li>
+					<li>Third saved report</li>
+				</ul>
+			</section>
+
+			<section
+				data-error-message="This deliberate failure leaves the native radios available."
+			>
+				<h2>Keep the fallback when a behavior module fails</h2>
+				<p>
+					This example intentionally rejects initialization. Its
+					radios keep their ordinary presentation. The error appears
+					below and in the console.
+				</p>
+				<form-multi-switch id="failure" script="./failing-behavior.js">
+					<fieldset>
+						<legend>Results per page</legend>
+						<label
+							><input
+								type="radio"
+								name="page-size"
+								value="10"
+								checked
+							/>10</label
+						>
+						<label
+							><input
+								type="radio"
+								name="page-size"
+								value="25"
+							/>25</label
+						>
+					</fieldset>
+				</form-multi-switch>
+				<p data-status aria-live="polite">
+					Waiting for the deliberately failing initializer…
 				</p>
 			</section>
+
+			<section>
+				<h2>Inspect interaction events</h2>
+				<p>
+					Click a selected choice again to see an activation without
+					another change. Arrow-key selection still produces change
+					events.
+				</p>
+				<pre id="event-log" role="log" aria-live="polite">
+Interact with a control to inspect its events.</pre>
+			</section>
 		</main>
-
 		<footer>
-			<p>
-				Made with ❤️ by
-				<a href="https://github.com/aarongustafson">Aaron Gustafson</a>.
-				View the source on
-				<a href="https://github.com/aarongustafson/form-multi-switch"
-					>GitHub</a
-				>.
-			</p>
+			<a href="https://github.com/aarongustafson/form-multi-switch"
+				>View the repository</a
+			>
 		</footer>
-
-		<script src="../define.js" type="module"></script>
 	</body>
 </html>
