@@ -10,6 +10,27 @@ template.innerHTML = html;
 const demo = template.content;
 
 describe('demo examples', () => {
+	it('keeps just the README link in the introduction', () => {
+		const links = [...demo.querySelectorAll('header a')];
+		expect(links).toHaveLength(1);
+		expect(links[0].textContent.trim()).toBe('README');
+		expect(links[0].getAttribute('href')).toBe(
+			'https://github.com/aarongustafson/form-multi-switch/blob/main/README.md',
+		);
+	});
+
+	it('ends with the shared author credit instead of repository navigation', () => {
+		const footer = demo.querySelector('footer');
+		expect(footer.textContent.replace(/\s+/g, ' ').trim()).toBe(
+			'Made with ❤️ by Aaron Gustafson.',
+		);
+		const links = [...footer.querySelectorAll('a')];
+		expect(links).toHaveLength(1);
+		expect(links[0].getAttribute('href')).toBe(
+			'https://github.com/aarongustafson',
+		);
+	});
+
 	it('pairs code on the left with every live example', () => {
 		const sections = [...demo.querySelectorAll('.demo-section')];
 		expect(sections.length).toBeGreaterThanOrEqual(10);
