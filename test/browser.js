@@ -339,10 +339,12 @@ const tests = [
 				'Keyboard focus has no visible segment hook.',
 			);
 			const focusStyle = getComputedStyle(label);
-			assert(
+			const hasOuterRing =
 				parseFloat(focusStyle.outlineWidth) >= 3 &&
-					parseFloat(focusStyle.outlineOffset) >= 0,
-				'Focus must have an outer outline distinct from the selected state.',
+				parseFloat(focusStyle.outlineOffset) > 0;
+			assert(
+				hasOuterRing === inputs[0].matches(':focus-visible'),
+				'The outer ring must follow native focus-visible, independently of selection.',
 			);
 			assert(
 				label.getBoundingClientRect().height >= 44,

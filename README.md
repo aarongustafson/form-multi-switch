@@ -353,7 +353,7 @@ form-multi-switch {
 | `--multi-switch-color`               | `CanvasText`    | Unselected text.                                         |
 | `--multi-switch-selected-background` | `Highlight`     | Selected background.                                     |
 | `--multi-switch-selected-color`      | `HighlightText` | Selected text.                                           |
-| `--multi-switch-focus-color`         | `Highlight`     | Focus outline.                                           |
+| `--multi-switch-focus-color`         | `Highlight`     | Outer outline when the radio matches `:focus-visible`.   |
 
 The default colors come from the browser’s system colors.
 
@@ -382,18 +382,18 @@ its own; reserve that ID for the component’s styles.
 For more control, use these attributes in your selectors once the component is
 ready:
 
-| Hook                          | Element or state                           |
-| ----------------------------- | ------------------------------------------ |
-| `[data-multi-switch-state]`   | Host initialization state.                 |
-| `[data-multi-switch-group]`   | Fieldset.                                  |
-| `[data-multi-switch-input]`   | Retained native radio.                     |
-| `[data-multi-switch-choice]`  | Associated visible label.                  |
-| `[data-multi-switch-label]`   | Choice text container.                     |
-| `[data-value="compact"]`      | A choice label with that radio value.      |
-| `[data-first]`, `[data-last]` | First and last choices in radio DOM order. |
-| `[data-selected]`             | Checked choice.                            |
-| `[data-disabled]`             | Effectively disabled choice.               |
-| `[data-focus]`                | Choice whose radio currently has focus.    |
+| Hook                          | Element or state                                                                         |
+| ----------------------------- | ---------------------------------------------------------------------------------------- |
+| `[data-multi-switch-state]`   | Host initialization state.                                                               |
+| `[data-multi-switch-group]`   | Fieldset.                                                                                |
+| `[data-multi-switch-input]`   | Retained native radio.                                                                   |
+| `[data-multi-switch-choice]`  | Associated visible label.                                                                |
+| `[data-multi-switch-label]`   | Choice text container.                                                                   |
+| `[data-value="compact"]`      | A choice label with that radio value.                                                    |
+| `[data-first]`, `[data-last]` | First and last choices in radio DOM order.                                               |
+| `[data-selected]`             | Checked choice.                                                                          |
+| `[data-disabled]`             | Effectively disabled choice.                                                             |
+| `[data-focus]`                | Choice whose radio currently has focus; the default ring also requires `:focus-visible`. |
 
 `data-first` and `data-last` identify the ends of the group even when you’ve
 wrapped each choice in another element. The default styles handle labels on
@@ -467,7 +467,9 @@ the switch is ready, while keeping it as the radio’s accessible name.
 - Keep a meaningful legend and a text label for every choice.
 - Let the radios do their job. You don’t need `role="switch"` or replacement
   buttons.
-- Keep a visible focus indicator when you customize the design.
+- Keep a visible focus indicator when you customize the design. The default
+  outer ring follows the radio’s `:focus-visible` state, so keyboard users get
+  a focus cue without adding one to ordinary mouse or touch selections.
 - Check your colors, zoomed layout, right-to-left layout, forced colors, and
   whether people will understand your icons.
 - Write your own radios when the control needs to work without JavaScript.
@@ -484,7 +486,8 @@ messages or interface your script adds.
 
 The component uses Custom Elements, ES modules, AbortController, MutationObserver,
 and modern CSS, including cascade layers, size container queries, logical
-properties, and `clip-path`. It doesn’t include polyfills for older browsers.
+properties, `:has()`, `:focus-visible`, and `clip-path`. It doesn’t include
+polyfills for older browsers.
 
 ## Development
 

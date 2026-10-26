@@ -9,7 +9,7 @@
 				{
 					"kind": "class",
 					"name": "FormMultiSwitchElement",
-					"description": "Enhance one native radio group into a light-DOM segmented control.",
+					"description": "Enhance one native radio group into a light-DOM segmented control. Default outer focus rings follow the native radio's :focus-visible state.",
 					"tagName": "form-multi-switch",
 					"customElement": true,
 					"superclass": { "name": "HTMLElement" },
@@ -215,7 +215,8 @@
 						},
 						{
 							"name": "--multi-switch-focus-color",
-							"default": "Highlight"
+							"default": "Highlight",
+							"description": "Outer focus ring color when the focused radio matches :focus-visible."
 						}
 					]
 				}

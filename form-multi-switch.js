@@ -66,7 +66,7 @@ const DEFAULT_STYLES = `@layer form-multi-switch {
 		color: var(--multi-switch-selected-color, HighlightText);
 		box-shadow: inset 0 0 0 1px var(--multi-switch-border, ButtonBorder);
 	}
-	[data-multi-switch-state='ready'] [data-focus] {
+	[data-multi-switch-state='ready']:has([data-multi-switch-input]:focus-visible) [data-focus] {
 		z-index: 1;
 		outline: 3px solid var(--multi-switch-focus-color, Highlight);
 		outline-offset: 3px;
@@ -96,7 +96,7 @@ const DEFAULT_STYLES = `@layer form-multi-switch {
 			outline: 2px solid Highlight;
 			outline-offset: -4px;
 		}
-		[data-multi-switch-state='ready'] [data-focus] {
+		[data-multi-switch-state='ready']:has([data-multi-switch-input]:focus-visible) [data-focus] {
 			outline: 3px solid CanvasText;
 			outline-offset: 3px;
 		}
@@ -169,6 +169,7 @@ function normalizeConfiguration(config) {
 /**
  * Enhance one native radio group without replacing its form controls.
  * Default styles are installed once per document in a named cascade layer.
+ * The outer focus ring follows the native radio's :focus-visible state.
  *
  * @element form-multi-switch
  */

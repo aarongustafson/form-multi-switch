@@ -11,6 +11,23 @@ const declaration = manifest.modules[0].declarations[0];
 const metadata = JSON.parse(read('../package.json'));
 
 describe('package metadata', () => {
+	it('requires native focus-visible for outer focus outlines, including forced colors', () => {
+		const selectors = [
+			...read('../form-multi-switch.css').matchAll(
+				/([^{}]+)\{[^{}]*outline:\s*3px/g,
+			),
+		].map((match) => match[1]);
+		expect(selectors).toHaveLength(2);
+		for (const selector of selectors) {
+			expect(selector).toContain(':focus-visible');
+		}
+		expect(
+			declaration.cssProperties.find(
+				({ name }) => name === '--multi-switch-focus-color',
+			).description,
+		).toContain(':focus-visible');
+	});
+
 	it('keeps the optional external CSS identical to the automatically installed defaults', () => {
 		const source = read('../form-multi-switch.js');
 		const styles = source.match(/const DEFAULT_STYLES = `([\s\S]*?)`;/)[1];

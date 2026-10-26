@@ -84,7 +84,10 @@
 		box-shadow: inset 0 0 0 1px var(--multi-switch-border, ButtonBorder);
 	}
 
-	[data-multi-switch-state='ready'] [data-focus] {
+	[data-multi-switch-state='ready']:has(
+			[data-multi-switch-input]:focus-visible
+		)
+		[data-focus] {
 		z-index: 1;
 		outline: 3px solid var(--multi-switch-focus-color, Highlight);
 		outline-offset: 3px;
@@ -129,7 +132,10 @@
 			outline: 2px solid Highlight;
 			outline-offset: -4px;
 		}
-		[data-multi-switch-state='ready'] [data-focus] {
+		[data-multi-switch-state='ready']:has(
+				[data-multi-switch-input]:focus-visible
+			)
+			[data-focus] {
 			outline: 3px solid CanvasText;
 			outline-offset: 3px;
 		}
