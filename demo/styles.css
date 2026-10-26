@@ -117,10 +117,6 @@ form-multi-switch {
 	margin-block: 1rem;
 }
 
-form-multi-switch[data-multi-switch-state='ready'] label {
-	margin: 0;
-}
-
 button {
 	font: inherit;
 	min-block-size: 2.75rem;

@@ -400,6 +400,70 @@ describe('form-multi-switch', () => {
 		expect(element.querySelectorAll('input')[2].disabled).toBe(true);
 	});
 
+	it('clears generated selection and reset defaults when its value attribute is removed', async () => {
+		const form = document.createElement('form');
+		document.body.append(form);
+		const element = document.createElement('form-multi-switch');
+		element.configure(configuration);
+		await connect(element, form);
+		element.removeAttribute('value');
+		expect(element.value).toBeNull();
+		expect(new FormData(form).has('density')).toBe(false);
+		expect(
+			[...element.querySelectorAll('input')].every(
+				(input) => !input.defaultChecked,
+			),
+		).toBe(true);
+		element.value = 'compact';
+		form.reset();
+		await Promise.resolve();
+		expect(element.value).toBeNull();
+		expect(element.querySelector('[data-selected]')).toBeNull();
+		element.setAttribute('value', 'comfortable');
+		expect(element.value).toBe('comfortable');
+	});
+
+	it.each([false, true])(
+		'tracks input-only updates before the next native change (wait: %s)',
+		async (wait) => {
+			const element = await connect(authored());
+			const changes = vi.fn();
+			element.addEventListener('form-multi-switch:change', changes);
+			const [comfortable, compact] = element.querySelectorAll('input');
+			compact.checked = true;
+			compact.dispatchEvent(new Event('input', { bubbles: true }));
+			expect(changes).not.toHaveBeenCalled();
+			if (wait) await Promise.resolve();
+			comfortable.click();
+			expect(changes).toHaveBeenCalledOnce();
+			expect(changes.mock.calls[0][0].detail).toEqual({
+				value: 'comfortable',
+				previousValue: 'compact',
+				index: 0,
+			});
+			compact.click();
+			expect(changes).toHaveBeenCalledTimes(2);
+			expect(changes.mock.calls[1][0].detail.previousValue).toBe(
+				'comfortable',
+			);
+		},
+	);
+
+	it('retains the native change baseline across a microtask checkpoint', async () => {
+		const element = await connect(authored());
+		const changes = vi.fn();
+		element.addEventListener('form-multi-switch:change', changes);
+		const compact = element.querySelector('input[value="compact"]');
+		compact.checked = true;
+		compact.dispatchEvent(new Event('input', { bubbles: true }));
+		await Promise.resolve();
+		compact.dispatchEvent(new Event('change', { bubbles: true }));
+		expect(changes).toHaveBeenCalledOnce();
+		expect(changes.mock.calls[0][0].detail.previousValue).toBe(
+			'comfortable',
+		);
+	});
+
 	it('uses the native form owner even with an explicit form attribute', async () => {
 		const form = document.createElement('form');
 		form.id = 'settings';

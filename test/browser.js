@@ -34,6 +34,95 @@ async function setup() {
 
 const tests = [
 	[
+		'Demo styles preserve shared borders in horizontal and vertical layouts',
+		async () => {
+			const stylesheet = document.createElement('link');
+			stylesheet.rel = 'stylesheet';
+			stylesheet.href = new URL(
+				'../demo/styles.css',
+				import.meta.url,
+			).href;
+			try {
+				await new Promise((resolve, reject) => {
+					stylesheet.onload = resolve;
+					stylesheet.onerror = () =>
+						reject(new Error('Demo stylesheet failed to load.'));
+					document.head.append(stylesheet);
+				});
+				const { inputs } = await setup();
+				for (const width of [720, 240]) {
+					fixture.style.inlineSize = `${width}px`;
+					const boxes = inputs.map((input) =>
+						input.labels[0].getBoundingClientRect(),
+					);
+					const overlap =
+						width < 320
+							? boxes[0].bottom - boxes[1].top
+							: boxes[0].right - boxes[1].left;
+					assert(
+						Math.abs(overlap - 1) < 0.5,
+						`Demo styles removed the shared border overlap at ${width}px.`,
+					);
+				}
+			} finally {
+				stylesheet.remove();
+				fixture.style.removeProperty('inline-size');
+			}
+		},
+	],
+	[
+		'Removing generated value clears submission and native reset defaults',
+		async () => {
+			fixture.innerHTML = `<form><form-multi-switch name="density" label="Density"
+				choices='[{"label":"Comfortable","value":"comfortable"},{"label":"Compact","value":"compact"}]'
+				value="comfortable"></form-multi-switch></form>`;
+			const control = fixture.querySelector('form-multi-switch');
+			const form = fixture.querySelector('form');
+			await control.ready;
+			control.removeAttribute('value');
+			assert(
+				control.value === null && !new FormData(form).has('density'),
+				'Removed value remains selected or submitted.',
+			);
+			control.value = 'compact';
+			form.reset();
+			await Promise.resolve();
+			assert(
+				control.value === null &&
+					!control.querySelector('[data-selected]'),
+				'Reset restored a removed default.',
+			);
+		},
+	],
+	[
+		'Input-only updates preserve the next native change and its previous value',
+		async () => {
+			const { control, inputs } = await setup();
+			const changes = [];
+			control.addEventListener('form-multi-switch:change', (event) =>
+				changes.push(event.detail),
+			);
+			inputs[1].checked = true;
+			inputs[1].dispatchEvent(new Event('input', { bubbles: true }));
+			assert(
+				changes.length === 0,
+				'An input-only update emitted a custom change.',
+			);
+			inputs[0].click();
+			assert(
+				changes.length === 1 &&
+					changes[0].previousValue === 'express' &&
+					changes[0].value === 'standard',
+				'The next native change was lost or used a stale baseline.',
+			);
+			inputs[1].click();
+			assert(
+				changes.length === 2 && changes[1].previousValue === 'standard',
+				'The native input/change sequence lost its baseline.',
+			);
+		},
+	],
+	[
 		'Authored markup overrides configuration attributes without changing submission or reset',
 		async () => {
 			fixture.innerHTML = `<form><form-multi-switch

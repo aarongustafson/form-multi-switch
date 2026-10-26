@@ -704,8 +704,7 @@ export class FormMultiSwitchElement extends HTMLElement {
 		}
 		if (
 			this._fieldset === this._generatedFieldset &&
-			!this._defaultApplied &&
-			this.hasAttribute('value')
+			!this._defaultApplied
 		) {
 			const value = this.getAttribute('value');
 			this._select(value);
@@ -770,6 +769,7 @@ export class FormMultiSwitchElement extends HTMLElement {
 	_listen() {
 		this._listeners = new AbortController();
 		const { signal } = this._listeners;
+		let inputChange = null;
 		this.addEventListener(
 			'click',
 			(event) => {
@@ -790,7 +790,16 @@ export class FormMultiSwitchElement extends HTMLElement {
 		this.addEventListener(
 			'input',
 			(event) => {
-				if (this._inputs.includes(event.target)) this._sync();
+				if (!this._inputs.includes(event.target)) return;
+				const change = {
+					input: event.target,
+					previousValue: this._previousValue,
+					value: this.value,
+				};
+				// Keep this until change; native events can have a microtask checkpoint between them.
+				inputChange = change;
+				this._previousValue = change.value;
+				this._sync();
 			},
 			{ signal },
 		);
@@ -800,7 +809,12 @@ export class FormMultiSwitchElement extends HTMLElement {
 				const index = this._inputs.indexOf(event.target);
 				if (index < 0) return;
 				const value = this.value;
-				const previousValue = this._previousValue;
+				const previousValue =
+					inputChange?.input === event.target &&
+					inputChange.value === value
+						? inputChange.previousValue
+						: this._previousValue;
+				inputChange = null;
 				this._previousValue = value;
 				this._sync();
 				if (value !== previousValue)

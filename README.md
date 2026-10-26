@@ -199,6 +199,9 @@ selection and its reset default. With your own `<fieldset>`, the component ignor
 that attribute and uses the radios’ checked state instead. You can still set
 the `value` property to change the live selection in either mode.
 
+Removing the attribute from a generated group clears both its selection and
+reset default.
+
 The attribute doesn’t change as someone uses the control; read the property
 when you need the current value.
 

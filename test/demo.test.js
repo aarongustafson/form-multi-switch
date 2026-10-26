@@ -10,6 +10,16 @@ template.innerHTML = html;
 const demo = template.content;
 
 describe('demo examples', () => {
+	it('leaves shared-border overlap margins to the component defaults', () => {
+		const css = readFileSync(
+			resolve(directory, '../demo/styles.css'),
+			'utf8',
+		);
+		expect(css).not.toMatch(
+			/form-multi-switch\[data-multi-switch-state=['"]ready['"]\]\s+label\s*\{[^}]*margin:\s*0/,
+		);
+	});
+
 	it('introduces script loading with a working example before the loading and failure demos', () => {
 		const intro = demo.querySelector('#script-loading');
 		expect(intro).not.toBeNull();

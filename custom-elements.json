@@ -34,7 +34,7 @@
 						{
 							"name": "value",
 							"type": { "text": "string" },
-							"description": "Initial selection and form-reset default for generated controls. Ignored for authored markup; the live value property works in either mode."
+							"description": "Initial selection and form-reset default for generated controls; removing the attribute clears both. Ignored for authored markup; the live value property works in either mode."
 						},
 						{
 							"name": "disabled",
