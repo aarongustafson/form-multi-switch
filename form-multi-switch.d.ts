@@ -75,9 +75,9 @@ declare global {
 		'form-multi-switch': FormMultiSwitchElement;
 	}
 	interface HTMLElementEventMap {
-		'form-multi-switch-activate': CustomEvent<MultiSwitchSelectionDetail>;
-		'form-multi-switch-change': CustomEvent<MultiSwitchSelectionDetail>;
-		'form-multi-switch-ready': CustomEvent<{ value: string | null }>;
-		'form-multi-switch-error': CustomEvent<MultiSwitchErrorDetail>;
+		'form-multi-switch:activate': CustomEvent<MultiSwitchSelectionDetail>;
+		'form-multi-switch:change': CustomEvent<MultiSwitchSelectionDetail>;
+		'form-multi-switch:ready': CustomEvent<{ value: string | null }>;
+		'form-multi-switch:error': CustomEvent<MultiSwitchErrorDetail>;
 	}
 }

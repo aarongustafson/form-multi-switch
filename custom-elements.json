@@ -156,28 +156,28 @@
 					],
 					"events": [
 						{
-							"name": "form-multi-switch-activate",
+							"name": "form-multi-switch:activate",
 							"type": {
 								"text": "CustomEvent<MultiSwitchSelectionDetail>"
 							},
 							"description": "Native radio click activation, including repeated activation."
 						},
 						{
-							"name": "form-multi-switch-change",
+							"name": "form-multi-switch:change",
 							"type": {
 								"text": "CustomEvent<MultiSwitchSelectionDetail>"
 							},
 							"description": "Native interaction changed the selection."
 						},
 						{
-							"name": "form-multi-switch-ready",
+							"name": "form-multi-switch:ready",
 							"type": {
 								"text": "CustomEvent<{ value: string | null }>"
 							},
 							"description": "Initialization succeeded."
 						},
 						{
-							"name": "form-multi-switch-error",
+							"name": "form-multi-switch:error",
 							"type": {
 								"text": "CustomEvent<MultiSwitchErrorDetail>"
 							},

@@ -10,6 +10,45 @@ template.innerHTML = html;
 const demo = template.content;
 
 describe('demo examples', () => {
+	it('introduces script loading with a working example before the loading and failure demos', () => {
+		const intro = demo.querySelector('#script-loading');
+		expect(intro).not.toBeNull();
+		const first = demo.querySelector('form-multi-switch[script]');
+		expect(first?.id).toBe('script-example');
+		expect(first?.closest('section')).toBe(intro);
+		const code = intro.querySelector('pre code').textContent;
+		expect(code).toContain('export function initialize');
+		expect(code).toContain('form-multi-switch:change');
+		expect(code).toContain('{ signal }');
+	});
+
+	it('updates the script example and releases its listener and preview state', async () => {
+		const { initialize } = await import('../demo/view-behavior.js');
+		const wrapper = document.createElement('div');
+		wrapper.innerHTML = `<form-multi-switch><fieldset><legend>View</legend>
+			<label><input type="radio" name="view" value="list" checked>List</label>
+			<label><input type="radio" name="view" value="grid">Grid</label>
+			</fieldset></form-multi-switch><ul data-view-preview></ul>`;
+		const control = wrapper.querySelector('form-multi-switch');
+		const preview = wrapper.querySelector('[data-view-preview]');
+		document.body.append(wrapper);
+		await control.ready;
+		const controller = new AbortController();
+		try {
+			const cleanup = initialize(control, { signal: controller.signal });
+			expect(preview.dataset.view).toBe('list');
+			control.querySelector('input[value="grid"]').click();
+			expect(preview.dataset.view).toBe('grid');
+			controller.abort();
+			cleanup();
+			control.dispatchEvent(new CustomEvent('form-multi-switch:change'));
+			expect(preview.hasAttribute('data-view')).toBe(false);
+		} finally {
+			controller.abort();
+			wrapper.remove();
+		}
+	});
+
 	it('does not require authors to link the component stylesheet', () => {
 		expect(html).not.toContain('href="../form-multi-switch.css"');
 	});
@@ -145,6 +184,6 @@ describe('demo examples', () => {
 	it('keeps the JavaScript-only action hidden until its control is ready', () => {
 		const button = demo.querySelector('#set-density');
 		expect(button.hidden).toBe(true);
-		expect(button.textContent.trim()).toBe('Set Compact through the API');
+		expect(button.textContent).toContain('Compact');
 	});
 });

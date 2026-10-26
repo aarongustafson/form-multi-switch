@@ -70,7 +70,7 @@ const tests = [
 			control.querySelector('fieldset').append(label);
 			await until(() => label.hasAttribute('data-last'));
 			let changes = 0;
-			control.addEventListener('form-multi-switch-change', () => {
+			control.addEventListener('form-multi-switch:change', () => {
 				changes += 1;
 			});
 			label.click();
@@ -114,7 +114,7 @@ const tests = [
 			external.id = 'external-owner';
 			fixture.append(external);
 			const reassociated = new Promise((resolve) =>
-				control.addEventListener('form-multi-switch-ready', resolve, {
+				control.addEventListener('form-multi-switch:ready', resolve, {
 					once: true,
 				}),
 			);
@@ -128,7 +128,7 @@ const tests = [
 				'Reset listener did not move to the new form.',
 			);
 			const renamed = new Promise((resolve) =>
-				control.addEventListener('form-multi-switch-ready', resolve, {
+				control.addEventListener('form-multi-switch:ready', resolve, {
 					once: true,
 				}),
 			);
@@ -244,7 +244,7 @@ const tests = [
 		async () => {
 			const { control, inputs } = await setup();
 			let changes = 0;
-			control.addEventListener('form-multi-switch-change', () => {
+			control.addEventListener('form-multi-switch:change', () => {
 				changes += 1;
 			});
 			control.addEventListener('click', (event) =>

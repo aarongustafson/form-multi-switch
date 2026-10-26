@@ -30,12 +30,12 @@ const ready: Promise<void> = control.ready;
 const refreshed: Promise<void> = control.refresh();
 const defined: boolean = defineFormMultiSwitch();
 document.querySelector('form-multi-switch')?.configure(configuration);
-control.addEventListener('form-multi-switch-change', (event) => {
+control.addEventListener('form-multi-switch:change', (event) => {
 	const value: string | null = event.detail.value;
 	const index: number = event.detail.index;
 	console.log(value, index);
 });
-control.addEventListener('form-multi-switch-error', (event) => {
+control.addEventListener('form-multi-switch:error', (event) => {
 	const error: unknown = event.detail.error;
 	console.error(event.detail.phase, error);
 });

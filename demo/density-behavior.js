@@ -16,7 +16,7 @@ export async function initialize(control, { signal }) {
 	const update = () => {
 		preview.style.lineHeight = control.value === 'compact' ? '1.2' : '2.4';
 	};
-	control.addEventListener('form-multi-switch-change', update, { signal });
+	control.addEventListener('form-multi-switch:change', update, { signal });
 	update();
 	return () => {
 		preview.style.lineHeight = original;

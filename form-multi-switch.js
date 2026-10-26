@@ -913,7 +913,7 @@ export class FormMultiSwitchElement extends HTMLElement {
 
 	_emit(name, detail) {
 		this.dispatchEvent(
-			new CustomEvent(`form-multi-switch-${name}`, {
+			new CustomEvent(`form-multi-switch:${name}`, {
 				detail,
 				bubbles: true,
 				composed: true,

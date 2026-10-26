@@ -20,8 +20,9 @@
 				for installation and API documentation.
 			</p>
 			<p>
-				<strong>Keyboard too:</strong> Use <kbd>Tab</kbd> to reach a group, arrow keys to
-				change its selection, and <kbd>Space</kbd> to select.
+				<strong>Keyboard too:</strong> Use <kbd>Tab</kbd> to reach a
+				group, arrow keys to change its selection, and
+				<kbd>Space</kbd> to select.
 			</p>
 			<noscript>
 				<p>
@@ -37,10 +38,11 @@
 				<div class="demo-section">
 					<h3>Default styling example: Shipping choices</h3>
 					<p>
-						This shows the default styles, hoisted into the page from the
-						component itself. I’ve included tools to inspect the selected
-						value and show how it still respects the default selection when
-						you reset it (restoring “Standard” shipping).
+						This shows the default styles, hoisted into the page
+						from the component itself. I’ve included tools to
+						inspect the selected value and show how it still
+						respects the default selection when you reset it
+						(restoring “Standard” shipping).
 					</p>
 					<div class="code-demo-pair">
 						<pre><code><mark>&lt;form-multi-switch&gt;</mark>
@@ -327,7 +329,12 @@
 				<div class="demo-section">
 					<h3>Generate a group from attributes</h3>
 					<p>
-						Supply a name, accessible label, and JSON choices to have the component generate and manage the controls. If you are using this component in a JavaScript-driven UI, this approach allows you to declaratively define the options without manually creating the `<input>` elements.
+						Supply a name, accessible label, and JSON choices to
+						have the component generate and manage the controls. If
+						you are using this component in a JavaScript-driven UI,
+						this approach allows you to declaratively define the
+						options without manually creating the `<input />`
+						elements.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch
@@ -352,12 +359,18 @@
 					</div>
 				</div>
 				<div class="demo-section">
-					<h3>Pure JS example: Generate a multi-switch from application data</h3>
+					<h3>
+						Pure JS example: Generate a multi-switch from
+						application data
+					</h3>
 					<p>
-						If you want to generate the multi-switch options dynamically, use <code>configure()</code>. 
+						If you want to generate the multi-switch options
+						dynamically, use <code>configure()</code>.
 					</p>
 					<p>
-						This demo also shows how to update the selected value programmatically after the multi-switch has been configured.
+						This demo also shows how to update the selected value
+						programmatically after the multi-switch has been
+						configured.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch id="js-density"&gt;
@@ -393,10 +406,10 @@ control.value = 'compact';</code></pre>
 			<section id="restyling">
 				<h2>Adapt the design to your use case</h2>
 				<p>
-					The component supports custom properties for colors, padding,
-					and corners. Use the light-DOM hooks when you want to change individual
-					states. These examples change the presentation, not the
-					radio behavior.
+					The component supports custom properties for colors,
+					padding, and corners. Use the light-DOM hooks when you want
+					to change individual states. These examples change the
+					presentation, not the radio behavior.
 				</p>
 				<p>
 					Resize the page to try the narrow layout. Below
@@ -491,7 +504,8 @@ control.value = 'compact';</code></pre>
 					<p>
 						Keep a text label for every radio and add decorative CSS
 						masks. <code>icon-only</code> visually hides the text
-						after enhancement; assistive technology can still read each label.
+						after enhancement; assistive technology can still read
+						each label.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch class="icons pill"
@@ -541,7 +555,8 @@ control.value = 'compact';</code></pre>
 				<div class="demo-section">
 					<h3>Example: Selection required</h3>
 					<p>
-						Try to submit without a selection to see native validation in play.
+						Try to submit without a selection to see native
+						validation in play.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form&gt;
@@ -693,7 +708,8 @@ control.value = 'compact';</code></pre>
 				<div class="demo-section">
 					<h3>Examples: French &amp; Arabic</h3>
 					<p>
-						The component plays nicely with different languages and text directions.
+						The component plays nicely with different languages and
+						text directions.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch <mark>lang="fr"</mark>
@@ -763,16 +779,105 @@ control.value = 'compact';</code></pre>
 				</div>
 			</section>
 
+			<section id="script-loading">
+				<h2>Give your switch a script</h2>
+				<p>
+					If your switch needs JavaScript to do its job, point the
+					<code>script</code> attribute at that module. The component
+					loads it and calls its <code>initialize()</code> function,
+					passing in the switch and an <code>AbortSignal</code> you
+					can use to clean up event listeners. Your radios keep their
+					usual appearance until the module is ready.
+				</p>
+				<div class="demo-section">
+					<h3>Example: Switch between a list and a grid</h3>
+					<p>
+						This script reads the selected value and changes how the
+						saved reports are displayed. You don’t need a separate
+						<code>&lt;script&gt;</code> element to load it.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;form-multi-switch <mark>script="./view-behavior.js"</mark>&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Saved reports view&lt;/legend&gt;
+    &lt;label&gt;&lt;input type="radio" name="reports-view"
+      value="list" checked&gt;List&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="reports-view"
+      value="grid"&gt;Grid&lt;/label&gt;
+  &lt;/fieldset&gt;
+&lt;/form-multi-switch&gt;
+&lt;ul data-view-preview&gt;
+  &lt;li&gt;Weekly sales&lt;/li&gt;
+  &lt;li&gt;Stock levels&lt;/li&gt;
+  &lt;li&gt;Returns&lt;/li&gt;
+  &lt;li&gt;Customer feedback&lt;/li&gt;
+&lt;/ul&gt;
+
+// view-behavior.js:
+export function initialize(control, { signal }) {
+  const preview = control.parentElement
+    .querySelector('[data-view-preview]');
+  const update = () => {
+    preview.dataset.view = control.value;
+  };
+  control.addEventListener('form-multi-switch:change',
+    update, { signal });
+  update();
+  return () => preview.removeAttribute('data-view');
+}
+
+[data-view-preview][data-view='grid'] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}</code></pre>
+						<div class="demo">
+							<form-multi-switch
+								id="script-example"
+								script="./view-behavior.js"
+							>
+								<fieldset>
+									<legend>Saved reports view</legend>
+									<label
+										><input
+											type="radio"
+											name="reports-view"
+											value="list"
+											checked
+										/>List</label
+									>
+									<label
+										><input
+											type="radio"
+											name="reports-view"
+											value="grid"
+										/>Grid</label
+									>
+								</fieldset>
+							</form-multi-switch>
+							<ul data-view-preview>
+								<li>Weekly sales</li>
+								<li>Stock levels</li>
+								<li>Returns</li>
+								<li>Customer feedback</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</section>
 			<section
 				data-error-message="The preview behavior could not load. You can still select an ordinary radio."
 			>
 				<h2>Interactive during boot</h2>
 				<div class="demo-section">
-					<h3>Example: Ordinary radios remain available while loading</h3>
+					<h3>
+						Example: Ordinary radios remain available while loading
+					</h3>
 					<p>
 						This instance has a 800ms initialization delay. The
 						radio controls remain usable while the module
-						initializes. Once ready, the control changes to the multi-switch.
+						initializes. Once ready, the control changes to the
+						multi-switch.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch <mark>script="./density-behavior.js"</mark>&gt;
@@ -798,7 +903,7 @@ export function initialize(control, { signal }) {
     preview.style.lineHeight =
       control.value === 'compact' ? '1.2' : '2.4';
   };
-  control.addEventListener('form-multi-switch-change',
+  control.addEventListener('form-multi-switch:change',
     updatePreview, { signal });
   updatePreview();
 }</code></pre>
@@ -844,7 +949,9 @@ export function initialize(control, { signal }) {
 			>
 				<h2>Wrapped controls always fail to usable markup</h2>
 				<div class="demo-section">
-					<h3>Example: A deliberately failing JavaScript enhancement</h3>
+					<h3>
+						Example: A deliberately failing JavaScript enhancement
+					</h3>
 					<p>
 						This example intentionally rejects initialization. The
 						radios keep their ordinary presentation and the error
@@ -903,11 +1010,12 @@ export function initialize() {
 				<div class="demo-section">
 					<h3>Example: Interaction events from this page</h3>
 					<p>
-						This example logs interaction events from the multi-switch controls on this page.
+						This example logs interaction events from the
+						multi-switch controls on this page.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>document.addEventListener(
-  <mark>'form-multi-switch-change'</mark>,
+  <mark>'form-multi-switch:change'</mark>,
   (event) => {
     const { value, previousValue, index } = event.detail;
     console.log(value, previousValue, index);
@@ -915,7 +1023,7 @@ export function initialize() {
 );
 
 document.addEventListener(
-  <mark>'form-multi-switch-activate'</mark>,
+  <mark>'form-multi-switch:activate'</mark>,
   (event) => console.log(event.detail)
 );</code></pre>
 						<div class="demo">

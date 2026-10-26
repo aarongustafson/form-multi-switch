@@ -56,6 +56,29 @@ describe('form-multi-switch', () => {
 		expect(input.hasAttribute('aria-hidden')).toBe(false);
 	});
 
+	it('uses component-name:event names for every custom event', async () => {
+		const element = authored();
+		const listeners = Object.fromEntries(
+			['ready', 'activate', 'change', 'error'].map((name) => {
+				const listener = vi.fn();
+				element.addEventListener(`form-multi-switch:${name}`, listener);
+				return [name, listener];
+			}),
+		);
+		await connect(element);
+		element.querySelectorAll('input')[1].click();
+		element.querySelector('legend').remove();
+		await vi.waitFor(() => expect(listeners.error).toHaveBeenCalledOnce());
+		for (const listener of Object.values(listeners)) {
+			expect(listener).toHaveBeenCalledOnce();
+		}
+		expect(listeners.change.mock.calls[0][0].detail).toEqual({
+			value: 'compact',
+			previousValue: 'comfortable',
+			index: 1,
+		});
+	});
+
 	it('installs overridable default styles once per document without a CSS import', async () => {
 		await connect(authored());
 		await connect(authored());
@@ -68,7 +91,7 @@ describe('form-multi-switch', () => {
 	it('automatically observes added, removed, and reordered choices without looping', async () => {
 		const element = await connect(authored());
 		const ready = vi.fn();
-		element.addEventListener('form-multi-switch-ready', ready);
+		element.addEventListener('form-multi-switch:ready', ready);
 		const label = document.createElement('label');
 		label.innerHTML =
 			'<input type="radio" name="density" value="spacious">Spacious';
@@ -115,7 +138,7 @@ describe('form-multi-switch', () => {
 		document.body.append(parent);
 		const element = await connect(authored(), parent);
 		const ready = vi.fn();
-		element.addEventListener('form-multi-switch-ready', ready);
+		element.addEventListener('form-multi-switch:ready', ready);
 		const sync = vi.spyOn(element, '_sync');
 		parent.disabled = true;
 		await vi.waitFor(() => expect(sync).toHaveBeenCalledOnce());
@@ -145,7 +168,7 @@ describe('form-multi-switch', () => {
 	it('coalesces structural edits and stops observing after disconnection', async () => {
 		const element = await connect(authored());
 		const ready = vi.fn();
-		element.addEventListener('form-multi-switch-ready', ready);
+		element.addEventListener('form-multi-switch:ready', ready);
 		element.querySelector('legend').textContent = 'Density';
 		element.querySelectorAll('input')[1].value = 'dense';
 		element.querySelectorAll('input')[2].value = 'condensed-new';
@@ -317,7 +340,7 @@ describe('form-multi-switch', () => {
 			const element = authored();
 			mutate(element);
 			const error = vi.fn();
-			element.addEventListener('form-multi-switch-error', error);
+			element.addEventListener('form-multi-switch:error', error);
 			document.body.append(element);
 			await expect(element.ready).rejects.toBeInstanceOf(Error);
 			expect(element.state).toBe('error');
@@ -402,8 +425,8 @@ describe('form-multi-switch', () => {
 		const change = vi.fn();
 		const activate = vi.fn();
 		const native = vi.fn();
-		element.addEventListener('form-multi-switch-change', change);
-		element.addEventListener('form-multi-switch-activate', activate);
+		element.addEventListener('form-multi-switch:change', change);
+		element.addEventListener('form-multi-switch:activate', activate);
 		element.addEventListener('change', native);
 		element.querySelectorAll('label')[1].click();
 		expect(change).toHaveBeenCalledOnce();
@@ -489,7 +512,7 @@ describe('form-multi-switch', () => {
 	it('does not duplicate listeners when disconnected and reconnected', async () => {
 		const element = await connect(authored());
 		const listener = vi.fn();
-		element.addEventListener('form-multi-switch-change', listener);
+		element.addEventListener('form-multi-switch:change', listener);
 		element.remove();
 		await connect(element);
 		element.querySelectorAll('input')[1].click();

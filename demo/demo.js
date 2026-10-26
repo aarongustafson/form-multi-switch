@@ -38,7 +38,7 @@ for (const form of document.querySelectorAll('form')) {
 
 const entries = [];
 for (const name of ['activate', 'change']) {
-	document.addEventListener(`form-multi-switch-${name}`, (event) => {
+	document.addEventListener(`form-multi-switch:${name}`, (event) => {
 		entries.unshift(
 			`${event.target.id}: ${name} ${JSON.stringify(event.detail)}`,
 		);
@@ -47,14 +47,14 @@ for (const name of ['activate', 'change']) {
 	});
 }
 
-document.addEventListener('form-multi-switch-ready', (event) => {
+document.addEventListener('form-multi-switch:ready', (event) => {
 	const status = event.target
 		.closest('section')
 		.querySelector('[data-status]');
 	if (status) status.textContent = 'The preview behavior is ready.';
 });
 
-document.addEventListener('form-multi-switch-error', (event) => {
+document.addEventListener('form-multi-switch:error', (event) => {
 	const section = event.target.closest('section');
 	const status = section.querySelector('[data-status]');
 	if (status) status.textContent = section.dataset.errorMessage;

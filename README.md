@@ -2,17 +2,18 @@
 
 [![npm version](https://img.shields.io/npm/v/@aarongustafson/form-multi-switch.svg)](https://www.npmjs.com/package/@aarongustafson/form-multi-switch) [![Build Status](https://img.shields.io/github/actions/workflow/status/aarongustafson/form-multi-switch/ci.yml?branch=main)](https://github.com/aarongustafson/form-multi-switch/actions)
 
-Turn a native radio group into a segmented control without replacing its `<input>` elements.
-Your `<fieldset>`, `<legend>`, `<label>` elements, and radio controls stay in light DOM. The browser still
-handles keyboard navigation, validation, form submission, and reset.
+Use `<form-multi-switch>` to give a group of radio buttons a segmented appearance.
+Your `<fieldset>`, `<legend>`, `<label>` elements, and radio controls stay in light
+DOM, so the browser still handles keyboard navigation, validation, form submission,
+and reset.
 
-You can also generate the same controls from attributes or JavaScript
-configuration for pure-JS interactions. If your experience needs to work without JS, upgrade an
-authored `<fieldset>` instead.
+You can wrap radios you’ve already written or let the component create them from
+attributes or JavaScript. If you need the control to work without JavaScript,
+start with the radio markup.
 
 ## Demos
 
-- [All examples](./demo/index.html): authored and generated controls, form behavior, restyling, icons, translation, and module loading.
+- [All examples](./demo/index.html): shipping choices, clothing and shoe sizes, custom styles, icons, languages, and scripts.
 - [Manual registration](./demo/esm.html): import the class and register it yourself, with an esm.sh import example.
 - [Automatic registration](./demo/unpkg.html): use the definition helper, with an unpkg import example.
 
@@ -32,16 +33,16 @@ import { FormMultiSwitchElement } from '@aarongustafson/form-multi-switch';
 customElements.define('form-multi-switch', FormMultiSwitchElement);
 ```
 
-Or import the definition module to register the element automatically:
+If you’d rather have the component register itself, import `define.js` instead:
 
 ```js
 import '@aarongustafson/form-multi-switch/define.js';
 ```
 
-The package root and `form-multi-switch.js` export the class without registering
-it. The `define.js` module also exports `defineFormMultiSwitch()`. You can call
-that helper again safely if the element is already registered with this `class`;
-it throws if another `class` has claimed the name.
+The package root and `form-multi-switch.js` leave registration to you.
+`define.js` also exports a `defineFormMultiSwitch()` helper you can call yourself.
+Calling it again is fine, as long as another `class` hasn’t claimed the element
+name.
 
 If you serve the installed files directly, load the registration module from
 HTML instead:
@@ -52,11 +53,6 @@ HTML instead:
   src="./node_modules/@aarongustafson/form-multi-switch/define.js"
 ></script>
 ```
-
-The component installs its default styles once per document. You don’t need a
-separate CSS import. It applies the segmented presentation only after
-initialization succeeds. While a behavior module loads, or if initialization
-fails, your authored radios keep their ordinary presentation.
 
 ## Usage
 
@@ -84,23 +80,25 @@ Wrap your fieldset in `<form-multi-switch>`:
 </form-multi-switch>
 ```
 
-Use one fieldset with a nonempty legend. Give every radio the same nonempty
-`name` and form owner, a unique value, and one text label inside that fieldset.
-You can wrap the input in its label or associate them with `for` and `id`.
-Keep links and other interactive controls out of the labels.
+Give your group a legend and each choice a text label. All the radios need to
+sit inside the same fieldset, share a `name`, and belong to the same form (if
+you’re using one). Give each choice its own value.
+
+You can wrap each input in its label, as above, or connect them with `for` and
+`id`. Keep links and other interactive controls out of the labels.
 
 You don’t need to repeat the name or legend on the component. If you omit a
 radio’s `value`, the browser uses `"on"`; because values must be unique, only one
 choice can rely on that default.
 
-Put the fieldset inside a form to submit its selected value. Explicit `form`
-attributes on authored inputs also work. Use different radio names for separate
-groups in the same form.
+To submit the selected value, put the fieldset inside a form or use the inputs’
+`form` attributes to connect them to one. Use a different radio name for each
+group in the same form.
 
 ### Generate controls from attributes
 
-For an interaction that depends on JavaScript, supply the group name, legend,
-and choices as attributes:
+If your control only needs to work with JavaScript, you can describe it with
+attributes instead:
 
 ```html
 <form-multi-switch
@@ -115,21 +113,21 @@ and choices as attributes:
 ></form-multi-switch>
 ```
 
-Write `choices` as a JSON array. Each choice needs a nonempty text `label`.
-Its optional `value` defaults to that label. Values must be unique strings;
-`disabled` must be a JSON boolean.
+Give `choices` a JSON array with a text `label` for each choice. You can leave out
+`value` to use the label as its value, but each value needs to be unique.
 
-Add `"disabled": true` to an individual choice to make it unavailable.
-Supply explicit values when you translate labels so a language change doesn’t
-change the values your form submits.
+Add `"disabled": true` to make a choice unavailable. Use JSON booleans (`true`
+or `false`), not strings.
 
-The component generates a fieldset, legend, and wrapping labels. It uses text
-nodes for labels, not HTML strings. Don’t combine a `choices` attribute with an
-authored fieldset.
+If you translate the labels, give each choice an explicit value so changing
+the language doesn’t change what your form submits.
+
+The component creates the fieldset, legend, radios, and labels for you. Labels
+are plain text, not HTML. Use either `choices` or your own fieldset, not both.
 
 ### Generate controls with JavaScript
 
-Call `configure()` when your application supplies the choices:
+If your choices come from JavaScript, pass them to `configure()`:
 
 ```html
 <form-multi-switch id="density"></form-multi-switch>
@@ -154,35 +152,36 @@ control.configure({
 await control.ready;
 ```
 
-`configure()` validates the whole configuration before changing its attributes.
-It rejects an authored fieldset rather than replacing your markup. Call it again
-to replace a configuration-generated group and establish new reset defaults.
+`configure()` checks your configuration before making changes. You can call it
+again to replace a group it created, including that group’s reset defaults. It
+won’t replace a fieldset you wrote yourself.
 
-Omit `value`, or use `null`, to start without a selection. Optional `disabled`,
-`required`, and `iconOnly` flags default to `false`. Supply `script` separately
-as an attribute or property if you need a behavior module.
+Leave out `value`, or use `null`, to start without a selection. `disabled`,
+`required`, and `iconOnly` default to `false`. If the control needs its own
+script, set the `script` attribute or property separately.
 
 ## Attributes and properties
 
-| Attribute   | Property   | What you control                                                                                          |
-| ----------- | ---------- | --------------------------------------------------------------------------------------------------------- |
-| `name`      | `name`     | Generated radios’ submission name.                                                                        |
-| `label`     | `label`    | Generated legend text.                                                                                    |
-| `choices`   | —          | JSON configuration for generated choices. Use `configure()` to update the whole configuration atomically. |
-| `value`     | `value`    | Attribute: current selection and reset default. Property: current selection only.                         |
-| `disabled`  | `disabled` | Group-level disabled state.                                                                               |
-| `required`  | `required` | Whether the group requires a selection.                                                                   |
-| `icon-only` | `iconOnly` | Visually hide the choice text after enhancement.                                                          |
-| `script`    | `script`   | Optional behavior-module URL.                                                                             |
-| —           | `state`    | Read-only initialization state: `pending`, `loading`, `ready`, or `error`.                                |
-| —           | `ready`    | Read-only promise for the current initialization attempt.                                                 |
+| Attribute   | Property   | What you control                                                                            |
+| ----------- | ---------- | ------------------------------------------------------------------------------------------- |
+| `name`      | `name`     | Generated radios’ submission name.                                                          |
+| `label`     | `label`    | Generated legend text.                                                                      |
+| `choices`   | —          | Choices as a JSON array. Use `configure()` to change the group’s configuration in one call. |
+| `value`     | `value`    | Attribute: current selection and reset default. Property: current selection only.           |
+| `disabled`  | `disabled` | Disable the whole group.                                                                    |
+| `required`  | `required` | Whether the group requires a selection.                                                     |
+| `icon-only` | `iconOnly` | Visually hide the choice text after enhancement.                                            |
+| `script`    | `script`   | URL of a JavaScript module to load before showing the segmented control.                    |
+| —           | `state`    | Read-only status: `pending`, `loading`, `ready`, or `error`.                                |
+| —           | `ready`    | Promise that resolves when the current setup attempt finishes.                              |
 
-The `name` and `label` getters fall back to authored markup. Set those attributes
-or properties to configure generated controls. To change an authored group, edit
-the native markup; the component observes those changes.
+Use `name` and `label` to configure a group the component creates. For radios
+you’ve written yourself, change the input names and legend in your markup.
+Reading these properties returns the attribute value if you’ve set one, or the
+name and legend from the markup otherwise.
 
-Boolean attributes follow HTML rules: their presence enables the option.
-`disabled="false"` still disables the group.
+As with other HTML boolean attributes, presence is what counts:
+`disabled="false"` still disables the group. Remove the attribute to turn it off.
 
 ### Update the current selection
 
@@ -191,32 +190,31 @@ control.value = 'compact';
 control.value = null; // Clear the selection.
 ```
 
-The `value` property returns the selected string, or `null`. Setting it changes
-the current selection and styling without changing reset defaults or emitting
-interaction events. An unknown value throws a `RangeError`; a value other than
-a string or `null` throws a `TypeError`.
+Read `value` to get the selected value, or `null` if nothing’s selected. Set it
+to change the selection without changing what a form reset will restore. This
+doesn’t fire interaction events.
 
-The `value` **attribute** establishes both the current selection and its
-form-reset default when you set it. User interaction doesn’t reflect the current
-selection back to that attribute.
+Use a string that matches one of your choices, or `null` to clear the selection.
+An unknown value throws a `RangeError`; other types throw a `TypeError`.
+
+Setting the `value` **attribute**, on the other hand, changes both the selection
+and its reset default. The attribute doesn’t change as someone uses the control;
+read the property when you need the current value.
 
 ### Update your markup
 
-The component observes added, removed, and reordered choices, label and legend
-text, and attributes that affect values, names, label associations, or form
-ownership. It batches structural changes into one initialization per animation
-frame, revalidates the group, and reruns an optional behavior initializer.
-Invalid markup restores the native presentation and emits an error. Correcting
-the markup triggers another attempt automatically.
+You can add, remove, or reorder choices and change their labels, values, names,
+or form associations. The component watches your markup and checks the group
+again when it changes. If you’ve supplied a script, it runs that script’s
+initializer again, too.
 
-Changes to native `disabled`, `checked`, and `required` attributes update state
-hooks without restarting the behavior initializer. The component also observes
-disabled ancestor fieldsets and changes to explicitly referenced external forms.
-It disconnects its observers when you remove it from the document.
+Changes to `disabled`, `checked`, and `required` attributes update the styling
+without rerunning your script. That includes disabling an ancestor fieldset.
 
-A MutationObserver can’t see property-only assignments such as `input.checked`.
-Use `control.value` to change the live selection, or dispatch a native `input`
-event after changing an input property if you need to update the styling.
+Setting `input.checked` is different: it changes a property, not an attribute,
+so a MutationObserver won’t see it. Use `control.value` to change the selection,
+or dispatch an `input` event after changing the input property to update the
+styling.
 
 ### Retry or refresh explicitly
 
@@ -225,45 +223,43 @@ event after changing an input property if you need to update the styling.
 await control.refresh();
 ```
 
-`refresh()` remains available when you want to retry a failed dependency or
-explicitly rerun initialization. It requires a connected component; you don’t
-need it after ordinary markup changes. Observer-driven updates happen
-asynchronously. Listen for `form-multi-switch-ready` if you need to act after
-the updated group finishes initialization.
+Call `refresh()` if you need to retry a script or rerun setup yourself. The
+component needs to be in the document first.
+
+Markup updates happen asynchronously. Listen for `form-multi-switch:ready` when
+you need to do something after the updated group is ready.
 
 ## Events
 
 Listen for selection changes when you want to update another part of your page:
 
 ```js
-control.addEventListener('form-multi-switch-change', (event) => {
+control.addEventListener('form-multi-switch:change', (event) => {
   const { value, previousValue, index } = event.detail;
   updateDensity(value);
 });
 ```
 
-| Event                        | When it fires                                                                              | Detail                            |
-| ---------------------------- | ------------------------------------------------------------------------------------------ | --------------------------------- |
-| `form-multi-switch-activate` | A radio receives click activation, including a repeated activation of the selected choice. | `{ value, previousValue, index }` |
-| `form-multi-switch-change`   | Native interaction changes the selection, including keyboard navigation.                   | `{ value, previousValue, index }` |
-| `form-multi-switch-ready`    | An initialization attempt succeeds.                                                        | `{ value }`                       |
-| `form-multi-switch-error`    | Configuration, loading, initialization, enhancement, or cleanup fails.                     | `{ error, phase }`                |
+| Event                        | When it fires                                                        | Detail                            |
+| ---------------------------- | -------------------------------------------------------------------- | --------------------------------- |
+| `form-multi-switch:activate` | Someone activates a choice, even if it’s already selected.           | `{ value, previousValue, index }` |
+| `form-multi-switch:change`   | Someone changes the selection, including with the keyboard.          | `{ value, previousValue, index }` |
+| `form-multi-switch:ready`    | The control finishes setting up.                                     | `{ value }`                       |
+| `form-multi-switch:error`    | Something goes wrong with configuration, loading, setup, or cleanup. | `{ error, phase }`                |
 
-The events bubble, cross shadow boundaries, and aren’t cancelable. Native
-`input` and `change` events still fire. The component listens to radio clicks,
-not label clicks, so label forwarding doesn’t produce duplicate activations.
-Calling a radio’s `.click()` can also produce interaction events.
+These events bubble, cross shadow boundaries, and aren’t cancelable. The radios
+still fire their native `input` and `change` events.
 
-Activation describes the click attempt, not a guarantee that selection changed:
-another listener can cancel the native click. Native change notification follows
-successful activation. Programmatic property assignments and form resets don’t
-emit custom activation/change events. Changes to ordinary radios while a behavior
-module is pending don’t emit the component’s custom interaction events.
+An `activate` event doesn’t promise that the selection changed: another listener
+can cancel the native click. Calling a radio’s `.click()` can also fire
+interaction events, but setting properties or resetting the form won’t.
+The custom interaction events start firing once the component is ready.
 
 ## Behavior modules
 
-Set `script` when the segmented presentation should wait for your application
-behavior to load. You can use it with any authoring mode:
+If your switch needs a script to do its job, point `script` at that JavaScript
+module. Your radios keep their usual appearance until the module has loaded
+and finished setting up:
 
 ```html
 <form-multi-switch script="./density-behavior.js">
@@ -271,18 +267,16 @@ behavior to load. You can use it with any authoring mode:
 </form-multi-switch>
 ```
 
-The URL resolves against the component’s document base URL. Use an HTTP or HTTPS
-URL and a trusted module that your Content Security Policy permits. Cross-origin
-modules also need the appropriate CORS headers. Inline `data:`, `javascript:`,
-and `blob:` URLs aren’t accepted.
+You can use `script` with your own radio markup, attribute configuration, or
+`configure()`. You don’t need a separate `<script>` element to load the module.
 
-If the module exports `initialize`, the component calls it once per initialization
-attempt and awaits its result before applying the segmented presentation:
+Export an `initialize()` function to connect your switch to the rest of the
+page. It receives the switch and an `AbortSignal` you can use with event listeners:
 
 ```js
 export function initialize(control, { signal }) {
   control.addEventListener(
-    'form-multi-switch-change',
+    'form-multi-switch:change',
     (event) => {
       document.documentElement.dataset.density = event.detail.value;
     },
@@ -293,16 +287,20 @@ export function initialize(control, { signal }) {
 }
 ```
 
-An initializer can return a synchronous cleanup function, directly or through a
-promise. Use the supplied `AbortSignal` to release listeners and cancel your own
-asynchronous work when the component disconnects, refreshes, or changes modules.
-The browser can’t cancel an import already in progress, but the component ignores
-stale results and runs a stale initializer’s returned cleanup.
+If setup takes time, return a promise or make `initialize()` async. The component
+will wait for it before changing the control’s appearance. Without an initializer,
+it waits for the module itself to finish running.
 
-Module evaluation runs once per resolved URL under the browser’s module cache;
-initialization runs separately for each control. A module without an initializer
-is ready when evaluation succeeds. A non-function `initialize` export, rejected
-import, thrown initializer, or invalid cleanup result is an error.
+Use the signal to cancel your work when the switch leaves the document or needs
+to set up again. You can also return a cleanup function (directly or through the
+promise) for anything the signal doesn’t handle. The cleanup function itself
+must be synchronous. The browser caches the module, but each switch gets its
+own call to `initialize()`.
+
+Relative URLs resolve against your document’s base URL. Only load scripts you
+trust, using HTTP or HTTPS and a URL your Content Security Policy permits.
+Cross-origin modules need CORS permission, too. `data:`, `javascript:`, and `blob:`
+URLs aren’t accepted.
 
 ### Readiness and failure
 
@@ -317,18 +315,18 @@ try {
 If your application needs to show a failure message, supply your own translated
 text.
 
-`state` reports `pending`, `loading`, `ready`, or `error`. The host exposes the
-same state through `data-multi-switch-state`. `ready` is the promise for the
-current initialization attempt. Read it again after changing configuration,
-changing `script`, refreshing, or reconnecting. A superseded attempt rejects
+Read `state` for the current status: `pending`, `loading`, `ready`, or `error`.
+You’ll find the same value in the element’s `data-multi-switch-state` attribute.
+`ready` is a promise for the current setup attempt, so read it again after
+reconfiguring the group, changing `script`, refreshing, or reconnecting the
+element. If a new attempt replaces one in progress, the old promise rejects
 with an `AbortError`.
 
-Failures emit an error event and a console diagnostic. The component leaves
-authored controls usable in their ordinary presentation; it doesn’t disable or
-hide the group. Fix invalid markup/configuration to trigger an automatic retry.
-Call `refresh()` to retry a failed behavior module without changing the markup.
-Remove `script` to retry without the behavior dependency. Imports remain subject
-to the browser’s module cache; `refresh()` doesn’t force a network refetch.
+If something goes wrong, you’ll get an error event and a message in the console.
+Radios you’ve written stay usable without the segmented styling. Fixing invalid
+markup or configuration triggers another attempt. For a failed script, call
+`refresh()` to retry, or remove `script` to use the control without it.
+Refreshing doesn’t bypass the browser’s module cache.
 
 ## Styling
 
@@ -357,35 +355,32 @@ form-multi-switch {
 | `--multi-switch-selected-color`      | `HighlightText` | Selected text.                                           |
 | `--multi-switch-focus-color`         | `Highlight`     | Focus outline.                                           |
 
-The color defaults use system colors. The border stays independent of the
-selected text color, so all choices keep a connected outline. Adjacent segments
-share one border rather than doubling it.
+The default colors come from the browser’s system colors.
 
 ### Layout and styling hooks
 
-The host establishes a named `multi-switch` inline-size container. At widths of
-at least `20rem`, the default stylesheet keeps choices in one row. Below that
-width, it stacks them into one connected column and rounds the top and bottom
-endpoints. Choices don’t wrap into partial rows. This follows the component’s
-available width, not the viewport width.
+The choices sit in a row when the component has at least `20rem` of space.
+Below that, they stack into a column. This follows the space available to the
+component, not the width of your viewport. The component uses a size container
+named `multi-switch` for this layout.
 
 See [the restyling demos](./demo/index.html#restyling) for a branded pill and an
-underline treatment, with CSS beside each live example. Load your overrides
-in your page’s stylesheet. The defaults live in the `form-multi-switch` cascade
-layer, so ordinary, unlayered author rules take precedence regardless of load
-order. You don’t need `!important` or selectors that match the defaults’ specificity.
+underline treatment, with CSS beside each live example. Put your own styles in
+your page’s stylesheet. The defaults use a cascade layer named
+`form-multi-switch`, so your unlayered rules take precedence without
+`!important`, regardless of load order.
 
-See [the size demos](./demo/index.html#shoe-sizes) for a longer list that wraps
-into a grid. The native radios keep their keyboard and form behavior; your CSS
-controls the grid and each option’s border.
+For a longer list, you might prefer a grid. The [shoe-size example](./demo/index.html#shoe-sizes)
+shows how to lay one out and give each choice its own border.
 
-If your Content Security Policy blocks inline styles, you can provide the
-defaults yourself. Load the exported `form-multi-switch.css` with a `<link>`
-whose `id` is `form-multi-switch-styles`; the component will skip style injection.
-Alternatively, put the defaults in a `<style>` with that ID and your approved
-nonce. Don’t give an empty or unrelated element that reserved ID.
+If your Content Security Policy blocks inline styles, load the exported
+`form-multi-switch.css` with a `<link id="form-multi-switch-styles">` before
+registering the component. Or put the defaults in a `<style>` with that ID and
+your approved nonce. The component will use that stylesheet instead of adding
+its own; reserve that ID for the component’s styles.
 
-The component marks these light-DOM elements after initialization:
+For more control, use these attributes in your selectors once the component is
+ready:
 
 | Hook                          | Element or state                           |
 | ----------------------------- | ------------------------------------------ |
@@ -400,14 +395,17 @@ The component marks these light-DOM elements after initialization:
 | `[data-disabled]`             | Effectively disabled choice.               |
 | `[data-focus]`                | Choice whose radio currently has focus.    |
 
-First/last hooks work even when each choice has its own wrapper. The default
-stylesheet lays out direct labels or one wrapper per choice. If you put all
-choices inside another container, give that container your own flex/grid layout.
-Reserve the component’s data attributes for its use.
+`data-first` and `data-last` identify the ends of the group even when you’ve
+wrapped each choice in another element. The default styles handle labels on
+their own or one wrapper per choice. If you put the whole list inside another
+container, give that container your own flex or grid layout.
+
+You can use these attributes to style the control, but leave setting them to
+the component.
 
 ### Use icons without losing names
 
-With generated controls, keep meaningful labels and add `icon-only`:
+To show icons instead of text, keep your labels and add `icon-only`:
 
 ```html
 <form-multi-switch
@@ -422,7 +420,7 @@ With generated controls, keep meaningful labels and add `icon-only`:
 ></form-multi-switch>
 ```
 
-Supply decorative CSS icons using the stable value hooks:
+Use each choice’s `data-value` to give it an icon:
 
 ```css
 form-multi-switch[icon-only] [data-multi-switch-choice]::before {
@@ -442,14 +440,13 @@ form-multi-switch [data-value='dark'] {
 }
 ```
 
-JavaScript configuration uses `iconOnly: true` with the same CSS. You must supply
-an icon for every choice before enabling icon-only presentation. If icons would
-be unfamiliar, retain visible text.
+If you’re calling `configure()`, use `iconOnly: true` with the same CSS. Give
+every choice an icon before turning on icon-only presentation. If the icons
+aren’t likely to be familiar, keep the text visible.
 
-In authored labels, you can instead supply inline SVG or other decorative markup
-with `aria-hidden="true"`. The component keeps those decorative siblings outside
-the text container. You can provide your own `data-multi-switch-label` span to
-control exactly which text gets visually hidden:
+When you’re writing the labels yourself, you can use inline SVG or other
+decorative markup with `aria-hidden="true"` instead. Put the text in a
+`data-multi-switch-label` span if you want to choose exactly what gets hidden:
 
 ```html
 <label>
@@ -461,36 +458,33 @@ control exactly which text gets visually hidden:
 </label>
 ```
 
-Don’t use `display: none`, `hidden`, or `aria-hidden` on the text label. The
-stylesheet visually clips the text while preserving the radio’s accessible name.
-It hides text only after enhancement succeeds.
+Leave the text label available to assistive technology: don’t use `display: none`,
+`hidden`, or `aria-hidden` on it. The component’s styles hide it visually once
+the switch is ready, while keeping it as the radio’s accessible name.
 
 ## Accessibility and progressive enhancement
 
 - Keep a meaningful legend and a text label for every choice.
-- Let native radios provide the semantics. Don’t add `role="switch"` or replace
-  them with generic clickable elements.
-- Keep the stylesheet’s visible focus treatment when you customize the design.
-  Programmatic focus and validation focus also highlight the visible segment.
-- Check your colors, zoomed layout, right-to-left layout, forced colors, and icon
-  meaning. The stylesheet uses logical corners and no animation.
-- Use authored radios when the control must work before JavaScript loads or
-  when it fails. Attribute- and JavaScript-configured groups need JavaScript to
-  create their controls.
+- Let the radios do their job. You don’t need `role="switch"` or replacement
+  buttons.
+- Keep a visible focus indicator when you customize the design.
+- Check your colors, zoomed layout, right-to-left layout, forced colors, and
+  whether people will understand your icons.
+- Write your own radios when the control needs to work without JavaScript.
+  Groups created from attributes or `configure()` need JavaScript to exist.
 
 ### Translation
 
-Supply labels and legend text in your page’s language, whether you write the
-markup, set `label` and `choices`, or call `configure()`. Keep explicit choice
-values stable when you translate their labels. The component generates no
-hardcoded user-facing messages; your application owns translated error messages
-and behavior-module UI.
+Write the labels and legend in your page’s language, whether you’re using
+markup, attributes, or `configure()`. Give each choice a value that won’t change
+when you translate its label. You supply all the visible text, including any
+messages or interface your script adds.
 
 ## Browser support
 
 The component uses Custom Elements, ES modules, AbortController, MutationObserver,
-and modern CSS, including cascade layers, size container queries, logical properties, and
-`clip-path`. It doesn’t include polyfills or claim support for legacy browsers.
+and modern CSS, including cascade layers, size container queries, logical
+properties, and `clip-path`. It doesn’t include polyfills for older browsers.
 
 ## Development
 
