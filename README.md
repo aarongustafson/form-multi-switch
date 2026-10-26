@@ -147,7 +147,7 @@ await control.ready;
 
 `configure()` checks your configuration before making changes. You can call it
 again to replace a group it created, including that group’s reset defaults. It
-won’t replace a fieldset you wrote yourself.
+won’t replace a `<fieldset>` you wrote yourself.
 
 Leave out `value`, or use `null`, to start without a selection. `disabled`,
 `required`, and `iconOnly` default to `false`. If the control needs its own
@@ -158,7 +158,7 @@ script, set the `script` attribute or property separately.
 | Attribute   | Property   | What you control                                                                                        |
 | ----------- | ---------- | ------------------------------------------------------------------------------------------------------- |
 | `name`      | `name`     | Generated radios’ submission name.                                                                      |
-| `label`     | `label`    | Generated legend text.                                                                                  |
+| `label`     | `label`    | Generated `<legend>` text.                                                                              |
 | `choices`   | —          | Choices as a JSON array. Use `configure()` to change the group’s configuration in one call.             |
 | `value`     | `value`    | Attribute: selection and reset default for generated controls. Property: live selection in either mode. |
 | `disabled`  | `disabled` | Disable the whole group.                                                                                |
@@ -169,8 +169,8 @@ script, set the `script` attribute or property separately.
 | —           | `ready`    | Promise that resolves when the current setup attempt finishes.                                          |
 
 Use `name` and `label` to configure a group the component creates. For radios
-you’ve written yourself, change the input names and legend in your markup.
-With your own fieldset, these properties return its radio name and legend,
+you’ve written yourself, change the `<input>` names and `<legend>` in your markup.
+With your own `<fieldset>`, these properties return its radio name and `<legend>`,
 even if you’ve set conflicting attributes on the component. The choices,
 selection, and reset defaults also come from your markup. Changing the ignored
 attributes doesn’t change the group or rerun your script.
@@ -195,7 +195,7 @@ Use a string that matches one of your choices, or `null` to clear the selection.
 An unknown value throws a `RangeError`; other types throw a `TypeError`.
 
 For generated controls, setting the `value` **attribute** changes both the
-selection and its reset default. With your own fieldset, the component ignores
+selection and its reset default. With your own `<fieldset>`, the component ignores
 that attribute and uses the radios’ checked state instead. You can still set
 the `value` property to change the live selection in either mode.
 
@@ -465,7 +465,7 @@ the switch is ready, while keeping it as the radio’s accessible name.
 
 ## Accessibility and progressive enhancement
 
-- Keep a meaningful legend and a text label for every choice.
+- Keep a meaningful `<legend>` for the group and `<label>` text for every choice.
 - Let the radios do their job. You don’t need `role="switch"` or replacement
   buttons.
 - Keep a visible focus indicator when you customize the design. The default
