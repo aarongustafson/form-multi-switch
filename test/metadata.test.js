@@ -11,6 +11,13 @@ const declaration = manifest.modules[0].declarations[0];
 const metadata = JSON.parse(read('../package.json'));
 
 describe('package metadata', () => {
+	it('keeps the optional external CSS identical to the automatically installed defaults', () => {
+		const source = read('../form-multi-switch.js');
+		const styles = source.match(/const DEFAULT_STYLES = `([\s\S]*?)`;/)[1];
+		expect(styles.replace(/\s/g, '')).toBe(
+			read('../form-multi-switch.css').replace(/\s/g, ''),
+		);
+	});
 	it('documents every observed attribute', () => {
 		expect(declaration.attributes.map(({ name }) => name).sort()).toEqual(
 			[...FormMultiSwitchElement.observedAttributes].sort(),

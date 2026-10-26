@@ -1,3 +1,108 @@
+const DEFAULT_STYLES = `@layer form-multi-switch {
+	[data-multi-switch-state] {
+		display: block;
+		container-name: multi-switch;
+		container-type: inline-size;
+	}
+	[data-multi-switch-state][hidden] { display: none; }
+	[data-multi-switch-state='ready'] [data-multi-switch-group] {
+		display: flex;
+		flex-wrap: nowrap;
+		gap: 0;
+		min-inline-size: 0;
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+	[data-multi-switch-state='ready'] [data-multi-switch-group] > :not(legend, [data-multi-switch-input], [data-multi-switch-choice]) {
+		display: flex;
+		flex: 1 1 0;
+		min-inline-size: 0;
+	}
+	[data-multi-switch-state='ready'] [data-multi-switch-group] > legend {
+		margin-block-end: 0.5em;
+		padding: 0;
+		font-weight: 600;
+	}
+	[data-multi-switch-state='ready'] [data-multi-switch-input],
+	[data-multi-switch-state='ready'][icon-only] [data-multi-switch-label] {
+		position: absolute;
+		inline-size: 1px;
+		block-size: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+		border: 0;
+	}
+	[data-multi-switch-state='ready'] [data-multi-switch-choice] {
+		position: relative;
+		display: inline-flex;
+		flex: 1 1 0;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5em;
+		min-inline-size: 2.75rem;
+		min-block-size: 2.75rem;
+		box-sizing: border-box;
+		padding: var(--multi-switch-padding, 0.5em 0.85em);
+		border: 1px solid var(--multi-switch-border, ButtonBorder);
+		background: var(--multi-switch-background, Canvas);
+		color: var(--multi-switch-color, CanvasText);
+		cursor: pointer;
+	}
+	[data-multi-switch-state='ready'] [data-multi-switch-choice]:not([data-first]) { margin-inline-start: -1px; }
+	[data-multi-switch-state='ready'] [data-multi-switch-choice][data-first] {
+		border-start-start-radius: var(--multi-switch-radius, 0.5rem);
+		border-end-start-radius: var(--multi-switch-radius, 0.5rem);
+	}
+	[data-multi-switch-state='ready'] [data-multi-switch-choice][data-last] {
+		border-start-end-radius: var(--multi-switch-radius, 0.5rem);
+		border-end-end-radius: var(--multi-switch-radius, 0.5rem);
+	}
+	[data-multi-switch-state='ready'] [data-selected] {
+		background: var(--multi-switch-selected-background, Highlight);
+		color: var(--multi-switch-selected-color, HighlightText);
+		box-shadow: inset 0 0 0 1px var(--multi-switch-border, ButtonBorder);
+	}
+	[data-multi-switch-state='ready'] [data-focus] {
+		z-index: 1;
+		outline: 3px solid var(--multi-switch-focus-color, Highlight);
+		outline-offset: 3px;
+	}
+	[data-multi-switch-state='ready'] [data-disabled] {
+		color: GrayText;
+		cursor: not-allowed;
+	}
+	@container multi-switch (inline-size < 20rem) {
+		[data-multi-switch-state='ready'] [data-multi-switch-group] { flex-direction: column; }
+		[data-multi-switch-state='ready'] [data-multi-switch-choice]:not([data-first]) {
+			margin-inline-start: 0;
+			margin-block-start: -1px;
+		}
+		[data-multi-switch-state='ready'] [data-multi-switch-choice]:is([data-first], [data-last]) { border-radius: 0; }
+		[data-multi-switch-state='ready'] [data-multi-switch-choice][data-first] {
+			border-start-start-radius: var(--multi-switch-radius, 0.5rem);
+			border-start-end-radius: var(--multi-switch-radius, 0.5rem);
+		}
+		[data-multi-switch-state='ready'] [data-multi-switch-choice][data-last] {
+			border-end-start-radius: var(--multi-switch-radius, 0.5rem);
+			border-end-end-radius: var(--multi-switch-radius, 0.5rem);
+		}
+	}
+	@media (forced-colors: active) {
+		[data-multi-switch-state='ready'] [data-selected] {
+			outline: 2px solid Highlight;
+			outline-offset: -4px;
+		}
+		[data-multi-switch-state='ready'] [data-focus] {
+			outline: 3px solid CanvasText;
+			outline-offset: 3px;
+		}
+	}
+}`;
+
 function labelText(label) {
 	const copy = label.cloneNode(true);
 	for (const decoration of copy.querySelectorAll(
@@ -63,7 +168,7 @@ function normalizeConfiguration(config) {
 
 /**
  * Enhance one native radio group without replacing its form controls.
- * Include form-multi-switch.css to apply the segmented presentation.
+ * Default styles are installed once per document in a named cascade layer.
  *
  * @element form-multi-switch
  */
@@ -93,6 +198,8 @@ export class FormMultiSwitchElement extends HTMLElement {
 		this._controller = null;
 		this._listeners = null;
 		this._observer = null;
+		this._contextObserver = null;
+		this._formObserver = null;
 		this._cleanup = null;
 		this._batch = false;
 		this._state = 'pending';
@@ -105,6 +212,12 @@ export class FormMultiSwitchElement extends HTMLElement {
 	}
 
 	connectedCallback() {
+		if (!this.ownerDocument.getElementById('form-multi-switch-styles')) {
+			const style = this.ownerDocument.createElement('style');
+			style.id = 'form-multi-switch-styles';
+			style.textContent = DEFAULT_STYLES;
+			this.ownerDocument.head.append(style);
+		}
 		for (const property of [
 			'name',
 			'label',
@@ -310,6 +423,7 @@ export class FormMultiSwitchElement extends HTMLElement {
 			this._scheduled = null;
 			this._initialize(version);
 		});
+		this._observe();
 	}
 
 	_cancel() {
@@ -333,6 +447,8 @@ export class FormMultiSwitchElement extends HTMLElement {
 		this._listeners?.abort();
 		this._listeners = null;
 		this._observer?.disconnect();
+		this._contextObserver?.disconnect();
+		this._formObserver?.disconnect();
 		if (this._cleanup) {
 			const cleanup = this._cleanup;
 			this._cleanup = null;
@@ -386,8 +502,10 @@ export class FormMultiSwitchElement extends HTMLElement {
 				if (version !== this._version || controller.signal.aborted)
 					return;
 			}
+			this._observer?.disconnect();
 			this._prepare();
 			this._applyOptions();
+			this._observe();
 			if (this._pendingValue !== undefined) {
 				this._select(this._pendingValue);
 				this._pendingValue = undefined;
@@ -435,8 +553,10 @@ export class FormMultiSwitchElement extends HTMLElement {
 			}
 			if (version !== this._version || controller.signal.aborted) return;
 			phase = 'enhancement';
+			this._observer?.disconnect();
 			this._decorate();
 			this._listen();
+			this._observe();
 			this._previousValue = this.value;
 			this._sync();
 			this._setState('ready');
@@ -563,6 +683,8 @@ export class FormMultiSwitchElement extends HTMLElement {
 
 	_applyOptions() {
 		if (!this._fieldset) return;
+		// Discard only our own reflected option writes, not queued author edits.
+		const records = this._observer?.takeRecords() ?? [];
 		if (this._disabledControlled || this.hasAttribute('disabled'))
 			this._fieldset.disabled = this.hasAttribute('disabled');
 		if (this._requiredControlled || this.hasAttribute('required')) {
@@ -576,6 +698,8 @@ export class FormMultiSwitchElement extends HTMLElement {
 				input.defaultChecked = input.value === value;
 		}
 		this._defaultApplied = true;
+		this._observer?.takeRecords();
+		if (records.length) this._handleMutations(records);
 	}
 
 	_select(value) {
@@ -684,11 +808,106 @@ export class FormMultiSwitchElement extends HTMLElement {
 			},
 			{ signal },
 		);
-		this._observer = new MutationObserver(() => this._sync());
-		this._observer.observe(this._fieldset, {
+	}
+
+	_handleMutations(records) {
+		if (this.state === 'pending' && this._controller) return;
+		records = records.filter(
+			(record) => record.type !== 'attributes' || record.target !== this,
+		);
+		if (!records.length) return;
+		if (
+			records.some(
+				(record) =>
+					record.type !== 'attributes' ||
+					!['disabled', 'checked', 'required'].includes(
+						record.attributeName,
+					),
+			)
+		) {
+			this._schedule();
+		} else {
+			this._previousValue = this.value;
+			this._sync();
+		}
+	}
+
+	_observe() {
+		if (!this.isConnected) return;
+		this._observer ??= new MutationObserver((records) =>
+			this._handleMutations(records),
+		);
+		this._observer.disconnect();
+		this._observer.observe(this, {
 			subtree: true,
+			childList: true,
+			characterData: true,
 			attributes: true,
-			attributeFilter: ['disabled', 'checked', 'required'],
+			attributeFilter: [
+				'disabled',
+				'checked',
+				'required',
+				'name',
+				'type',
+				'value',
+				'id',
+				'for',
+				'form',
+				'aria-hidden',
+				'hidden',
+			],
+		});
+		this._contextObserver ??= new MutationObserver(() => this._sync());
+		this._contextObserver.disconnect();
+		for (
+			let ancestor = this.parentElement;
+			ancestor;
+			ancestor = ancestor.parentElement
+		) {
+			if (ancestor.tagName === 'FIELDSET') {
+				this._contextObserver.observe(ancestor, {
+					attributes: true,
+					attributeFilter: ['disabled'],
+					childList: true,
+				});
+			}
+		}
+		// Form association can change outside the component's own subtree.
+		this._formObserver ??= new MutationObserver((records) => {
+			if (
+				records.some((record) =>
+					this._inputs.some((input) => {
+						const id = input.getAttribute('form');
+						if (id === null) return false;
+						if (record.type === 'attributes')
+							return (
+								record.target.id === id ||
+								record.oldValue === id
+							);
+						return [
+							...record.addedNodes,
+							...record.removedNodes,
+						].some(
+							(node) =>
+								node.nodeType === 1 &&
+								(node.id === id ||
+									[...node.querySelectorAll('[id]')].some(
+										(child) => child.id === id,
+									)),
+						);
+					}),
+				)
+			)
+				this._schedule();
+		});
+		this._formObserver.disconnect();
+		if (!this._inputs.some((input) => input.hasAttribute('form'))) return;
+		this._formObserver.observe(this.ownerDocument, {
+			subtree: true,
+			childList: true,
+			attributes: true,
+			attributeOldValue: true,
+			attributeFilter: ['id'],
 		});
 	}
 
@@ -718,6 +937,7 @@ export class FormMultiSwitchElement extends HTMLElement {
 		}
 		this._cancel();
 		this._setState('error');
+		this._observe();
 		this._emit('error', { error, phase });
 		console.error(`form-multi-switch: ${phase} failed.`, error);
 	}

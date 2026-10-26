@@ -7,6 +7,14 @@ function assert(condition, message) {
 	if (!condition) throw new Error(message);
 }
 
+async function until(predicate) {
+	for (let attempt = 0; attempt < 120; attempt += 1) {
+		if (predicate()) return;
+		await new Promise((resolve) => requestAnimationFrame(resolve));
+	}
+	throw new Error('The observed update did not complete.');
+}
+
 async function setup() {
 	fixture.innerHTML = `<form><form-multi-switch>
 		<fieldset><legend>Delivery speed</legend>
@@ -25,6 +33,114 @@ async function setup() {
 }
 
 const tests = [
+	[
+		'Defaults install once and ordinary CSS overrides them without an external stylesheet',
+		async () => {
+			const { inputs } = await setup();
+			assert(
+				document.querySelectorAll('#form-multi-switch-styles')
+					.length === 1,
+				'Default styles were duplicated.',
+			);
+			assert(
+				!document.querySelector('link[href*="form-multi-switch.css"]'),
+				'The test relies on external component CSS.',
+			);
+			const style = document.createElement('style');
+			style.textContent = 'label { border-radius: 17px; }';
+			document.head.prepend(style);
+			try {
+				assert(
+					getComputedStyle(inputs[0].labels[0])
+						.borderTopLeftRadius === '17px',
+					'An earlier ordinary author rule did not override the defaults.',
+				);
+			} finally {
+				style.remove();
+			}
+		},
+	],
+	[
+		'Observed choice changes update endpoints, events, and submitted values',
+		async () => {
+			const { control, form } = await setup();
+			const label = document.createElement('label');
+			label.innerHTML =
+				'<input type="radio" name="speed" value="collection">Collection';
+			control.querySelector('fieldset').append(label);
+			await until(() => label.hasAttribute('data-last'));
+			let changes = 0;
+			control.addEventListener('form-multi-switch-change', () => {
+				changes += 1;
+			});
+			label.click();
+			assert(
+				new FormData(form).get('speed') === 'collection',
+				'A new radio did not submit.',
+			);
+			assert(
+				changes === 1,
+				'A new radio emitted duplicate or missing change events.',
+			);
+			label.remove();
+			await until(
+				() =>
+					control.querySelector('[data-last]')?.dataset.value ===
+					'overnight',
+			);
+		},
+	],
+	[
+		'Ancestor disabled state and external form ownership update automatically',
+		async () => {
+			const { control, inputs, form } = await setup();
+			const ancestor = document.createElement('fieldset');
+			control.replaceWith(ancestor);
+			ancestor.append(control);
+			await control.ready;
+			ancestor.disabled = true;
+			await until(
+				() => control.querySelectorAll('[data-disabled]').length === 3,
+			);
+			assert(
+				!new FormData(form).has('speed'),
+				'Disabled ancestor controls were submitted.',
+			);
+			ancestor.disabled = false;
+			await until(
+				() => control.querySelectorAll('[data-disabled]').length === 1,
+			);
+			const external = document.createElement('form');
+			external.id = 'external-owner';
+			fixture.append(external);
+			const reassociated = new Promise((resolve) =>
+				control.addEventListener('form-multi-switch-ready', resolve, {
+					once: true,
+				}),
+			);
+			for (const input of inputs) input.setAttribute('form', external.id);
+			await reassociated;
+			control.value = 'express';
+			external.reset();
+			await Promise.resolve();
+			assert(
+				control.value === 'standard',
+				'Reset listener did not move to the new form.',
+			);
+			const renamed = new Promise((resolve) =>
+				control.addEventListener('form-multi-switch-ready', resolve, {
+					once: true,
+				}),
+			);
+			external.id = 'renamed-owner';
+			await renamed;
+			assert(
+				inputs[0].form === null,
+				'A renamed form retained an obsolete association.',
+			);
+			external.remove();
+		},
+	],
 	[
 		'Selected and unselected segments share one connected border',
 		async () => {

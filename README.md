@@ -24,10 +24,9 @@ To run the demos locally, follow the [development instructions](#development).
 npm install @aarongustafson/form-multi-switch
 ```
 
-Import the stylesheet and class, then register the element:
+Import the `class`, then register the element:
 
 ```js
-import '@aarongustafson/form-multi-switch/form-multi-switch.css';
 import { FormMultiSwitchElement } from '@aarongustafson/form-multi-switch';
 
 customElements.define('form-multi-switch', FormMultiSwitchElement);
@@ -36,32 +35,28 @@ customElements.define('form-multi-switch', FormMultiSwitchElement);
 Or import the definition module to register the element automatically:
 
 ```js
-import '@aarongustafson/form-multi-switch/form-multi-switch.css';
 import '@aarongustafson/form-multi-switch/define.js';
 ```
 
 The package root and `form-multi-switch.js` export the class without registering
 it. The `define.js` module also exports `defineFormMultiSwitch()`. You can call
-that helper again safely if the element is already registered with this class;
-it throws if another class has claimed the name.
+that helper again safely if the element is already registered with this `class`;
+it throws if another `class` has claimed the name.
 
-If you serve the installed files directly, load the stylesheet and registration
-module from HTML instead:
+If you serve the installed files directly, load the registration module from
+HTML instead:
 
 ```html
-<link
-  rel="stylesheet"
-  href="./node_modules/@aarongustafson/form-multi-switch/form-multi-switch.css"
-/>
 <script
   type="module"
   src="./node_modules/@aarongustafson/form-multi-switch/define.js"
 ></script>
 ```
 
-Load the component stylesheet before your own overrides. It applies the segmented
-presentation only after initialization succeeds. While a behavior module loads,
-or if initialization fails, your authored radios keep their ordinary presentation.
+The component installs its default styles once per document. You don’t need a
+separate CSS import. It applies the segmented presentation only after
+initialization succeeds. While a behavior module loads, or if initialization
+fails, your authored radios keep their ordinary presentation.
 
 ## Usage
 
@@ -183,8 +178,8 @@ as an attribute or property if you need a behavior module.
 | —           | `ready`    | Read-only promise for the current initialization attempt.                                                 |
 
 The `name` and `label` getters fall back to authored markup. Set those attributes
-or properties to configure generated controls; edit the native markup and call
-`refresh()` when you want to change an authored group.
+or properties to configure generated controls. To change an authored group, edit
+the native markup; the component observes those changes.
 
 Boolean attributes follow HTML rules: their presence enables the option.
 `disabled="false"` still disables the group.
@@ -205,21 +200,36 @@ The `value` **attribute** establishes both the current selection and its
 form-reset default when you set it. User interaction doesn’t reflect the current
 selection back to that attribute.
 
-### Refresh after direct markup changes
+### Update your markup
+
+The component observes added, removed, and reordered choices, label and legend
+text, and attributes that affect values, names, label associations, or form
+ownership. It batches structural changes into one initialization per animation
+frame, revalidates the group, and reruns an optional behavior initializer.
+Invalid markup restores the native presentation and emits an error. Correcting
+the markup triggers another attempt automatically.
+
+Changes to native `disabled`, `checked`, and `required` attributes update state
+hooks without restarting the behavior initializer. The component also observes
+disabled ancestor fieldsets and changes to explicitly referenced external forms.
+It disconnects its observers when you remove it from the document.
+
+A MutationObserver can’t see property-only assignments such as `input.checked`.
+Use `control.value` to change the live selection, or dispatch a native `input`
+event after changing an input property if you need to update the styling.
+
+### Retry or refresh explicitly
 
 ```js
-// After you add/remove choices or change input properties directly:
+// Force revalidation and rerun the behavior initializer.
 await control.refresh();
 ```
 
-`refresh()` validates the group again, updates hooks, and reruns an optional
-behavior initializer. It requires a connected component. The component doesn’t
-watch for arbitrary added choices or intercept assignments to `input.checked`.
-Call `refresh()` after those changes, or use the component’s `value` property.
-
-Native `disabled`, `checked`, and `required` attribute changes inside the
-fieldset update state hooks automatically. Changes to an external form owner
-or an ancestor fieldset require `refresh()` to resynchronize component hooks.
+`refresh()` remains available when you want to retry a failed dependency or
+explicitly rerun initialization. It requires a connected component; you don’t
+need it after ordinary markup changes. Observer-driven updates happen
+asynchronously. Listen for `form-multi-switch-ready` if you need to act after
+the updated group finishes initialization.
 
 ## Events
 
@@ -315,13 +325,14 @@ with an `AbortError`.
 
 Failures emit an error event and a console diagnostic. The component leaves
 authored controls usable in their ordinary presentation; it doesn’t disable or
-hide the group. Fix invalid markup/configuration and call `refresh()` to retry.
+hide the group. Fix invalid markup/configuration to trigger an automatic retry.
+Call `refresh()` to retry a failed behavior module without changing the markup.
 Remove `script` to retry without the behavior dependency. Imports remain subject
 to the browser’s module cache; `refresh()` doesn’t force a network refetch.
 
 ## Styling
 
-Load the supplied stylesheet, then override its custom properties:
+Override the component’s custom properties in your own CSS:
 
 ```css
 form-multi-switch {
@@ -360,7 +371,19 @@ available width, not the viewport width.
 
 See [the restyling demos](./demo/index.html#restyling) for a branded pill and an
 underline treatment, with CSS beside each live example. Load your overrides
-after the component stylesheet.
+in your page’s stylesheet. The defaults live in the `form-multi-switch` cascade
+layer, so ordinary, unlayered author rules take precedence regardless of load
+order. You don’t need `!important` or selectors that match the defaults’ specificity.
+
+See [the size demos](./demo/index.html#shoe-sizes) for a longer list that wraps
+into a grid. The native radios keep their keyboard and form behavior; your CSS
+controls the grid and each option’s border.
+
+If your Content Security Policy blocks inline styles, you can provide the
+defaults yourself. Load the exported `form-multi-switch.css` with a `<link>`
+whose `id` is `form-multi-switch-styles`; the component will skip style injection.
+Alternatively, put the defaults in a `<style>` with that ID and your approved
+nonce. Don’t give an empty or unrelated element that reserved ID.
 
 The component marks these light-DOM elements after initialization:
 
@@ -466,7 +489,7 @@ and behavior-module UI.
 ## Browser support
 
 The component uses Custom Elements, ES modules, AbortController, MutationObserver,
-and modern CSS, including size container queries, logical properties, and
+and modern CSS, including cascade layers, size container queries, logical properties, and
 `clip-path`. It doesn’t include polyfills or claim support for legacy browsers.
 
 ## Development

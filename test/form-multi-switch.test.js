@@ -56,6 +56,128 @@ describe('form-multi-switch', () => {
 		expect(input.hasAttribute('aria-hidden')).toBe(false);
 	});
 
+	it('installs overridable default styles once per document without a CSS import', async () => {
+		await connect(authored());
+		await connect(authored());
+		const styles = document.querySelectorAll('#form-multi-switch-styles');
+		expect(styles).toHaveLength(1);
+		expect(styles[0].textContent).toContain('@layer form-multi-switch');
+		expect(styles[0].textContent).toContain('--multi-switch-border');
+	});
+
+	it('automatically observes added, removed, and reordered choices without looping', async () => {
+		const element = await connect(authored());
+		const ready = vi.fn();
+		element.addEventListener('form-multi-switch-ready', ready);
+		const label = document.createElement('label');
+		label.innerHTML =
+			'<input type="radio" name="density" value="spacious">Spacious';
+		element.querySelector('fieldset').append(label);
+		await vi.waitFor(() =>
+			expect(label.hasAttribute('data-last')).toBe(true),
+		);
+		expect(element.querySelectorAll('[data-last]')).toHaveLength(1);
+		label.remove();
+		await vi.waitFor(() =>
+			expect(element.querySelector('[data-last]').dataset.value).toBe(
+				'condensed',
+			),
+		);
+		element
+			.querySelector('fieldset')
+			.append(element.querySelector('label'));
+		await vi.waitFor(() =>
+			expect(element.querySelector('[data-last]').dataset.value).toBe(
+				'comfortable',
+			),
+		);
+		await new Promise((resolve) => setTimeout(resolve, 60));
+		expect(ready).toHaveBeenCalledTimes(3);
+	});
+
+	it('revalidates labels and values and recovers when invalid markup is corrected', async () => {
+		const element = await connect(authored());
+		const input = element.querySelectorAll('input')[1];
+		input.value = 'dense';
+		await vi.waitFor(() =>
+			expect(input.labels[0].dataset.value).toBe('dense'),
+		);
+		const text = input.labels[0].querySelector('[data-multi-switch-label]');
+		text.textContent = '';
+		await vi.waitFor(() => expect(element.state).toBe('error'));
+		expect(element.querySelector('[data-multi-switch-group]')).toBeNull();
+		text.textContent = 'Dense';
+		await vi.waitFor(() => expect(element.state).toBe('ready'));
+	});
+
+	it('updates inherited disabled state without restarting behavior', async () => {
+		const parent = document.createElement('fieldset');
+		document.body.append(parent);
+		const element = await connect(authored(), parent);
+		const ready = vi.fn();
+		element.addEventListener('form-multi-switch-ready', ready);
+		const sync = vi.spyOn(element, '_sync');
+		parent.disabled = true;
+		await vi.waitFor(() => expect(sync).toHaveBeenCalledOnce());
+		parent.disabled = false;
+		await vi.waitFor(() => expect(sync).toHaveBeenCalledTimes(2));
+		expect(ready).not.toHaveBeenCalled();
+	});
+
+	it('uses an author-provided CSP stylesheet instead of injecting another style', async () => {
+		document.getElementById('form-multi-switch-styles')?.remove();
+		const link = document.createElement('link');
+		link.id = 'form-multi-switch-styles';
+		document.head.append(link);
+		try {
+			await connect(authored());
+			expect(
+				document.querySelectorAll('#form-multi-switch-styles'),
+			).toHaveLength(1);
+			expect(document.getElementById('form-multi-switch-styles')).toBe(
+				link,
+			);
+		} finally {
+			link.remove();
+		}
+	});
+
+	it('coalesces structural edits and stops observing after disconnection', async () => {
+		const element = await connect(authored());
+		const ready = vi.fn();
+		element.addEventListener('form-multi-switch-ready', ready);
+		element.querySelector('legend').textContent = 'Density';
+		element.querySelectorAll('input')[1].value = 'dense';
+		element.querySelectorAll('input')[2].value = 'condensed-new';
+		await vi.waitFor(() => expect(ready).toHaveBeenCalledOnce());
+		element.remove();
+		element.querySelector('legend').textContent = 'Disconnected';
+		await new Promise((resolve) => setTimeout(resolve, 60));
+		expect(ready).toHaveBeenCalledOnce();
+		expect(element.state).toBe('pending');
+		await connect(element);
+		expect(element.label).toBe('Disconnected');
+		expect(ready).toHaveBeenCalledTimes(2);
+	});
+
+	it('observes replacement fieldsets and changed label associations', async () => {
+		const element = await connect(authored());
+		element.innerHTML = `<fieldset><legend>Fit</legend>
+			<input id="regular-fit" name="fit" type="radio" value="regular">
+			<label for="regular-fit">Regular</label>
+			<input id="slim-fit" name="fit" type="radio" value="slim">
+			<label for="slim-fit">Slim</label></fieldset>`;
+		await vi.waitFor(() =>
+			expect(element.querySelector('[data-last]')?.dataset.value).toBe(
+				'slim',
+			),
+		);
+		element.querySelector('label').htmlFor = 'wrong-id';
+		await vi.waitFor(() => expect(element.state).toBe('error'));
+		element.querySelector('label').htmlFor = 'regular-fit';
+		await vi.waitFor(() => expect(element.state).toBe('ready'));
+	});
+
 	it('waits for parsing to finish before inspecting streamed child markup', async () => {
 		vi.spyOn(document, 'readyState', 'get').mockReturnValue('loading');
 		const element = document.createElement('form-multi-switch');
@@ -320,6 +442,21 @@ describe('form-multi-switch', () => {
 			'Density preference',
 		);
 		expect(element.querySelectorAll('fieldset')).toHaveLength(1);
+	});
+
+	it('does not restart behavior for host value and state attributes', async () => {
+		const element = authored();
+		const initialize = vi.fn();
+		vi.spyOn(element, 'loadModule').mockResolvedValue({ initialize });
+		element.script = './behavior.js';
+		await connect(element);
+		element.setAttribute('value', 'compact');
+		element.required = true;
+		element.disabled = true;
+		await new Promise((resolve) => setTimeout(resolve, 60));
+		expect(element.value).toBe('compact');
+		expect(initialize).toHaveBeenCalledOnce();
+		expect(element.state).toBe('ready');
 	});
 
 	it('retains decorative icons and accessible label text in authored icon mode', async () => {

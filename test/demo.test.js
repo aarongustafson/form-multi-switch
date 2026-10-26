@@ -10,6 +10,42 @@ template.innerHTML = html;
 const demo = template.content;
 
 describe('demo examples', () => {
+	it('does not require authors to link the component stylesheet', () => {
+		expect(html).not.toContain('href="../form-multi-switch.css"');
+	});
+
+	it('shows clothing sizes and a wrapping native shoe-size list', () => {
+		expect(
+			[...demo.querySelectorAll('#clothing-sizes input')].map(
+				(input) => input.value,
+			),
+		).toEqual(['S', 'M', 'L', 'XL']);
+		const shoes = demo.querySelector('#shoe-sizes');
+		expect(
+			shoes.querySelectorAll('ul > li > label > input').length,
+		).toBeGreaterThan(6);
+		expect(shoes.classList.contains('size-grid')).toBe(true);
+		const code = shoes
+			.closest('.code-demo-pair')
+			.querySelector('code').textContent;
+		expect(code).toContain('grid-template-columns');
+	});
+
+	it('keeps unavailable shoe-size text accessible but visually hidden', () => {
+		const label = demo
+			.querySelector('#shoe-sizes input[disabled]')
+			.closest('label');
+		const text = label.querySelector('.visually-hidden');
+		expect(text?.textContent).toContain('unavailable');
+		expect(text?.hasAttribute('aria-hidden')).toBe(false);
+		const css = readFileSync(
+			resolve(directory, '../demo/styles.css'),
+			'utf8',
+		);
+		expect(css).toContain('.size-grid [data-disabled]::after');
+		expect(css).toMatch(/linear-gradient\(\s*135deg/);
+	});
+
 	it('keeps just the README link in the introduction', () => {
 		const links = [...demo.querySelectorAll('header a')];
 		expect(links).toHaveLength(1);

@@ -137,7 +137,7 @@
 							"kind": "method",
 							"name": "refresh",
 							"return": { "type": { "text": "Promise<void>" } },
-							"description": "Reinspect connected markup and rerun initialization."
+							"description": "Force reinspection and initialization of a connected component; ordinary markup changes are observed automatically."
 						},
 						{
 							"kind": "method",

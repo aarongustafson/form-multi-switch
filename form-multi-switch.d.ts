@@ -57,6 +57,7 @@ export class FormMultiSwitchElement extends HTMLElement {
 	readonly state: MultiSwitchState;
 	readonly ready: Promise<void>;
 	configure(configuration: MultiSwitchConfiguration): void;
+	/** Force reinitialization; ordinary markup changes are observed automatically. */
 	refresh(): Promise<void>;
 	/** Override only to customize loading in a subclass. */
 	protected loadModule(url: string): Promise<MultiSwitchBehaviorModule>;
