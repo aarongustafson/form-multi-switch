@@ -1,50 +1,73 @@
-# `<form-multi-switch>`
+# `form-multi-switch` Web Component
 
-Turn a native radio group into a segmented control without replacing its inputs.
-Your fieldset, legend, labels, and radios stay in light DOM. The browser still
+[![npm version](https://img.shields.io/npm/v/@aarongustafson/form-multi-switch.svg)](https://www.npmjs.com/package/@aarongustafson/form-multi-switch) [![Build Status](https://img.shields.io/github/actions/workflow/status/aarongustafson/form-multi-switch/ci.yml?branch=main)](https://github.com/aarongustafson/form-multi-switch/actions)
+
+Turn a native radio group into a segmented control without replacing its `<input>` elements.
+Your `<fieldset>`, `<legend>`, `<label>` elements, and radio controls stay in light DOM. The browser still
 handles keyboard navigation, validation, form submission, and reset.
 
 You can also generate the same controls from attributes or JavaScript
-configuration. Those two modes need JavaScript to create the controls; use an
-authored fieldset when you need a working no-JavaScript fallback.
+configuration for pure-JS interactions. If your experience needs to work without JS, upgrade an
+authored `<fieldset>` instead.
 
-**Development status:** this package hasn’t been published. Run the local demos
-from this repository; the package import paths below describe the prepared
-package exports, not an available npm release.
+## Demos
 
-## Load the component
+- [All examples](./demo/index.html): authored and generated controls, form behavior, restyling, icons, translation, and module loading.
+- [Manual registration](./demo/esm.html): import the class and register it yourself, with an esm.sh import example.
+- [Automatic registration](./demo/unpkg.html): use the definition helper, with an unpkg import example.
 
-Serve this directory over HTTP, then include its stylesheet and registration
-module:
+To run the demos locally, follow the [development instructions](#development).
 
-```html
-<link rel="stylesheet" href="./form-multi-switch.css" />
-<script type="module" src="./define.js"></script>
+## Installation
+
+```sh
+npm install @aarongustafson/form-multi-switch
 ```
 
-The stylesheet only applies the segmented presentation after initialization
-succeeds. While a behavior module loads, or if initialization fails, your
-authored radios keep their ordinary presentation.
-
-With a package-aware bundler, import the registration module and stylesheet:
+Import the stylesheet and class, then register the element:
 
 ```js
-import '@aarongustafson/form-multi-switch/define.js';
 import '@aarongustafson/form-multi-switch/form-multi-switch.css';
-```
-
-To register the class yourself, import the package root or the class module:
-
-```js
-import { FormMultiSwitchElement } from './form-multi-switch.js';
+import { FormMultiSwitchElement } from '@aarongustafson/form-multi-switch';
 
 customElements.define('form-multi-switch', FormMultiSwitchElement);
 ```
 
-The root and class imports don’t register an element. Importing `define.js` does.
-You can also call its exported `defineFormMultiSwitch()` helper again.
+Or import the definition module to register the element automatically:
 
-## Enhance your existing radios
+```js
+import '@aarongustafson/form-multi-switch/form-multi-switch.css';
+import '@aarongustafson/form-multi-switch/define.js';
+```
+
+The package root and `form-multi-switch.js` export the class without registering
+it. The `define.js` module also exports `defineFormMultiSwitch()`. You can call
+that helper again safely if the element is already registered with this class;
+it throws if another class has claimed the name.
+
+If you serve the installed files directly, load the stylesheet and registration
+module from HTML instead:
+
+```html
+<link
+  rel="stylesheet"
+  href="./node_modules/@aarongustafson/form-multi-switch/form-multi-switch.css"
+/>
+<script
+  type="module"
+  src="./node_modules/@aarongustafson/form-multi-switch/define.js"
+></script>
+```
+
+Load the component stylesheet before your own overrides. It applies the segmented
+presentation only after initialization succeeds. While a behavior module loads,
+or if initialization fails, your authored radios keep their ordinary presentation.
+
+## Usage
+
+### Enhance your existing radios
+
+Wrap your fieldset in `<form-multi-switch>`:
 
 ```html
 <form-multi-switch>
@@ -57,6 +80,10 @@ You can also call its exported `defineFormMultiSwitch()` helper again.
     <label>
       <input type="radio" name="density" value="compact" />
       Compact
+    </label>
+    <label>
+      <input type="radio" name="density" value="condensed" />
+      Condensed
     </label>
   </fieldset>
 </form-multi-switch>
@@ -75,7 +102,10 @@ Put the fieldset inside a form to submit its selected value. Explicit `form`
 attributes on authored inputs also work. Use different radio names for separate
 groups in the same form.
 
-## Generate controls from attributes
+### Generate controls from attributes
+
+For an interaction that depends on JavaScript, supply the group name, legend,
+and choices as attributes:
 
 ```html
 <form-multi-switch
@@ -84,7 +114,7 @@ groups in the same form.
   choices='[
     {"label":"Comfortable","value":"comfortable"},
     {"label":"Compact","value":"compact"},
-    {"label":"Condensed","value":"condensed","disabled":true}
+    {"label":"Condensed","value":"condensed"}
   ]'
   value="comfortable"
 ></form-multi-switch>
@@ -94,6 +124,7 @@ Write `choices` as a JSON array. Each choice needs a nonempty text `label`.
 Its optional `value` defaults to that label. Values must be unique strings;
 `disabled` must be a JSON boolean.
 
+Add `"disabled": true` to an individual choice to make it unavailable.
 Supply explicit values when you translate labels so a language change doesn’t
 change the values your form submits.
 
@@ -101,7 +132,9 @@ The component generates a fieldset, legend, and wrapping labels. It uses text
 nodes for labels, not HTML strings. Don’t combine a `choices` attribute with an
 authored fieldset.
 
-## Generate controls with JavaScript
+### Generate controls with JavaScript
+
+Call `configure()` when your application supplies the choices:
 
 ```html
 <form-multi-switch id="density"></form-multi-switch>
@@ -118,6 +151,7 @@ control.configure({
   choices: [
     { label: 'Comfortable', value: 'comfortable' },
     { label: 'Compact', value: 'compact' },
+    { label: 'Condensed', value: 'condensed' },
   ],
   value: 'comfortable',
 });
@@ -140,11 +174,13 @@ as an attribute or property if you need a behavior module.
 | `name`      | `name`     | Generated radios’ submission name.                                                                        |
 | `label`     | `label`    | Generated legend text.                                                                                    |
 | `choices`   | —          | JSON configuration for generated choices. Use `configure()` to update the whole configuration atomically. |
-| `value`     | See below  | Initial selection and reset default.                                                                      |
+| `value`     | `value`    | Attribute: current selection and reset default. Property: current selection only.                         |
 | `disabled`  | `disabled` | Group-level disabled state.                                                                               |
 | `required`  | `required` | Whether the group requires a selection.                                                                   |
 | `icon-only` | `iconOnly` | Visually hide the choice text after enhancement.                                                          |
 | `script`    | `script`   | Optional behavior-module URL.                                                                             |
+| —           | `state`    | Read-only initialization state: `pending`, `loading`, `ready`, or `error`.                                |
+| —           | `ready`    | Read-only promise for the current initialization attempt.                                                 |
 
 The `name` and `label` getters fall back to authored markup. Set those attributes
 or properties to configure generated controls; edit the native markup and call
@@ -185,7 +221,9 @@ Native `disabled`, `checked`, and `required` attribute changes inside the
 fieldset update state hooks automatically. Changes to an external form owner
 or an ancestor fieldset require `refresh()` to resynchronize component hooks.
 
-## Handle interaction
+## Events
+
+Listen for selection changes when you want to update another part of your page:
 
 ```js
 control.addEventListener('form-multi-switch-change', (event) => {
@@ -212,9 +250,10 @@ successful activation. Programmatic property assignments and form resets don’t
 emit custom activation/change events. Changes to ordinary radios while a behavior
 module is pending don’t emit the component’s custom interaction events.
 
-## Wait for application behavior
+## Behavior modules
 
-Use `script` with any authoring mode:
+Set `script` when the segmented presentation should wait for your application
+behavior to load. You can use it with any authoring mode:
 
 ```html
 <form-multi-switch script="./density-behavior.js">
@@ -261,9 +300,12 @@ import, thrown initializer, or invalid cleanup result is an error.
 try {
   await control.ready;
 } catch (error) {
-  // Show your own translated failure message if the application needs one.
+  console.error('The density control could not initialize.', error);
 }
 ```
+
+If your application needs to show a failure message, supply your own translated
+text.
 
 `state` reports `pending`, `loading`, `ready`, or `error`. The host exposes the
 same state through `data-multi-switch-state`. `ready` is the promise for the
@@ -277,7 +319,7 @@ hide the group. Fix invalid markup/configuration and call `refresh()` to retry.
 Remove `script` to retry without the behavior dependency. Imports remain subject
 to the browser’s module cache; `refresh()` doesn’t force a network refetch.
 
-## Style the segments
+## Styling
 
 Load the supplied stylesheet, then override its custom properties:
 
@@ -291,10 +333,24 @@ form-multi-switch {
 }
 ```
 
-Other properties are `--multi-switch-background`, `--multi-switch-color`, and
-`--multi-switch-focus-color`. Defaults use system colors. The border defaults to
-`ButtonBorder`, independently of the selected text color, so all choices keep a
-connected outline. Adjacent segments share one border rather than doubling it.
+### CSS custom properties
+
+| Property                             | Default         | What you control                                         |
+| ------------------------------------ | --------------- | -------------------------------------------------------- |
+| `--multi-switch-radius`              | `0.5rem`        | Rounding at the group’s endpoints.                       |
+| `--multi-switch-padding`             | `0.5em 0.85em`  | Padding inside each segment.                             |
+| `--multi-switch-border`              | `ButtonBorder`  | Shared borders and the selected segment’s inset outline. |
+| `--multi-switch-background`          | `Canvas`        | Unselected background.                                   |
+| `--multi-switch-color`               | `CanvasText`    | Unselected text.                                         |
+| `--multi-switch-selected-background` | `Highlight`     | Selected background.                                     |
+| `--multi-switch-selected-color`      | `HighlightText` | Selected text.                                           |
+| `--multi-switch-focus-color`         | `Highlight`     | Focus outline.                                           |
+
+The color defaults use system colors. The border stays independent of the
+selected text color, so all choices keep a connected outline. Adjacent segments
+share one border rather than doubling it.
+
+### Layout and styling hooks
 
 The host establishes a named `multi-switch` inline-size container. At widths of
 at least `20rem`, the default stylesheet keeps choices in one row. Below that
@@ -302,7 +358,7 @@ width, it stacks them into one connected column and rounds the top and bottom
 endpoints. Choices don’t wrap into partial rows. This follows the component’s
 available width, not the viewport width.
 
-See [the restyling demos](demo/index.html#restyling) for a branded pill and an
+See [the restyling demos](./demo/index.html#restyling) for a branded pill and an
 underline treatment, with CSS beside each live example. Load your overrides
 after the component stylesheet.
 
@@ -310,6 +366,7 @@ The component marks these light-DOM elements after initialization:
 
 | Hook                          | Element or state                           |
 | ----------------------------- | ------------------------------------------ |
+| `[data-multi-switch-state]`   | Host initialization state.                 |
 | `[data-multi-switch-group]`   | Fieldset.                                  |
 | `[data-multi-switch-input]`   | Retained native radio.                     |
 | `[data-multi-switch-choice]`  | Associated visible label.                  |
@@ -385,7 +442,7 @@ Don’t use `display: none`, `hidden`, or `aria-hidden` on the text label. The
 stylesheet visually clips the text while preserving the radio’s accessible name.
 It hides text only after enhancement succeeds.
 
-## Accessibility and translation
+## Accessibility and progressive enhancement
 
 - Keep a meaningful legend and a text label for every choice.
 - Let native radios provide the semantics. Don’t add `role="switch"` or replace
@@ -394,36 +451,54 @@ It hides text only after enhancement succeeds.
   Programmatic focus and validation focus also highlight the visible segment.
 - Check your colors, zoomed layout, right-to-left layout, forced colors, and icon
   meaning. The stylesheet uses logical corners and no animation.
-- Supply labels and legend text in your page’s language. The component generates
-  no hardcoded user-facing messages; your application owns translated error
-  messages and behavior-module UI.
+- Use authored radios when the control must work before JavaScript loads or
+  when it fails. Attribute- and JavaScript-configured groups need JavaScript to
+  create their controls.
 
-## Try the demos and tests
+### Translation
 
-From this repository:
+Supply labels and legend text in your page’s language, whether you write the
+markup, set `label` and `choices`, or call `configure()`. Keep explicit choice
+values stable when you translate their labels. The component generates no
+hardcoded user-facing messages; your application owns translated error messages
+and behavior-module UI.
+
+## Browser support
+
+The component uses Custom Elements, ES modules, AbortController, MutationObserver,
+and modern CSS, including size container queries, logical properties, and
+`clip-path`. It doesn’t include polyfills or claim support for legacy browsers.
+
+## Development
+
+Clone the repository and run:
 
 ```sh
 npm install
 npm run test:run
+npm run test:coverage
 npm run test:types
 npm run lint
+npm run format
+```
+
+Serve the repository over HTTP to try the demos and browser tests:
+
+```sh
 python3 -m http.server 8765
 ```
 
-Open [the demos](demo/index.html) for authored/configured controls, submission,
-reset, required/disabled choices, pill styling, icons, translated labels, and
-module loading/failure. Open [the browser tests](test/browser.html) for native
-validation, cancellation, focus, and submission checks.
+Open [the demos](http://localhost:8765/demo/) or
+[the browser tests](http://localhost:8765/test/browser.html). The browser tests
+cover native validation, cancellation, focus, and submission.
 
 The unit suite uses Happy DOM. The browser page covers native behavior that a DOM
 emulator can’t reliably reproduce. Also test real keyboard navigation and
 screen-reader interaction with your target browsers and assistive technologies.
 
-The component uses Custom Elements, ES modules, AbortController, MutationObserver,
-and modern CSS, including size container queries, logical properties, and
-`clip-path`. It doesn’t include
-polyfills or claim support for legacy browsers.
+See [Contributing](./CONTRIBUTING.md) for the test-first workflow and pull request
+guidelines.
 
 ## License
 
-[MIT](LICENSE).
+[MIT](./LICENSE) © [Aaron Gustafson](https://www.aaron-gustafson.com/).
