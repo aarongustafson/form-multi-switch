@@ -6,6 +6,9 @@ on:
     paths:
       - "demo/**"
       - "form-multi-switch.js"
+      - "form-multi-switch.css"
+      - "test/browser.html"
+      - "test/browser.js"
       - "define.js"
       - "index.js"
       - "README.md"

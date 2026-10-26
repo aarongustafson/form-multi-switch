@@ -1,17 +1,11 @@
-/* ==========================================================================
-   Reusable Demo Styles
-   ========================================================================== */
-
-/* Base Layout
-   ========================================================================== */
-
 :root {
-  color-scheme: light dark;
+	color-scheme: light dark;
 }
 
 body {
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-		Oxygen, Ubuntu, Cantarell, sans-serif;
+	font-family:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+		Cantarell, sans-serif;
 	line-height: 1.6;
 	color: CanvasText;
 	background: Canvas;
@@ -19,20 +13,6 @@ body {
 	margin: 0 auto;
 	padding: 1rem;
 }
-
-.visibly-hidden {
-  border: 0;
-  clip: rect(0 0 0 0);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  width: 1px;
-}
-
-/* Typography
-   ========================================================================== */
 
 h1 {
 	font-size: 2rem;
@@ -48,44 +28,12 @@ h2 {
 
 h3 {
 	font-size: 1.25rem;
-	margin-block: 1.5rem 0.5rem;
+	margin-block: 0 0.5rem;
 }
 
 p {
 	margin-block: 0.5rem;
 }
-
-code {
-	background-color: ButtonFace;
-	color: ButtonText;
-	padding: 0.125rem 0.25rem;
-	border-radius: 3px;
-	font-family: 'Courier New', Courier, monospace;
-	font-size: 0.9em;
-}
-
-/* Links
-   ========================================================================== */
-
-a {
-	color: LinkText;
-	text-decoration-skip-ink: auto;
-}
-
-a:visited {
-	color: VisitedText;
-}
-
-a:active {
-	color: ActiveText;
-}
-
-a:hover {
-	text-decoration: underline;
-}
-
-/* Header & Footer
-   ========================================================================== */
 
 header {
 	margin-block-end: 2rem;
@@ -95,74 +43,59 @@ header p {
 	font-size: 1.1rem;
 }
 
-footer {
-	margin-block-start: 3rem;
-	padding-block-start: 2rem;
-	border-top: 2px solid ButtonBorder;
-	color: GrayText;
-	font-size: 0.9rem;
+a {
+	color: LinkText;
+	text-decoration-skip-ink: auto;
 }
 
-/* Demo Sections
-   ========================================================================== */
+code {
+	background: ButtonFace;
+	color: ButtonText;
+	padding: 0.125rem 0.25rem;
+	border-radius: 3px;
+	font-family: ui-monospace, monospace;
+	font-size: 0.9em;
+}
 
 .demo-section {
 	margin-block: 2rem;
 	padding: 1.5rem;
 	background: ButtonFace;
-	border-radius: 8px;
 	border: 1px solid ButtonBorder;
+	border-radius: 8px;
 }
 
 .demo-section > p {
-	color: CanvasText;
 	margin-block-end: 1rem;
 }
 
-/* Code & Demo Pairing
-   ========================================================================== */
-
 .code-demo-pair {
-	display: flex;
-	flex-direction: column;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: 1rem;
+	align-items: start;
 	margin-block: 1rem;
 }
 
-@media (min-width: 768px) {
-	.code-demo-pair {
-		flex-direction: row;
-		align-items: flex-start;
-	}
-
-	.code-demo-pair > pre {
-		flex: 1;
-		margin: 0;
-	}
-
-	.code-demo-pair > .demo {
-		flex: 1;
-	}
+.code-demo-pair > * {
+	min-inline-size: 0;
 }
-
-/* Code Blocks
-   ========================================================================== */
 
 pre {
 	background: Field;
 	color: FieldText;
 	padding: 1rem;
 	border-radius: 6px;
-	overflow-x: auto;
+	overflow: auto;
 	margin: 0;
 	font-size: 0.875rem;
-	line-height: 1.3;
+	line-height: 1.4;
 }
 
 pre code {
 	background: none;
-	padding: 0;
 	color: inherit;
+	padding: 0;
 	font-size: inherit;
 }
 
@@ -170,171 +103,164 @@ pre code mark {
 	background: Mark;
 	color: MarkText;
 	border-radius: 2px;
-	padding: 0.125rem 0.25rem;
-	font-weight: 600;
 }
-
-/* Demo Container
-   ========================================================================== */
 
 .demo {
 	background: Canvas;
+	color: CanvasText;
 	padding: 1rem;
+	border: 1px solid ButtonBorder;
 	border-radius: 6px;
-	border: 1px solid ButtonBorder;
 }
 
-/* Form Elements
-   ========================================================================== */
-
-legend,
-label {
-	font-weight: bold;
-	display: block;
+form-multi-switch {
 	margin-block: 1rem;
 }
 
-label:has(+ input),
-label:has(+ select),
-label:has(+ textarea) {
-	margin-block-end: 0;
-}
-
-fieldset {
-	margin-block: 1rem;
-	border: 0;
-	padding: 0;
-}
-
-legend {
-	margin-block: 0;
-	padding: 0;
-}
-
-fieldset > label {
-	font-weight: normal;
-	margin-block: 0.25rem;
-	min-height: 23px;
-}
-
-input:not([type='checkbox'], [type='radio'], [type='submit'], [type='reset']),
-select,
-textarea {
-	display: block;
-	padding: 0.25rem 0.5rem;
-	border: 1px solid ButtonBorder;
-	border-radius: 4px;
-	font-size: 1rem;
-	font-family: inherit;
-	width: 100%;
-	max-width: 400px;
-	background: Field;
-	color: FieldText;
-}
-
-:focus-visible {
-	outline: 2px solid AccentColor;
-	outline-offset: 2px;
-	border-color: AccentColor;
-}
-
-button[type='submit'],
-button[type='reset'] {
-	background: ButtonFace;
-	color: ButtonText;
-	border: 1px solid ButtonBorder;
-	padding: 0.75rem 1.5rem;
-	border-radius: 4px;
-	font-size: 1rem;
-	font-weight: bold;
+button {
+	font: inherit;
+	min-block-size: 2.75rem;
+	padding: 0.35em 0.8em;
 	cursor: pointer;
-	margin-block-start: 1rem;
-	margin-inline-end: 0.5rem;
 }
 
-button[type='submit']:hover,
-button[type='reset']:hover {
-	opacity: 0.8;
-}
-
-small {
+output {
 	display: block;
-	font-style: italic;
-	font-weight: normal;
-	margin-block: 0.5rem 1rem;
-	color: GrayText;
+	overflow-wrap: anywhere;
 }
 
-/* Radio/Checkbox "Other" Pattern
-   ========================================================================== */
-
-.other-radio,
-.other-checkbox {
-	display: flex;
-	margin-block: 0.25rem;
-	min-height: 23px;
-	align-items: flex-start;
+.pill {
+	--multi-switch-radius: 999px;
 }
 
-.other-radio label,
-.other-checkbox label {
-	font-weight: normal;
-	margin-block: 0;
-	margin-inline-end: 0.5rem;
+.branded {
+	--multi-switch-border: #173f63;
+	--multi-switch-background: #eef4ff;
+	--multi-switch-color: #173f63;
+	--multi-switch-selected-background: #173f63;
+	--multi-switch-selected-color: #fff;
+	--multi-switch-focus-color: #173f63;
 }
 
-.other-radio label + *,
-.other-checkbox label + * {
-	flex: 1;
+.underline {
+	--multi-switch-radius: 0;
+	--multi-switch-border: transparent;
+	--multi-switch-selected-background: Canvas;
+	--multi-switch-selected-color: CanvasText;
 }
 
-/* Note Boxes
-   ========================================================================== */
-
-.note {
-	background: Mark;
-	color: MarkText;
-	border-left: 4px solid AccentColor;
-	padding: 1rem;
-	margin-block: 1rem;
-	border-radius: 4px;
+.underline [data-multi-switch-choice] {
+	border-block-end: 2px solid GrayText;
 }
 
-.note code {
-	background: transparent;
-	color: inherit;
+.underline [data-multi-switch-choice][data-selected] {
+	border-block-end: 4px solid currentColor;
+	box-shadow: none;
+	font-weight: 700;
 }
 
-.note strong {
+.icons [data-multi-switch-choice]::before {
+	content: '';
+	inline-size: 1.4em;
+	block-size: 1.4em;
+	background: currentColor;
+	mask: var(--choice-icon) center / contain no-repeat;
+}
+
+.icons [data-value='system'] {
+	--choice-icon: url('./monitor.svg');
+}
+
+.icons [data-value='light'] {
+	--choice-icon: url('./sun.svg');
+}
+
+.icons [data-value='dark'] {
+	--choice-icon: url('./moon.svg');
+}
+
+.size-grid [data-multi-switch-group] {
 	display: block;
-	margin-block-end: 0.5rem;
 }
 
-/* API Reference Box
-   ========================================================================== */
-
-.api-reference {
-	background: SelectedItem;
-	color: SelectedItemText;
-	border-left: 4px solid AccentColor;
-	padding: 1rem;
-	margin-block: 2rem;
-	border-radius: 4px;
-}
-
-.api-reference p {
+.size-grid ul {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(3.25rem, 1fr));
+	gap: 0.5rem;
+	padding: 0;
 	margin: 0;
+	list-style: none;
 }
 
-.api-reference a {
-  color: inherit;
+.size-grid [data-multi-switch-choice] {
+	inline-size: 100%;
+	margin: 0;
+	border-radius: 0.4rem;
+}
+
+.size-grid [data-disabled]::after {
+	content: '';
+	position: absolute;
+	inset: 0.25rem;
+	pointer-events: none;
+	background: linear-gradient(
+		135deg,
+		transparent calc(50% - 1px),
+		currentColor calc(50% - 1px),
+		currentColor calc(50% + 1px),
+		transparent calc(50% + 1px)
+	);
 }
 
 @media (forced-colors: active) {
-	pre code mark,
-	.note,
-	.api-reference {
-		background: Highlight;
-		color: HighlightText;
+	.size-grid [data-disabled]::after {
+		forced-color-adjust: none;
+	}
+}
+
+.visually-hidden {
+	position: absolute;
+	inline-size: 1px;
+	block-size: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+#event-log {
+	min-block-size: 8em;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+[data-view-preview][data-view='grid'] {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.5rem;
+}
+
+footer {
+	margin-block-start: 3rem;
+	padding-block-start: 2rem;
+	border-top: 2px solid ButtonBorder;
+	color: GrayText;
+}
+
+@media (min-width: 48rem) {
+	.code-demo-pair {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 30rem) {
+	body {
+		padding: 0.5rem;
+	}
+
+	.demo-section {
+		padding: 0.75rem;
 	}
 }

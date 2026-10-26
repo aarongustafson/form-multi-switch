@@ -1,6 +1,6 @@
 {
 	"schemaVersion": "1.0.0",
-	"readme": "",
+	"readme": "README.md",
 	"modules": [
 		{
 			"kind": "javascript-module",
@@ -8,22 +8,253 @@
 			"declarations": [
 				{
 					"kind": "class",
-					"description": "Progressively enhance native radio groups into accessible light-DOM segmented controls.",
 					"name": "FormMultiSwitchElement",
-					"members": [],
-					"events": [],
-					"attributes": [],
-					"superclass": {
-						"name": "HTMLElement"
-					},
+					"description": "Enhance one native radio group into a light-DOM segmented control. Authored fieldsets take precedence over choices, name, label, and value attributes. Default outer focus rings follow the native radio's :focus-visible state.",
 					"tagName": "form-multi-switch",
-					"customElement": true
+					"customElement": true,
+					"superclass": { "name": "HTMLElement" },
+					"attributes": [
+						{
+							"name": "name",
+							"fieldName": "name",
+							"type": { "text": "string" },
+							"description": "Generated radio group submission name. Ignored when an authored fieldset supplies the group."
+						},
+						{
+							"name": "label",
+							"fieldName": "label",
+							"type": { "text": "string" },
+							"description": "Generated legend text. Ignored when an authored fieldset supplies the group."
+						},
+						{
+							"name": "choices",
+							"type": { "text": "string" },
+							"description": "JSON array of labeled choices with optional value and disabled state. Ignored, without parsing, when an authored fieldset supplies the group."
+						},
+						{
+							"name": "value",
+							"type": { "text": "string" },
+							"description": "Initial selection and form-reset default for generated controls; removing the attribute clears both. Ignored for authored markup; the live value property works in either mode."
+						},
+						{
+							"name": "disabled",
+							"fieldName": "disabled",
+							"type": { "text": "boolean" },
+							"description": "Disable the native fieldset."
+						},
+						{
+							"name": "required",
+							"fieldName": "required",
+							"type": { "text": "boolean" },
+							"description": "Require a selection through native radio validation."
+						},
+						{
+							"name": "icon-only",
+							"fieldName": "iconOnly",
+							"type": { "text": "boolean" },
+							"description": "Visually hide text labels after enhancement; authors supply decorative icons."
+						},
+						{
+							"name": "script",
+							"fieldName": "script",
+							"type": { "text": "string" },
+							"description": "Trusted HTTP(S) behavior module URL."
+						}
+					],
+					"members": [
+						{
+							"kind": "field",
+							"name": "name",
+							"type": { "text": "string | null" },
+							"description": "Authored radio name takes precedence over the component attribute. Assignments configure generated controls only."
+						},
+						{
+							"kind": "field",
+							"name": "label",
+							"type": { "text": "string | null" },
+							"description": "Authored legend text takes precedence over the component attribute. Assignments configure generated controls only."
+						},
+						{
+							"kind": "field",
+							"name": "value",
+							"type": { "text": "string | null" },
+							"description": "Live selected value. Assignments do not change reset defaults or emit interaction events."
+						},
+						{
+							"kind": "field",
+							"name": "disabled",
+							"type": { "text": "boolean" },
+							"default": "false"
+						},
+						{
+							"kind": "field",
+							"name": "required",
+							"type": { "text": "boolean" },
+							"default": "false"
+						},
+						{
+							"kind": "field",
+							"name": "iconOnly",
+							"type": { "text": "boolean" },
+							"default": "false"
+						},
+						{
+							"kind": "field",
+							"name": "script",
+							"type": { "text": "string | null" }
+						},
+						{
+							"kind": "field",
+							"name": "state",
+							"readonly": true,
+							"type": {
+								"text": "'pending' | 'loading' | 'ready' | 'error'"
+							},
+							"default": "'pending'"
+						},
+						{
+							"kind": "field",
+							"name": "ready",
+							"readonly": true,
+							"type": { "text": "Promise<void>" },
+							"description": "Readiness for the current attempt; superseded attempts reject with AbortError."
+						},
+						{
+							"kind": "method",
+							"name": "configure",
+							"parameters": [
+								{
+									"name": "configuration",
+									"type": {
+										"text": "MultiSwitchConfiguration"
+									}
+								}
+							],
+							"return": { "type": { "text": "void" } },
+							"description": "Validate and configure generated controls; never replace authored fieldsets."
+						},
+						{
+							"kind": "method",
+							"name": "refresh",
+							"return": { "type": { "text": "Promise<void>" } },
+							"description": "Force reinspection and initialization of a connected component; ordinary markup changes are observed automatically."
+						},
+						{
+							"kind": "method",
+							"name": "loadModule",
+							"privacy": "protected",
+							"parameters": [
+								{ "name": "url", "type": { "text": "string" } }
+							],
+							"return": {
+								"type": {
+									"text": "Promise<MultiSwitchBehaviorModule>"
+								}
+							},
+							"description": "Override to specialize the module loader."
+						}
+					],
+					"events": [
+						{
+							"name": "form-multi-switch:activate",
+							"type": {
+								"text": "CustomEvent<MultiSwitchSelectionDetail>"
+							},
+							"description": "Native radio click activation, including repeated activation."
+						},
+						{
+							"name": "form-multi-switch:change",
+							"type": {
+								"text": "CustomEvent<MultiSwitchSelectionDetail>"
+							},
+							"description": "Native interaction changed the selection."
+						},
+						{
+							"name": "form-multi-switch:ready",
+							"type": {
+								"text": "CustomEvent<{ value: string | null }>"
+							},
+							"description": "Initialization succeeded."
+						},
+						{
+							"name": "form-multi-switch:error",
+							"type": {
+								"text": "CustomEvent<MultiSwitchErrorDetail>"
+							},
+							"description": "An operation failed; inspect error and phase."
+						}
+					],
+					"cssProperties": [
+						{
+							"name": "--multi-switch-radius",
+							"default": "0.5rem"
+						},
+						{
+							"name": "--multi-switch-padding",
+							"default": "0.5em 0.85em"
+						},
+						{
+							"name": "--multi-switch-border",
+							"default": "ButtonBorder"
+						},
+						{
+							"name": "--multi-switch-background",
+							"default": "Canvas"
+						},
+						{
+							"name": "--multi-switch-color",
+							"default": "CanvasText"
+						},
+						{
+							"name": "--multi-switch-selected-background",
+							"default": "Highlight"
+						},
+						{
+							"name": "--multi-switch-selected-color",
+							"default": "HighlightText"
+						},
+						{
+							"name": "--multi-switch-focus-color",
+							"default": "Highlight",
+							"description": "Outer focus ring color when the focused radio matches :focus-visible."
+						}
+					]
 				}
 			],
 			"exports": [
 				{
 					"kind": "js",
 					"name": "FormMultiSwitchElement",
+					"declaration": {
+						"name": "FormMultiSwitchElement",
+						"module": "form-multi-switch.js"
+					}
+				}
+			]
+		},
+		{
+			"kind": "javascript-module",
+			"path": "define.js",
+			"declarations": [
+				{
+					"kind": "function",
+					"name": "defineFormMultiSwitch",
+					"description": "Register the element idempotently; report conflicting definitions.",
+					"return": { "type": { "text": "boolean" } }
+				}
+			],
+			"exports": [
+				{
+					"kind": "js",
+					"name": "defineFormMultiSwitch",
+					"declaration": {
+						"name": "defineFormMultiSwitch",
+						"module": "define.js"
+					}
+				},
+				{
+					"kind": "custom-element-definition",
+					"name": "form-multi-switch",
 					"declaration": {
 						"name": "FormMultiSwitchElement",
 						"module": "form-multi-switch.js"

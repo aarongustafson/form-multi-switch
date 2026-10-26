@@ -32,7 +32,7 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 
 1. Fork the repository
 2. Create a new branch from `main`: `git checkout -b feature/my-feature`
-3. Make your changes
+3. Write a focused test and run it to confirm the expected failure, then make your changes
 4. Run tests: `npm run test:run`
 5. Run linter: `npm run lint`
 6. Format code: `npm run format`
@@ -44,6 +44,9 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 
 - Follow the existing code style
 - Write tests for new features
+- Follow test-driven development for features and bug fixes.
+- Keep the native light-DOM controls and markup-first configuration usable.
+- Don’t bump the package version or publish a release without maintainer approval.
 - Update documentation as needed
 - Keep PRs focused on a single concern
 - Write clear commit messages
@@ -64,10 +67,14 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 - Ensure existing tests still pass
 - Aim for high test coverage
 - Use `npm run test:coverage` to check coverage
+- Run `npm run test:types` to validate the declarations.
+- Serve the repository over HTTP and open `test/browser.html` for native browser checks.
+- Check real keyboard interaction and accessible names in the demos.
 
 ## Coding Style
 
 This project uses:
+
 - ESLint for code quality
 - Prettier for code formatting
 - Vitest for testing

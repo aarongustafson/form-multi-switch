@@ -1,65 +1,85 @@
-/**
- * FormMultiSwitchElement - Progressively enhance native radio groups into accessible light-DOM segmented controls.
- *
- * @element form-multi-switch
- *
- * @attr {string} example-attribute - Description of the attribute
- *
- * @fires form-multi-switch:event-name - Description of the event
- *
- * @slot - Default slot for content
- *
- * @cssprop --component-name-color - Description of CSS custom property
- */
+export interface MultiSwitchChoice {
+	label: string;
+	/** Defaults to label. Values must be unique within the group. */
+	value?: string;
+	disabled?: boolean;
+}
+
+export interface MultiSwitchConfiguration {
+	name: string;
+	label: string;
+	choices: MultiSwitchChoice[];
+	/** Establishes the initial selection and form-reset default. */
+	value?: string | null;
+	disabled?: boolean;
+	required?: boolean;
+	iconOnly?: boolean;
+}
+
+export type MultiSwitchState = 'pending' | 'loading' | 'ready' | 'error';
+export type MultiSwitchCleanup = () => void;
+export interface MultiSwitchBehaviorModule {
+	initialize?: (
+		element: FormMultiSwitchElement,
+		context: { signal: AbortSignal },
+	) => void | MultiSwitchCleanup | Promise<void | MultiSwitchCleanup>;
+}
+
+export interface MultiSwitchSelectionDetail {
+	value: string | null;
+	previousValue: string | null;
+	index: number;
+}
+
+export interface MultiSwitchErrorDetail {
+	error: unknown;
+	phase:
+		| 'configuration'
+		| 'module'
+		| 'initialization'
+		| 'enhancement'
+		| 'cleanup';
+}
+
 export class FormMultiSwitchElement extends HTMLElement {
-	/**
-	 * List of attributes to observe for changes
-	 */
 	static readonly observedAttributes: string[];
-
-	/**
-	 * Internal state and flags
-	 */
-	private readonly _internals: {
-		isRendered: boolean;
-	};
-
-	constructor();
-
-	/**
-	 * Called when the element is connected to the DOM
-	 */
+	/** Authored radio name takes precedence; the setter configures generated controls only. */
+	get name(): string | null;
+	set name(value: string | null | undefined);
+	/** Authored legend takes precedence; the setter configures generated controls only. */
+	get label(): string | null;
+	set label(value: string | null | undefined);
+	get value(): string | null;
+	set value(value: string | null);
+	disabled: boolean;
+	required: boolean;
+	iconOnly: boolean;
+	get script(): string | null;
+	set script(value: string | null | undefined);
+	readonly state: MultiSwitchState;
+	readonly ready: Promise<void>;
+	configure(configuration: MultiSwitchConfiguration): void;
+	/** Force reinitialization; ordinary markup changes are observed automatically. */
+	refresh(): Promise<void>;
+	/** Override only to customize loading in a subclass. */
+	protected loadModule(url: string): Promise<MultiSwitchBehaviorModule>;
 	connectedCallback(): void;
-
-	/**
-	 * Called when an observed attribute changes
-	 * @param name - The attribute name that changed
-	 * @param oldValue - The previous value
-	 * @param newValue - The new value
-	 */
+	disconnectedCallback(): void;
 	attributeChangedCallback(
 		name: string,
 		oldValue: string | null,
 		newValue: string | null,
 	): void;
+}
 
-	/**
-	 * Upgrade a property to handle cases where it was set before the element upgraded.
-	 * This is especially important for framework compatibility.
-	 * @param prop - Property name to upgrade
-	 * @private
-	 */
-	private _upgradeProperty(prop: string): void;
-
-	/**
-	 * Example attribute as a property.
-	 * Reflects between property and attribute to keep them in sync.
-	 */
-	get exampleAttribute(): string | null;
-	set exampleAttribute(value: string | null | undefined);
-
-	/**
-	 * Renders the component's shadow DOM content
-	 */
-	render(): void;
+declare global {
+	interface HTMLElementTagNameMap {
+		'form-multi-switch': FormMultiSwitchElement;
+	}
+	interface HTMLElementEventMap {
+		'form-multi-switch:activate': CustomEvent<MultiSwitchSelectionDetail>;
+		'form-multi-switch:change': CustomEvent<MultiSwitchSelectionDetail>;
+		'form-multi-switch:ready': CustomEvent<{ value: string | null }>;
+		'form-multi-switch:error': CustomEvent<MultiSwitchErrorDetail>;
+	}
 }

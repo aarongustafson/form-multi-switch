@@ -3,27 +3,49 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>form-multi-switch via unpkg</title>
+		<title>form-multi-switch: automatic registration</title>
 		<link rel="stylesheet" href="./styles.css" />
-		<style>
-			/* Demo-specific styles */
-		</style>
 	</head>
 	<body>
-		<h1>unpkg CDN sanity check</h1>
+		<h1>Import the registration module</h1>
 		<p>
-			This page loads the guarded definition helper from
-			<code>unpkg</code> and registers the element when supported.
+			This preview imports the local definition helper, which registers
+			the element automatically. Calling the helper again is safe.
 		</p>
+		<div class="demo-section">
+			<h2>Import the guarded definition helper</h2>
+			<div class="code-demo-pair">
+				<pre><code>&lt;form-multi-switch
+  name="view" label="View"
+  choices='[
+    {"label":"List","value":"list"},
+    {"label":"Grid","value":"grid"},
+    {"label":"Table","value":"table"}
+  ]'
+  value="list"
+&gt;&lt;/form-multi-switch&gt;
 
-		<form-multi-switch>
-			<p>Replace this markup once you customize form-multi-switch.</p>
-		</form-multi-switch>
-
+<mark>import { defineFormMultiSwitch } from '../define.js';
+defineFormMultiSwitch();</mark></code></pre>
+				<div class="demo">
+					<form-multi-switch
+						name="view"
+						label="View"
+						choices='[{"label":"List","value":"list"},{"label":"Grid","value":"grid"},{"label":"Table","value":"table"}]'
+						value="list"
+					></form-multi-switch>
+				</div>
+			</div>
+		</div>
+		<p>
+			To use unpkg on your own site, pin the registration module. The
+			component installs its default styles automatically:
+		</p>
+		<pre><code>import 'https://unpkg.com/@aarongustafson/form-multi-switch@0.0.1/define.js';</code></pre>
+		<p><a href="./index.html">All examples</a></p>
 		<script type="module">
-			import { defineComponentName } from 'https://unpkg.com/@aarongustafson/form-multi-switch@latest/define.js?module';
-
-			defineComponentName();
+			import { defineFormMultiSwitch } from '../define.js';
+			defineFormMultiSwitch();
 		</script>
 	</body>
 </html>
