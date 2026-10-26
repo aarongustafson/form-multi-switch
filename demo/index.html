@@ -20,27 +20,27 @@
 				for installation and API documentation.
 			</p>
 			<p>
-				<strong>Try it:</strong> Use Tab to reach a group, arrow keys to
-				change its selection, and Space to select.
+				<strong>Keyboard too:</strong> Use <kbd>Tab</kbd> to reach a group, arrow keys to
+				change its selection, and <kbd>Space</kbd> to select.
 			</p>
-			<noscript
-				><p>
+			<noscript>
+				<p>
 					JavaScript is disabled. The authored radio groups below
 					still work; attribute- and JavaScript-generated groups are
 					unavailable.
-				</p></noscript
-			>
+				</p>
+			</noscript>
 		</header>
 		<main>
 			<section>
 				<h2>Enhance your existing radios</h2>
 				<div class="demo-section">
-					<h3>Three delivery choices</h3>
+					<h3>Default styling example: Shipping choices</h3>
 					<p>
-						All three choices are available. Submit the form to
-						inspect the selected value, or reset it to restore
-						Standard. This example uses the default styling,
-						including a shared border around every choice.
+						This shows the default styles, hoisted into the page from the
+						component itself. I’ve included tools to inspect the selected
+						value and show how it still respects the default selection when
+						you reset it (restoring “Standard” shipping).
 					</p>
 					<div class="code-demo-pair">
 						<pre><code><mark>&lt;form-multi-switch&gt;</mark>
@@ -85,9 +85,9 @@
 								</form-multi-switch>
 								<p>
 									<button type="submit">
-										Inspect submission
+										Inspect FormData
 									</button>
-									<button type="reset">Reset delivery</button>
+									<button type="reset">Reset Form</button>
 								</p>
 								<output aria-live="polite"
 									>Submit to inspect the selected delivery
@@ -100,7 +100,7 @@
 			</section>
 
 			<section>
-				<h2>Choose a size</h2>
+				<h2>Multiple choice: Choose a size</h2>
 				<div class="demo-section">
 					<h3>Clothing sizes</h3>
 					<p>
@@ -155,13 +155,12 @@
 					</div>
 				</div>
 				<div class="demo-section">
-					<h3>Shoe sizes in a wrapping list</h3>
+					<h3>Wrapping group: Shoe sizes</h3>
 					<p>
 						Use your own grid for a longer list. Each size has its
 						own border and rounded corners rather than pretending
 						the wrapped rows form one continuous switch. A diagonal
-						line marks size 8.5 as unavailable; its label also
-						includes that word for screen-reader users.
+						line marks disabled sizes as unavailable.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch class="size-grid"&gt;
@@ -203,17 +202,6 @@
     currentColor calc(50% - 1px),
     currentColor calc(50% + 1px),
     transparent calc(50% + 1px));
-}
-.visually-hidden {
-  position: absolute;
-  inline-size: 1px;
-  block-size: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
 }</code></pre>
 						<div class="demo">
 							<form-multi-switch
@@ -335,13 +323,11 @@
 				</div>
 			</section>
 			<section>
-				<h2>Configure the choices</h2>
+				<h2>Declarative Configuration: For JS-driven controls</h2>
 				<div class="demo-section">
 					<h3>Generate a group from attributes</h3>
 					<p>
-						Supply a name, legend text, and JSON choices to generate
-						the native controls. This mode needs JavaScript to
-						create the inputs.
+						Supply a name, accessible label, and JSON choices to have the component generate and manage the controls. If you are using this component in a JavaScript-driven UI, this approach allows you to declaratively define the options without manually creating the `<input>` elements.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch
@@ -366,12 +352,12 @@
 					</div>
 				</div>
 				<div class="demo-section">
-					<h3>Generate a group from application data</h3>
+					<h3>Pure JS example: Generate a multi-switch from application data</h3>
 					<p>
-						Use <code>configure()</code> when your choices come from
-						JavaScript. The button changes the current selection
-						without changing the reset default or firing an
-						interaction event.
+						If you want to generate the multi-switch options dynamically, use <code>configure()</code>. 
+					</p>
+					<p>
+						This demo also shows how to update the selected value programmatically after the multi-switch has been configured.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch id="js-density"&gt;
@@ -396,7 +382,7 @@ control.value = 'compact';</code></pre>
 							></form-multi-switch>
 							<p>
 								<button id="set-density" type="button" hidden>
-									Set Compact through the API
+									Set “Compact” via the API
 								</button>
 							</p>
 						</div>
@@ -405,10 +391,10 @@ control.value = 'compact';</code></pre>
 			</section>
 
 			<section id="restyling">
-				<h2>Restyle the same native control</h2>
+				<h2>Adapt the design to your use case</h2>
 				<p>
-					Use custom properties for colors, padding, and corners. Use
-					the light-DOM hooks when you want to change individual
+					The component supports custom properties for colors, padding,
+					and corners. Use the light-DOM hooks when you want to change individual
 					states. These examples change the presentation, not the
 					radio behavior.
 				</p>
@@ -419,12 +405,7 @@ control.value = 'compact';</code></pre>
 					partial rows. First and last corners follow the new layout.
 				</p>
 				<div class="demo-section">
-					<h3>Use your colors and a pill outline</h3>
-					<p>
-						Set one border color for the whole group, independent of
-						the selected text color. Increase the radius to round
-						the outer ends.
-					</p>
+					<h3>Example: Different colors and a pill outline</h3>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch class="branded pill"
   name="report-period" label="Report period"
@@ -461,13 +442,7 @@ control.value = 'compact';</code></pre>
 					</div>
 				</div>
 				<div class="demo-section">
-					<h3>Use an underline instead of a filled segment</h3>
-					<p>
-						Target the choice and selected-state hooks to change the
-						border treatment. The thicker underline identifies the
-						selection without relying on color alone. These are
-						still radios, not navigation tabs.
-					</p>
+					<h3>Example: Underlined instead of a filled segment</h3>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch class="underline"
   name="results" label="Show results"
@@ -507,87 +482,16 @@ control.value = 'compact';</code></pre>
 						</div>
 					</div>
 				</div>
-				<div class="demo-section">
-					<h3>Keep rounded ends with separate wrappers</h3>
-					<p>
-						The component marks the first and last labels
-						explicitly. You don’t need to assume that all labels
-						share a parent to get the correct outer corners,
-						including in the stacked layout.
-					</p>
-					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch <mark>class="pill"</mark>&gt;
-  &lt;fieldset&gt;
-    &lt;legend&gt;Reading width&lt;/legend&gt;
-    &lt;div&gt;
-      &lt;input id="narrow" type="radio"
-        name="width" value="narrow"&gt;
-      &lt;label for="narrow"&gt;Narrow&lt;/label&gt;
-    &lt;/div&gt;
-    &lt;div&gt;
-      &lt;input id="standard" type="radio"
-        name="width" value="standard" checked&gt;
-      &lt;label for="standard"&gt;Standard&lt;/label&gt;
-    &lt;/div&gt;
-    &lt;div&gt;
-      &lt;input id="wide" type="radio"
-        name="width" value="wide"&gt;
-      &lt;label for="wide"&gt;Wide&lt;/label&gt;
-    &lt;/div&gt;
-  &lt;/fieldset&gt;
-&lt;/form-multi-switch&gt;
-
-.pill { --multi-switch-radius: 999px; }</code></pre>
-						<div class="demo">
-							<form-multi-switch id="wrapped" class="pill">
-								<fieldset>
-									<legend>Reading width</legend>
-									<div>
-										<input
-											id="width-narrow"
-											type="radio"
-											name="width"
-											value="narrow"
-										/><label for="width-narrow"
-											>Narrow</label
-										>
-									</div>
-									<div>
-										<input
-											id="width-standard"
-											type="radio"
-											name="width"
-											value="standard"
-											checked
-										/><label for="width-standard"
-											>Standard</label
-										>
-									</div>
-									<div>
-										<input
-											id="width-wide"
-											type="radio"
-											name="width"
-											value="wide"
-										/><label for="width-wide">Wide</label>
-									</div>
-								</fieldset>
-							</form-multi-switch>
-						</div>
-					</div>
-				</div>
 			</section>
 
 			<section>
-				<h2>Use icons without losing the labels</h2>
+				<h2>Prefer icons?</h2>
 				<div class="demo-section">
-					<h3>System, light, and dark choices</h3>
+					<h3>Example: System, light, and dark choices</h3>
 					<p>
 						Keep a text label for every radio and add decorative CSS
 						masks. <code>icon-only</code> visually hides the text
-						after enhancement; assistive technology can still name
-						each choice. This example only selects a value—it
-						doesn’t change the page theme.
+						after enhancement; assistive technology can still read each label.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch class="icons pill"
@@ -633,13 +537,11 @@ control.value = 'compact';</code></pre>
 			</section>
 
 			<section>
-				<h2>Keep native form behavior</h2>
+				<h2>Plays well with native form behavior</h2>
 				<div class="demo-section">
-					<h3>Require a selection</h3>
+					<h3>Example: Selection required</h3>
 					<p>
-						Submit without a selection to try native validation. The
-						browser focuses a retained radio, and its visible
-						segment shows that focus.
+						Try to submit without a selection to see native validation in play.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form&gt;
@@ -693,7 +595,7 @@ control.value = 'compact';</code></pre>
 					</div>
 				</div>
 				<div class="demo-section">
-					<h3>Disable just one choice</h3>
+					<h3>Example: Disabled choice</h3>
 					<p>
 						CSV and JSON remain selectable. The native disabled
 						input keeps PDF out of keyboard navigation and prevents
@@ -744,7 +646,7 @@ control.value = 'compact';</code></pre>
 					</div>
 				</div>
 				<div class="demo-section">
-					<h3>Disable the whole group</h3>
+					<h3>Example: Disabled group</h3>
 					<p>
 						An authored disabled fieldset disables all its radio
 						inputs. The component also exposes a
@@ -787,14 +689,11 @@ control.value = 'compact';</code></pre>
 			</section>
 
 			<section>
-				<h2>Translate your labels and change direction</h2>
+				<h2>Other languages (and directions)</h2>
 				<div class="demo-section">
-					<h3>French labels and a right-to-left group</h3>
+					<h3>Examples: French &amp; Arabic</h3>
 					<p>
-						Supply your own translated text and keep submission
-						values stable. Logical corners follow the reading
-						direction in the horizontal layout, and the top and
-						bottom endpoints in the stacked layout.
+						The component plays nicely with different languages and text directions.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch <mark>lang="fr"</mark>
@@ -867,14 +766,13 @@ control.value = 'compact';</code></pre>
 			<section
 				data-error-message="The preview behavior could not load. You can still select an ordinary radio."
 			>
-				<h2>Wait for application behavior</h2>
+				<h2>Interactive during boot</h2>
 				<div class="demo-section">
-					<h3>Keep ordinary radios available while loading</h3>
+					<h3>Example: Ordinary radios remain available while loading</h3>
 					<p>
-						Reload to try the 800ms initialization delay. The
-						ordinary radios remain usable while the module
-						initializes. Once ready, the control changes the preview
-						spacing.
+						This instance has a 800ms initialization delay. The
+						radio controls remain usable while the module
+						initializes. Once ready, the control changes to the multi-switch.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch <mark>script="./density-behavior.js"</mark>&gt;
@@ -944,13 +842,13 @@ export function initialize(control, { signal }) {
 			<section
 				data-error-message="This deliberate failure leaves the native radios available."
 			>
-				<h2>Keep the fallback if behavior fails</h2>
+				<h2>Wrapped controls always fail to usable markup</h2>
 				<div class="demo-section">
-					<h3>A deliberately rejected initializer</h3>
+					<h3>Example: A deliberately failing JavaScript enhancement</h3>
 					<p>
-						This module intentionally rejects initialization. The
-						radios keep their ordinary presentation, and the error
-						appears below and in the console.
+						This example intentionally rejects initialization. The
+						radios keep their ordinary presentation and the error
+						appears below (and in the console).
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch <mark>script="./failing-behavior.js"</mark>&gt;
@@ -1003,12 +901,9 @@ export function initialize() {
 			<section>
 				<h2>Inspect interaction events</h2>
 				<div class="demo-section">
-					<h3>Separate activation from a value change</h3>
+					<h3>Example: Interaction events from this page</h3>
 					<p>
-						Click a selected choice again to see activation without
-						another change. Arrow-key selection still produces
-						change events. The log shows the latest six events from
-						the examples above.
+						This example logs interaction events from the multi-switch controls on this page.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>document.addEventListener(
