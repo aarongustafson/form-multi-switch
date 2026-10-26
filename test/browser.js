@@ -34,6 +34,52 @@ async function setup() {
 
 const tests = [
 	[
+		'Authored markup overrides configuration attributes without changing submission or reset',
+		async () => {
+			fixture.innerHTML = `<form><form-multi-switch
+				name="ignored" label="Ignored" choices="not JSON" value="express">
+				<fieldset><legend>Delivery speed</legend>
+					<label><input type="radio" name="speed" value="standard" checked>Standard</label>
+					<label><input type="radio" name="speed" value="express">Express</label>
+				</fieldset></form-multi-switch></form>`;
+			const control = fixture.querySelector('form-multi-switch');
+			const form = fixture.querySelector('form');
+			await control.ready;
+			assert(
+				control.name === 'speed' && control.label === 'Delivery speed',
+				'Component attributes overrode the authored name or legend.',
+			);
+			assert(
+				control.value === 'standard',
+				'The value attribute overrode authored checked state.',
+			);
+			assert(
+				new FormData(form).get('speed') === 'standard' &&
+					!new FormData(form).has('ignored'),
+				'Conflicting attributes changed the submitted name or value.',
+			);
+			control.value = 'express';
+			form.reset();
+			await Promise.resolve();
+			assert(
+				control.value === 'standard',
+				'The ignored value attribute changed reset defaults.',
+			);
+			control.setAttribute('value', 'missing');
+			control.setAttribute('choices', '[]');
+			await new Promise((resolve) => requestAnimationFrame(resolve));
+			assert(
+				control.state === 'ready' && control.value === 'standard',
+				'Changing ignored attributes invalidated authored controls.',
+			);
+			control.querySelector('input[value="express"]').labels[0].click();
+			assert(
+				new FormData(form).get('speed') === 'express',
+				'Native interaction stopped updating submission.',
+			);
+		},
+	],
+	[
 		'Defaults install once and ordinary CSS overrides them without an external stylesheet',
 		async () => {
 			const { inputs } = await setup();

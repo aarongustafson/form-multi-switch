@@ -43,8 +43,10 @@ export interface MultiSwitchErrorDetail {
 
 export class FormMultiSwitchElement extends HTMLElement {
 	static readonly observedAttributes: string[];
+	/** Authored radio name takes precedence; the setter configures generated controls only. */
 	get name(): string | null;
 	set name(value: string | null | undefined);
+	/** Authored legend takes precedence; the setter configures generated controls only. */
 	get label(): string | null;
 	set label(value: string | null | undefined);
 	get value(): string | null;

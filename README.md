@@ -1,4 +1,4 @@
-# `form-multi-switch` Web Component
+# `<form-multi-switch>` Web Component
 
 [![npm version](https://img.shields.io/npm/v/@aarongustafson/form-multi-switch.svg)](https://www.npmjs.com/package/@aarongustafson/form-multi-switch) [![Build Status](https://img.shields.io/github/actions/workflow/status/aarongustafson/form-multi-switch/ci.yml?branch=main)](https://github.com/aarongustafson/form-multi-switch/actions)
 
@@ -80,20 +80,12 @@ Wrap your fieldset in `<form-multi-switch>`:
 </form-multi-switch>
 ```
 
-Give your group a legend and each choice a text label. All the radios need to
-sit inside the same fieldset, share a `name`, and belong to the same form (if
+Give your group a `<legend>` and each choice a text label. All the radios need to
+sit inside the same `<fieldset>`, share a `name`, and belong to the same form (if
 you’re using one). Give each choice its own value.
 
-You can wrap each input in its label, as above, or connect them with `for` and
-`id`. Keep links and other interactive controls out of the labels.
-
-You don’t need to repeat the name or legend on the component. If you omit a
-radio’s `value`, the browser uses `"on"`; because values must be unique, only one
-choice can rely on that default.
-
-To submit the selected value, put the fieldset inside a form or use the inputs’
-`form` attributes to connect them to one. Use a different radio name for each
-group in the same form.
+You can wrap each `<input>` in its `<label>`, as above, or connect them with `for`
+and `id`. Keep links and other interactive controls out of the labels.
 
 ### Generate controls from attributes
 
@@ -113,8 +105,7 @@ attributes instead:
 ></form-multi-switch>
 ```
 
-Give `choices` a JSON array with a text `label` for each choice. You can leave out
-`value` to use the label as its value, but each value needs to be unique.
+Give `choices` a JSON array with a text `label` and `value` for each choice.
 
 Add `"disabled": true` to make a choice unavailable. Use JSON booleans (`true`
 or `false`), not strings.
@@ -122,12 +113,14 @@ or `false`), not strings.
 If you translate the labels, give each choice an explicit value so changing
 the language doesn’t change what your form submits.
 
-The component creates the fieldset, legend, radios, and labels for you. Labels
-are plain text, not HTML. Use either `choices` or your own fieldset, not both.
+The component creates the markup for you. Labels only support plain text, not
+HTML. If you’ve already supplied a `<fieldset>`, its markup takes precedence:
+the component ignores the `choices`, `name`, `label`, and `value` attributes.
 
 ### Generate controls with JavaScript
 
-If your choices come from JavaScript, pass them to `configure()`:
+If your choices come from JavaScript, you can also pass them to the component
+using `configure()`:
 
 ```html
 <form-multi-switch id="density"></form-multi-switch>
@@ -162,23 +155,27 @@ script, set the `script` attribute or property separately.
 
 ## Attributes and properties
 
-| Attribute   | Property   | What you control                                                                            |
-| ----------- | ---------- | ------------------------------------------------------------------------------------------- |
-| `name`      | `name`     | Generated radios’ submission name.                                                          |
-| `label`     | `label`    | Generated legend text.                                                                      |
-| `choices`   | —          | Choices as a JSON array. Use `configure()` to change the group’s configuration in one call. |
-| `value`     | `value`    | Attribute: current selection and reset default. Property: current selection only.           |
-| `disabled`  | `disabled` | Disable the whole group.                                                                    |
-| `required`  | `required` | Whether the group requires a selection.                                                     |
-| `icon-only` | `iconOnly` | Visually hide the choice text after enhancement.                                            |
-| `script`    | `script`   | URL of a JavaScript module to load before showing the segmented control.                    |
-| —           | `state`    | Read-only status: `pending`, `loading`, `ready`, or `error`.                                |
-| —           | `ready`    | Promise that resolves when the current setup attempt finishes.                              |
+| Attribute   | Property   | What you control                                                                                        |
+| ----------- | ---------- | ------------------------------------------------------------------------------------------------------- |
+| `name`      | `name`     | Generated radios’ submission name.                                                                      |
+| `label`     | `label`    | Generated legend text.                                                                                  |
+| `choices`   | —          | Choices as a JSON array. Use `configure()` to change the group’s configuration in one call.             |
+| `value`     | `value`    | Attribute: selection and reset default for generated controls. Property: live selection in either mode. |
+| `disabled`  | `disabled` | Disable the whole group.                                                                                |
+| `required`  | `required` | Whether the group requires a selection.                                                                 |
+| `icon-only` | `iconOnly` | Visually hide the choice text after enhancement.                                                        |
+| `script`    | `script`   | URL of a JavaScript module to load before showing the segmented control.                                |
+| —           | `state`    | Read-only status: `pending`, `loading`, `ready`, or `error`.                                            |
+| —           | `ready`    | Promise that resolves when the current setup attempt finishes.                                          |
 
 Use `name` and `label` to configure a group the component creates. For radios
 you’ve written yourself, change the input names and legend in your markup.
-Reading these properties returns the attribute value if you’ve set one, or the
-name and legend from the markup otherwise.
+With your own fieldset, these properties return its radio name and legend,
+even if you’ve set conflicting attributes on the component. The choices,
+selection, and reset defaults also come from your markup. Changing the ignored
+attributes doesn’t change the group or rerun your script.
+
+`disabled`, `required`, `icon-only`, and `script` work with either authoring mode.
 
 As with other HTML boolean attributes, presence is what counts:
 `disabled="false"` still disables the group. Remove the attribute to turn it off.
@@ -197,9 +194,13 @@ doesn’t fire interaction events.
 Use a string that matches one of your choices, or `null` to clear the selection.
 An unknown value throws a `RangeError`; other types throw a `TypeError`.
 
-Setting the `value` **attribute**, on the other hand, changes both the selection
-and its reset default. The attribute doesn’t change as someone uses the control;
-read the property when you need the current value.
+For generated controls, setting the `value` **attribute** changes both the
+selection and its reset default. With your own fieldset, the component ignores
+that attribute and uses the radios’ checked state instead. You can still set
+the `value` property to change the live selection in either mode.
+
+The attribute doesn’t change as someone uses the control; read the property
+when you need the current value.
 
 ### Update your markup
 

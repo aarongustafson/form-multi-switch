@@ -9,7 +9,7 @@
 				{
 					"kind": "class",
 					"name": "FormMultiSwitchElement",
-					"description": "Enhance one native radio group into a light-DOM segmented control. Default outer focus rings follow the native radio's :focus-visible state.",
+					"description": "Enhance one native radio group into a light-DOM segmented control. Authored fieldsets take precedence over choices, name, label, and value attributes. Default outer focus rings follow the native radio's :focus-visible state.",
 					"tagName": "form-multi-switch",
 					"customElement": true,
 					"superclass": { "name": "HTMLElement" },
@@ -18,23 +18,23 @@
 							"name": "name",
 							"fieldName": "name",
 							"type": { "text": "string" },
-							"description": "Generated radio group submission name."
+							"description": "Generated radio group submission name. Ignored when an authored fieldset supplies the group."
 						},
 						{
 							"name": "label",
 							"fieldName": "label",
 							"type": { "text": "string" },
-							"description": "Generated legend text."
+							"description": "Generated legend text. Ignored when an authored fieldset supplies the group."
 						},
 						{
 							"name": "choices",
 							"type": { "text": "string" },
-							"description": "JSON array of labeled choices with optional value and disabled state."
+							"description": "JSON array of labeled choices with optional value and disabled state. Ignored, without parsing, when an authored fieldset supplies the group."
 						},
 						{
 							"name": "value",
 							"type": { "text": "string" },
-							"description": "Initial selection and form-reset default; distinct from the live value property."
+							"description": "Initial selection and form-reset default for generated controls. Ignored for authored markup; the live value property works in either mode."
 						},
 						{
 							"name": "disabled",
@@ -66,13 +66,13 @@
 							"kind": "field",
 							"name": "name",
 							"type": { "text": "string | null" },
-							"description": "Generated name attribute, or authored radio name."
+							"description": "Authored radio name takes precedence over the component attribute. Assignments configure generated controls only."
 						},
 						{
 							"kind": "field",
 							"name": "label",
 							"type": { "text": "string | null" },
-							"description": "Generated label attribute, or authored legend text."
+							"description": "Authored legend text takes precedence over the component attribute. Assignments configure generated controls only."
 						},
 						{
 							"kind": "field",

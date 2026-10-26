@@ -467,17 +467,93 @@ describe('form-multi-switch', () => {
 		expect(element.querySelectorAll('fieldset')).toHaveLength(1);
 	});
 
-	it('does not restart behavior for host value and state attributes', async () => {
+	it('ignores configuration attributes when authored markup supplies the group', async () => {
+		const element = authored();
+		const fieldset = element.querySelector('fieldset');
+		element.setAttribute('choices', 'not JSON');
+		element.setAttribute('name', 'ignored-name');
+		element.setAttribute('label', 'Ignored legend');
+		element.setAttribute('value', 'missing');
+		expect(element.name).toBe('density');
+		expect(element.label).toBe('Display density');
+		await connect(element);
+		expect(element.querySelector('fieldset')).toBe(fieldset);
+		expect(element.querySelectorAll('input')).toHaveLength(3);
+		expect(element.value).toBe('comfortable');
+		expect(element.querySelector('input').defaultChecked).toBe(true);
+		element.name = 'still-ignored';
+		element.label = 'Still ignored';
+		element.setAttribute('choices', '[]');
+		element.setAttribute('value', 'compact');
+		await new Promise((resolve) => setTimeout(resolve, 60));
+		expect(element.name).toBe('density');
+		expect(element.label).toBe('Display density');
+		expect(element.value).toBe('comfortable');
+		expect(element.state).toBe('ready');
+	});
+
+	it('keeps authored selection and reset defaults even with a valid conflicting value', async () => {
+		const form = document.createElement('form');
+		document.body.append(form);
+		const element = authored();
+		element.setAttribute('value', 'compact');
+		try {
+			await connect(element, form);
+			expect(element.value).toBe('comfortable');
+			element.value = 'compact';
+			expect(new FormData(form).get('density')).toBe('compact');
+			form.reset();
+			await Promise.resolve();
+			expect(element.value).toBe('comfortable');
+		} finally {
+			form.remove();
+		}
+	});
+
+	it('does not fill an unselected authored group from the value attribute', async () => {
+		const element = authored();
+		element.querySelector('input').removeAttribute('checked');
+		element.setAttribute('value', 'compact');
+		await connect(element);
+		expect(element.value).toBeNull();
+	});
+
+	it('uses authored markup when it replaces a generated fieldset', async () => {
+		const element = document.createElement('form-multi-switch');
+		element.configure(configuration);
+		await connect(element);
+		element.innerHTML = authored().innerHTML;
+		element.querySelector('legend').textContent = 'Authored density';
+		await vi.waitFor(() => expect(element.label).toBe('Authored density'));
+		await vi.waitFor(() => expect(element.state).toBe('ready'));
+		expect(element.querySelectorAll('fieldset')).toHaveLength(1);
+	});
+
+	it('reports invalid authored markup rather than replacing it with configured choices', async () => {
+		const element = authored();
+		element.querySelector('legend').remove();
+		element.setAttribute('name', configuration.name);
+		element.setAttribute('label', configuration.label);
+		element.setAttribute('choices', JSON.stringify(choices));
+		document.body.append(element);
+		await expect(element.ready).rejects.toThrow(/legend/i);
+		expect(element.querySelector('legend')).toBeNull();
+	});
+
+	it('does not restart behavior for ignored attributes or host state attributes', async () => {
 		const element = authored();
 		const initialize = vi.fn();
 		vi.spyOn(element, 'loadModule').mockResolvedValue({ initialize });
 		element.script = './behavior.js';
 		await connect(element);
 		element.setAttribute('value', 'compact');
+		element.setAttribute('choices', 'invalid JSON');
+		element.name = 'ignored';
+		element.label = 'Ignored';
 		element.required = true;
 		element.disabled = true;
 		await new Promise((resolve) => setTimeout(resolve, 60));
-		expect(element.value).toBe('compact');
+		expect(element.value).toBe('comfortable');
 		expect(initialize).toHaveBeenCalledOnce();
 		expect(element.state).toBe('ready');
 	});
@@ -530,7 +606,9 @@ describe('form-multi-switch', () => {
 	});
 
 	it('recovers after correcting an invalid initial-value attribute', async () => {
-		const element = await connect(authored());
+		const element = document.createElement('form-multi-switch');
+		element.configure(configuration);
+		await connect(element);
 		element.setAttribute('value', 'missing');
 		expect(element.state).toBe('error');
 		element.setAttribute('value', 'compact');
@@ -679,7 +757,8 @@ describe('behavior module readiness', () => {
 	it('does not enhance after configuration fails during module initialization', async () => {
 		let finish;
 		let signal;
-		const element = authored();
+		const element = document.createElement('form-multi-switch');
+		element.configure(configuration);
 		vi.spyOn(element, 'loadModule').mockResolvedValue({
 			initialize(_control, context) {
 				signal = context.signal;

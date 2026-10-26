@@ -170,6 +170,7 @@ function normalizeConfiguration(config) {
  * Enhance one native radio group without replacing its form controls.
  * Default styles are installed once per document in a named cascade layer.
  * The outer focus ring follows the native radio's :focus-visible state.
+ * Authored fieldsets take precedence over choices, name, label, and value attributes.
  *
  * @element form-multi-switch
  */
@@ -247,6 +248,11 @@ export class FormMultiSwitchElement extends HTMLElement {
 		if (oldValue === newValue || this._batch) {
 			return;
 		}
+		if (
+			['choices', 'name', 'label', 'value'].includes(name) &&
+			this._authoredFieldset()
+		)
+			return;
 		if (name === 'disabled') this._disabledControlled = true;
 		if (name === 'required') this._requiredControlled = true;
 		if (name === 'value') this._defaultApplied = false;
@@ -271,12 +277,18 @@ export class FormMultiSwitchElement extends HTMLElement {
 	}
 
 	get name() {
+		const authored = this._authoredFieldset();
+		if (authored)
+			return authored.querySelector('input[type="radio"]')?.name ?? null;
 		return this.getAttribute('name') ?? this._inputs[0]?.name ?? null;
 	}
 	set name(value) {
 		this._stringAttribute('name', value);
 	}
 	get label() {
+		const authored = this._authoredFieldset();
+		if (authored)
+			return authored.querySelector('legend')?.textContent ?? null;
 		return (
 			this.getAttribute('label') ??
 			this._fieldset?.querySelector('legend')?.textContent ??
@@ -570,23 +582,21 @@ export class FormMultiSwitchElement extends HTMLElement {
 		}
 	}
 
+	_authoredFieldset() {
+		return [...this.querySelectorAll('fieldset')].find(
+			(fieldset) => fieldset !== this._generatedFieldset,
+		);
+	}
+
 	_prepare() {
-		if (this.hasAttribute('choices')) {
+		const authored = this._authoredFieldset();
+		if (!authored && this.hasAttribute('choices')) {
 			const config = normalizeConfiguration({
 				name: this.getAttribute('name'),
 				label: this.getAttribute('label'),
 				choices: JSON.parse(this.getAttribute('choices')),
 				value: this.getAttribute('value'),
 			});
-			if (
-				[...this.querySelectorAll('fieldset')].some(
-					(fieldset) => fieldset !== this._generatedFieldset,
-				)
-			) {
-				throw new TypeError(
-					'Do not combine authored fieldsets with configured choices.',
-				);
-			}
 			const signature = JSON.stringify([
 				config.name,
 				config.label,
@@ -620,7 +630,7 @@ export class FormMultiSwitchElement extends HTMLElement {
 				this._signature = signature;
 				this._defaultApplied = false;
 			}
-		} else if (this._generatedFieldset) {
+		} else if (!authored && this._generatedFieldset) {
 			throw new TypeError(
 				'Keep choices configured while using generated controls.',
 			);
@@ -692,7 +702,11 @@ export class FormMultiSwitchElement extends HTMLElement {
 			for (const input of this._inputs)
 				input.required = this.hasAttribute('required');
 		}
-		if (!this._defaultApplied && this.hasAttribute('value')) {
+		if (
+			this._fieldset === this._generatedFieldset &&
+			!this._defaultApplied &&
+			this.hasAttribute('value')
+		) {
 			const value = this.getAttribute('value');
 			this._select(value);
 			for (const input of this._inputs)
