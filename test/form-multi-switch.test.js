@@ -373,7 +373,7 @@ describe('form-multi-switch', () => {
 				.hasAttribute('data-selected'),
 		).toBe(true);
 		form.reset();
-		await Promise.resolve();
+		await new Promise((resolve) => setTimeout(resolve, 0));
 		expect(element.value).toBe('comfortable');
 		expect(
 			element
@@ -400,6 +400,28 @@ describe('form-multi-switch', () => {
 		expect(element.querySelectorAll('input')[2].disabled).toBe(true);
 	});
 
+	it('reconciles reset styling and the change baseline after the default-action checkpoint', async () => {
+		const form = document.createElement('form');
+		document.body.append(form);
+		const element = await connect(authored(), form);
+		element.value = 'compact';
+		form.dispatchEvent(
+			new Event('reset', { bubbles: true, cancelable: true }),
+		);
+		await Promise.resolve();
+		element.querySelector('input[value="comfortable"]').checked = true;
+		await new Promise((resolve) => setTimeout(resolve, 0));
+		expect(element.querySelector('[data-selected]').dataset.value).toBe(
+			'comfortable',
+		);
+		const change = vi.fn();
+		element.addEventListener('form-multi-switch:change', change);
+		element.querySelector('input[value="compact"]').click();
+		expect(change.mock.calls[0][0].detail.previousValue).toBe(
+			'comfortable',
+		);
+	});
+
 	it('clears generated selection and reset defaults when its value attribute is removed', async () => {
 		const form = document.createElement('form');
 		document.body.append(form);
@@ -416,7 +438,7 @@ describe('form-multi-switch', () => {
 		).toBe(true);
 		element.value = 'compact';
 		form.reset();
-		await Promise.resolve();
+		await new Promise((resolve) => setTimeout(resolve, 0));
 		expect(element.value).toBeNull();
 		expect(element.querySelector('[data-selected]')).toBeNull();
 		element.setAttribute('value', 'comfortable');
@@ -475,7 +497,7 @@ describe('form-multi-switch', () => {
 		await connect(element);
 		element.value = 'compact';
 		form.reset();
-		await Promise.resolve();
+		await new Promise((resolve) => setTimeout(resolve, 0));
 		expect(element.value).toBe('comfortable');
 		expect(
 			element
@@ -567,7 +589,7 @@ describe('form-multi-switch', () => {
 			element.value = 'compact';
 			expect(new FormData(form).get('density')).toBe('compact');
 			form.reset();
-			await Promise.resolve();
+			await new Promise((resolve) => setTimeout(resolve, 0));
 			expect(element.value).toBe('comfortable');
 		} finally {
 			form.remove();

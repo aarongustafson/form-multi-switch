@@ -202,6 +202,10 @@ the `value` property to change the live selection in either mode.
 Removing the attribute from a generated group clears both its selection and
 reset default.
 
+After a form reset, selected styling and the interaction-event baseline update
+in a task after the browser restores the radios. A canceled reset leaves them
+unchanged.
+
 The attribute doesn’t change as someone uses the control; read the property
 when you need the current value.
 
@@ -515,6 +519,8 @@ python3 -m http.server 8765
 Open [the demos](http://localhost:8765/demo/) or
 [the browser tests](http://localhost:8765/test/browser.html). The browser tests
 cover native validation, cancellation, focus, and submission.
+Add `?native-reset` to the browser-test URL and activate **Reset delivery** when
+it appears to check native reset-button timing.
 
 The unit suite uses Happy DOM. The browser page covers native behavior that a DOM
 emulator can’t reliably reproduce. Also test real keyboard navigation and

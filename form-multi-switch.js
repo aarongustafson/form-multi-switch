@@ -828,12 +828,12 @@ export class FormMultiSwitchElement extends HTMLElement {
 		this._inputs[0].form?.addEventListener(
 			'reset',
 			(event) => {
-				queueMicrotask(() => {
+				setTimeout(() => {
 					if (!event.defaultPrevented && !signal.aborted) {
 						this._previousValue = this.value;
 						this._sync();
 					}
-				});
+				}, 0);
 			},
 			{ signal },
 		);
