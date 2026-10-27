@@ -11,11 +11,14 @@ You can wrap radios you’ve already written or let the component create them fr
 attributes or JavaScript. If you need the control to work without JavaScript,
 start with the radio markup.
 
-## Demos
+## Documentation and demos
 
-- [All examples](./demo/index.html): shipping choices, clothing and shoe sizes, custom styles, icons, languages, and scripts.
-- [Manual registration](./demo/esm.html): import the class and register it yourself, with an esm.sh import example.
-- [Automatic registration](./demo/unpkg.html): use the definition helper, with an unpkg import example.
+Read the [documentation on GitHub Pages](https://aarongustafson.github.io/form-multi-switch/)
+or try the examples:
+
+- [All examples](https://aarongustafson.github.io/form-multi-switch/demo/): shipping choices, clothing and shoe sizes, custom styles, icons, languages, and scripts.
+- [Manual registration](https://aarongustafson.github.io/form-multi-switch/demo/esm.html): import the class and register it yourself, with an esm.sh import example.
+- [Automatic registration](https://aarongustafson.github.io/form-multi-switch/demo/unpkg.html): use the definition helper, with an unpkg import example.
 
 To run the demos locally, follow the [development instructions](#development).
 
@@ -372,13 +375,13 @@ Below that, they stack into a column. This follows the space available to the
 component, not the width of your viewport. The component uses a size container
 named `multi-switch` for this layout.
 
-See [the restyling demos](./demo/index.html#restyling) for a branded pill and an
+See [the restyling demos](https://aarongustafson.github.io/form-multi-switch/demo/#restyling) for a branded pill and an
 underline treatment, with CSS beside each live example. Put your own styles in
 your page’s stylesheet. The defaults use a cascade layer named
 `form-multi-switch`, so your unlayered rules take precedence without
 `!important`, regardless of load order.
 
-For a longer list, you might prefer a grid. The [shoe-size example](./demo/index.html#shoe-sizes)
+For a longer list, you might prefer a grid. The [shoe-size example](https://aarongustafson.github.io/form-multi-switch/demo/#shoe-sizes)
 shows how to lay one out and give each choice its own border.
 
 If your Content Security Policy blocks inline styles, load the exported
