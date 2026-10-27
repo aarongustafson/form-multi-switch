@@ -15,6 +15,8 @@ async function until(predicate) {
 	throw new Error('The observed update did not complete.');
 }
 
+const afterReset = () => new Promise((resolve) => setTimeout(resolve, 0));
+
 async function setup() {
 	fixture.innerHTML = `<form><form-multi-switch>
 		<fieldset><legend>Delivery speed</legend>
@@ -86,7 +88,7 @@ const tests = [
 			);
 			control.value = 'compact';
 			form.reset();
-			await Promise.resolve();
+			await afterReset();
 			assert(
 				control.value === null &&
 					!control.querySelector('[data-selected]'),
@@ -149,7 +151,7 @@ const tests = [
 			);
 			control.value = 'express';
 			form.reset();
-			await Promise.resolve();
+			await afterReset();
 			assert(
 				control.value === 'standard',
 				'The ignored value attribute changed reset defaults.',
@@ -406,7 +408,7 @@ const tests = [
 			control.value = 'express';
 			form.addEventListener('reset', (event) => event.preventDefault());
 			form.reset();
-			await Promise.resolve();
+			await afterReset();
 			assert(
 				control.value === 'express',
 				'Canceled reset changed the selection.',
@@ -447,7 +449,7 @@ const tests = [
 				'Submission value is incorrect.',
 			);
 			form.reset();
-			await Promise.resolve();
+			await afterReset();
 			assert(
 				control.value === 'standard',
 				'Reset did not restore the default.',
@@ -488,6 +490,45 @@ const tests = [
 		},
 	],
 ];
+
+if (new URL(location.href).searchParams.has('native-reset')) {
+	tests.push([
+		'Trusted reset-button activation updates selected styling and the change baseline',
+		async () => {
+			const { control, form, inputs } = await setup();
+			control.value = 'express';
+			const button = document.createElement('button');
+			button.type = 'reset';
+			button.textContent = 'Reset delivery';
+			form.append(button);
+			await new Promise((resolve) =>
+				button.addEventListener('click', () => setTimeout(resolve, 0), {
+					once: true,
+				}),
+			);
+			await afterReset();
+			assert(
+				control.value === 'standard' &&
+					control.querySelector('[data-selected]')?.dataset.value ===
+						'standard',
+				'A reset-button activation left selection styling stale.',
+			);
+			let change;
+			control.addEventListener(
+				'form-multi-switch:change',
+				(event) => {
+					change = event.detail;
+				},
+				{ once: true },
+			);
+			inputs[1].click();
+			assert(
+				change?.previousValue === 'standard',
+				'Reset left a stale native change baseline.',
+			);
+		},
+	]);
+}
 
 let failures = 0;
 for (const [name, run] of tests) {
