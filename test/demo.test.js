@@ -182,6 +182,33 @@ describe('demo examples', () => {
 		expect(samples).toContain('[data-selected]');
 	});
 
+	it('shows a CSS-only sliding highlight with reduced-motion support', () => {
+		const control = demo.querySelector('#sliding-highlight');
+		expect(control).not.toBeNull();
+		expect(control.classList.contains('sliding-highlight')).toBe(true);
+		expect(JSON.parse(control.getAttribute('choices'))).toEqual([
+			{ label: 'List', value: 'list' },
+			{ label: 'Grid', value: 'grid' },
+			{ label: 'Table', value: 'table' },
+		]);
+		const section = control.closest('.demo-section');
+		expect(section.textContent).toContain('reduced-motion');
+		expect(section.querySelector('pre code').textContent).toContain(
+			'transition: transform 300ms ease',
+		);
+		const css = readFileSync(
+			resolve(directory, '../demo/styles.css'),
+			'utf8',
+		);
+		expect(css).toMatch(
+			/\.sliding-highlight\s+\[data-multi-switch-group\]:has\(/,
+		);
+		expect(css).toContain('transform: translateX(200%)');
+		expect(css).toMatch(
+			/@media \(prefers-reduced-motion: reduce\)[\s\S]*?transition: none/,
+		);
+	});
+
 	it('shows an individually disabled option separately from the basic control', () => {
 		expect(
 			demo.querySelector('#unavailable input[disabled]'),
