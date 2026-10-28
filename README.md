@@ -153,8 +153,8 @@ again to replace a group it created, including that group’s reset defaults. It
 won’t replace a `<fieldset>` you wrote yourself.
 
 Leave out `value`, or use `null`, to start without a selection. `disabled`,
-`required`, and `iconOnly` default to `false`. If the control needs its own
-script, set the `script` attribute or property separately.
+`readOnly`, `required`, and `iconOnly` default to `false`. If the control needs
+its own script, set the `script` attribute or property separately.
 
 ## Attributes and properties
 
@@ -164,7 +164,8 @@ script, set the `script` attribute or property separately.
 | `label`     | `label`    | Generated `<legend>` text.                                                                              |
 | `choices`   | —          | Choices as a JSON array. Use `configure()` to change the group’s configuration in one call.             |
 | `value`     | `value`    | Attribute: selection and reset default for generated controls. Property: live selection in either mode. |
-| `disabled`  | `disabled` | Disable the whole group.                                                                                |
+| `disabled`  | `disabled` | Disable the whole group and clear its selection.                                                        |
+| `readonly`  | `readOnly` | Keep the group enabled and selected, but prevent users from changing the selection.                     |
 | `required`  | `required` | Whether the group requires a selection.                                                                 |
 | `icon-only` | `iconOnly` | Visually hide the choice text after enhancement.                                                        |
 | `script`    | `script`   | URL of a JavaScript module to load before showing the segmented control.                                |
@@ -178,7 +179,10 @@ even if you’ve set conflicting attributes on the component. The choices,
 selection, and reset defaults also come from your markup. Changing the ignored
 attributes doesn’t change the group or rerun your script.
 
-`disabled`, `required`, `icon-only`, and `script` work with either authoring mode.
+`disabled`, `readonly`, `required`, `icon-only`, and `script` work with either
+authoring mode. A disabled group has no selection and is omitted from form
+submission. A read-only group remains enabled, keeps its selection, and submits
+its value.
 
 As with other HTML boolean attributes, presence is what counts:
 `disabled="false"` still disables the group. Remove the attribute to turn it off.

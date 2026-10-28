@@ -75,6 +75,7 @@ const DEFAULT_STYLES = `@layer form-multi-switch {
 		color: GrayText;
 		cursor: not-allowed;
 	}
+	[data-multi-switch-state='ready'] [data-readonly] { cursor: default; }
 	@container multi-switch (inline-size < 20rem) {
 		[data-multi-switch-state='ready'] [data-multi-switch-group] { flex-direction: column; }
 		[data-multi-switch-state='ready'] [data-multi-switch-choice]:not([data-first]) {
@@ -158,7 +159,7 @@ function normalizeConfiguration(config) {
 	) {
 		throw new RangeError('The initial value must match a choice.');
 	}
-	for (const key of ['disabled', 'required', 'iconOnly']) {
+	for (const key of ['disabled', 'readOnly', 'required', 'iconOnly']) {
 		if (config[key] !== undefined && typeof config[key] !== 'boolean') {
 			throw new TypeError(`${key} must be a boolean.`);
 		}
@@ -182,6 +183,7 @@ export class FormMultiSwitchElement extends HTMLElement {
 			'choices',
 			'value',
 			'disabled',
+			'readonly',
 			'required',
 			'icon-only',
 			'script',
@@ -225,6 +227,7 @@ export class FormMultiSwitchElement extends HTMLElement {
 			'label',
 			'value',
 			'disabled',
+			'readOnly',
 			'required',
 			'iconOnly',
 			'script',
@@ -262,7 +265,9 @@ export class FormMultiSwitchElement extends HTMLElement {
 		}
 		if (
 			this._fieldset &&
-			['disabled', 'required', 'icon-only', 'value'].includes(name)
+			['disabled', 'readonly', 'required', 'icon-only', 'value'].includes(
+				name,
+			)
 		) {
 			try {
 				this._applyOptions();
@@ -329,6 +334,13 @@ export class FormMultiSwitchElement extends HTMLElement {
 			this._sync();
 		}
 	}
+	get readOnly() {
+		return this.hasAttribute('readonly');
+	}
+	set readOnly(value) {
+		this.toggleAttribute('readonly', Boolean(value));
+		if (this._fieldset) this._sync();
+	}
 	get required() {
 		return (
 			this.hasAttribute('required') ||
@@ -379,6 +391,7 @@ export class FormMultiSwitchElement extends HTMLElement {
 		this.setAttribute('choices', JSON.stringify(normalized.choices));
 		this._stringAttribute('value', normalized.value);
 		this.toggleAttribute('disabled', normalized.disabled ?? false);
+		this.toggleAttribute('readonly', normalized.readOnly ?? false);
 		this.toggleAttribute('required', normalized.required ?? false);
 		this.toggleAttribute('icon-only', normalized.iconOnly ?? false);
 		this._batch = false;
@@ -482,6 +495,7 @@ export class FormMultiSwitchElement extends HTMLElement {
 				'data-last',
 				'data-selected',
 				'data-disabled',
+				'data-readonly',
 				'data-focus',
 			]) {
 				label.removeAttribute(name);
@@ -755,15 +769,36 @@ export class FormMultiSwitchElement extends HTMLElement {
 	}
 
 	_sync() {
+		if (this._groupDisabled()) {
+			for (const input of this._inputs) input.checked = false;
+			this._previousValue = null;
+		}
 		this._inputs.forEach((input, index) => {
 			const label = this._labels[index];
 			label.toggleAttribute('data-selected', input.checked);
 			label.toggleAttribute('data-disabled', input.matches(':disabled'));
+			label.toggleAttribute('data-readonly', this.readOnly);
 			label.toggleAttribute(
 				'data-focus',
 				input === this.ownerDocument.activeElement,
 			);
 		});
+	}
+
+	_groupDisabled() {
+		if (this.disabled) return true;
+		for (
+			let ancestor = this._fieldset?.parentElement;
+			ancestor;
+			ancestor = ancestor.parentElement
+		) {
+			if (ancestor.tagName !== 'FIELDSET' || !ancestor.disabled) continue;
+			const legend = [...ancestor.children].find(
+				(child) => child.tagName === 'LEGEND',
+			);
+			if (!legend?.contains(this._fieldset)) return true;
+		}
+		return false;
 	}
 
 	_listen() {
@@ -775,6 +810,12 @@ export class FormMultiSwitchElement extends HTMLElement {
 			(event) => {
 				const index = this._inputs.indexOf(event.target);
 				if (index < 0 || event.target.matches(':disabled')) return;
+				if (this.readOnly) {
+					event.preventDefault();
+					this._select(this._previousValue);
+					this._sync();
+					return;
+				}
 				this._sync();
 				queueMicrotask(() => {
 					if (!signal.aborted) this._sync();
