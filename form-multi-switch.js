@@ -75,7 +75,7 @@ const DEFAULT_STYLES = `@layer form-multi-switch {
 		color: GrayText;
 		cursor: not-allowed;
 	}
-	[data-multi-switch-state='ready'] [data-readonly] { cursor: default; }
+	[data-multi-switch-state='ready'] [data-readonly] { cursor: not-allowed; }
 	@container multi-switch (inline-size < 20rem) {
 		[data-multi-switch-state='ready'] [data-multi-switch-group] { flex-direction: column; }
 		[data-multi-switch-state='ready'] [data-multi-switch-choice]:not([data-first]) {
