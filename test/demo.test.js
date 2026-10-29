@@ -182,6 +182,56 @@ describe('demo examples', () => {
 		expect(samples).toContain('[data-selected]');
 	});
 
+	it('shows a CSS-only sliding highlight with reduced-motion support', () => {
+		const control = demo.querySelector('#sliding-highlight');
+		expect(control).not.toBeNull();
+		expect(control.classList.contains('sliding-highlight')).toBe(true);
+		expect(JSON.parse(control.getAttribute('choices'))).toEqual([
+			{ label: 'List', value: 'list' },
+			{ label: 'Grid', value: 'grid' },
+			{ label: 'Table', value: 'table' },
+		]);
+		const section = control.closest('.demo-section');
+		expect(section.textContent).toContain('reduced-motion');
+		expect(section.querySelector('pre code').textContent).toContain(
+			'transition: transform 300ms ease',
+		);
+		const css = readFileSync(
+			resolve(directory, '../demo/styles.css'),
+			'utf8',
+		);
+		expect(css).toMatch(
+			/\.sliding-highlight\s+\[data-multi-switch-group\]:has\(/,
+		);
+		expect(css).toContain('transform: translateX(200%)');
+		expect(css).toMatch(
+			/@media \(prefers-reduced-motion: reduce\)[\s\S]*?transition: none/,
+		);
+	});
+
+	it.each([
+		['grid', -100],
+		['table', -200],
+	])(
+		'moves the %s highlight left in RTL in the live CSS and code example',
+		(value, offset) => {
+			const code = demo
+				.querySelector('#sliding-highlight')
+				.closest('.demo-section')
+				.querySelector('pre code').textContent;
+			const css = readFileSync(
+				resolve(directory, '../demo/styles.css'),
+				'utf8',
+			);
+			for (const source of [css, code]) {
+				const normalized = source.replace(/\s/g, '').replace(/"/g, "'");
+				expect(normalized).toContain(
+					`.sliding-highlight[data-multi-switch-group]:dir(rtl):has([data-value='${value}'][data-selected])::before{transform:translateX(${offset}%);}`,
+				);
+			}
+		},
+	);
+
 	it('distinguishes disabled and read-only groups in the examples', () => {
 		expect(
 			demo.querySelector('#unavailable input[disabled]'),

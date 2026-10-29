@@ -159,6 +159,80 @@ output {
 	font-weight: 700;
 }
 
+.sliding-highlight [data-multi-switch-group] {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sliding-highlight [data-multi-switch-group] > legend {
+	grid-column: 1 / -1;
+}
+
+.sliding-highlight [data-multi-switch-group]::before {
+	grid-area: 2 / 1;
+	z-index: 0;
+	border-radius: var(--multi-switch-radius, 0.5rem);
+	background: var(--multi-switch-selected-background, Highlight);
+	content: '';
+	transition: transform 300ms ease;
+}
+
+.sliding-highlight [data-multi-switch-choice] {
+	grid-row: 2;
+	z-index: 1;
+	margin: 0;
+	border-color: transparent;
+	background: transparent;
+	color: var(--multi-switch-color, CanvasText);
+	box-shadow: none;
+}
+
+.sliding-highlight [data-multi-switch-choice][data-selected] {
+	color: var(--multi-switch-selected-color, HighlightText);
+}
+
+.sliding-highlight [data-value='list'] {
+	grid-column: 1;
+}
+
+.sliding-highlight [data-value='grid'] {
+	grid-column: 2;
+}
+
+.sliding-highlight [data-value='table'] {
+	grid-column: 3;
+}
+
+.sliding-highlight
+	[data-multi-switch-group]:has([data-value='grid'][data-selected])::before {
+	transform: translateX(100%);
+}
+
+.sliding-highlight
+	[data-multi-switch-group]:has([data-value='table'][data-selected])::before {
+	transform: translateX(200%);
+}
+
+.sliding-highlight
+	[data-multi-switch-group]:dir(rtl):has(
+		[data-value='grid'][data-selected]
+	)::before {
+	transform: translateX(-100%);
+}
+
+.sliding-highlight
+	[data-multi-switch-group]:dir(rtl):has(
+		[data-value='table'][data-selected]
+	)::before {
+	transform: translateX(-200%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sliding-highlight [data-multi-switch-group]::before {
+		transition: none;
+	}
+}
+
 .icons [data-multi-switch-choice]::before {
 	content: '';
 	inline-size: 1.4em;

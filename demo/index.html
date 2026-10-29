@@ -495,6 +495,96 @@ control.value = 'compact';</code></pre>
 						</div>
 					</div>
 				</div>
+				<div class="demo-section">
+					<h3>Example: A highlight that slides between choices</h3>
+					<p>
+						A CSS-only highlight follows the selected radio. Choose
+						another option to see it slide; reduced-motion
+						preferences disable the transition.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;form-multi-switch class="sliding-highlight"
+  name="layout" label="Reading layout"
+  choices='[
+    {"label":"List","value":"list"},
+    {"label":"Grid","value":"grid"},
+    {"label":"Table","value":"table"}
+  ]'
+  value="grid"
+&gt;&lt;/form-multi-switch&gt;
+
+<mark>.sliding-highlight [data-multi-switch-group] {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sliding-highlight [data-multi-switch-group] > legend {
+  grid-column: 1 / -1;
+}
+
+.sliding-highlight [data-multi-switch-group]::before {
+  grid-area: 2 / 1;
+  z-index: 0;
+  border-radius: var(--multi-switch-radius, 0.5rem);
+  background: var(--multi-switch-selected-background, Highlight);
+  content: "";
+  transition: transform 300ms ease;
+}
+
+.sliding-highlight [data-multi-switch-choice] {
+  grid-row: 2;
+  z-index: 1;
+  margin: 0;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.sliding-highlight [data-value="list"] { grid-column: 1; }
+.sliding-highlight [data-value="grid"] { grid-column: 2; }
+.sliding-highlight [data-value="table"] { grid-column: 3; }
+
+.sliding-highlight [data-multi-switch-group]:has(
+  [data-value="grid"][data-selected]
+)::before {
+  transform: translateX(100%);
+}
+
+.sliding-highlight [data-multi-switch-group]:has(
+  [data-value="table"][data-selected]
+)::before {
+  transform: translateX(200%);
+}
+
+.sliding-highlight [data-multi-switch-group]:dir(rtl):has(
+  [data-value="grid"][data-selected]
+)::before {
+  transform: translateX(-100%);
+}
+
+.sliding-highlight [data-multi-switch-group]:dir(rtl):has(
+  [data-value="table"][data-selected]
+)::before {
+  transform: translateX(-200%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sliding-highlight [data-multi-switch-group]::before {
+    transition: none;
+  }
+}</mark></code></pre>
+						<div class="demo">
+							<form-multi-switch
+								id="sliding-highlight"
+								class="sliding-highlight"
+								name="layout"
+								label="Reading layout"
+								choices='[{"label":"List","value":"list"},{"label":"Grid","value":"grid"},{"label":"Table","value":"table"}]'
+								value="grid"
+							></form-multi-switch>
+						</div>
+					</div>
+				</div>
 			</section>
 
 			<section>
