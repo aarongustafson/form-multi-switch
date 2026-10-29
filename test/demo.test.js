@@ -209,6 +209,29 @@ describe('demo examples', () => {
 		);
 	});
 
+	it.each([
+		['grid', -100],
+		['table', -200],
+	])(
+		'moves the %s highlight left in RTL in the live CSS and code example',
+		(value, offset) => {
+			const code = demo
+				.querySelector('#sliding-highlight')
+				.closest('.demo-section')
+				.querySelector('pre code').textContent;
+			const css = readFileSync(
+				resolve(directory, '../demo/styles.css'),
+				'utf8',
+			);
+			for (const source of [css, code]) {
+				const normalized = source.replace(/\s/g, '').replace(/"/g, "'");
+				expect(normalized).toContain(
+					`.sliding-highlight[data-multi-switch-group]:dir(rtl):has([data-value='${value}'][data-selected])::before{transform:translateX(${offset}%);}`,
+				);
+			}
+		},
+	);
+
 	it('shows an individually disabled option separately from the basic control', () => {
 		expect(
 			demo.querySelector('#unavailable input[disabled]'),

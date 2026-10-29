@@ -213,6 +213,20 @@ output {
 	transform: translateX(200%);
 }
 
+.sliding-highlight
+	[data-multi-switch-group]:dir(rtl):has(
+		[data-value='grid'][data-selected]
+	)::before {
+	transform: translateX(-100%);
+}
+
+.sliding-highlight
+	[data-multi-switch-group]:dir(rtl):has(
+		[data-value='table'][data-selected]
+	)::before {
+	transform: translateX(-200%);
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.sliding-highlight [data-multi-switch-group]::before {
 		transition: none;
