@@ -98,7 +98,7 @@
 		cursor: not-allowed;
 	}
 	[data-multi-switch-state='ready'] [data-readonly] {
-		cursor: default;
+		cursor: not-allowed;
 	}
 
 	@container multi-switch (inline-size < 20rem) {
