@@ -21,6 +21,7 @@ control.configure(configuration);
 control.value = 'comfortable';
 control.value = null;
 control.disabled = true;
+control.readOnly = true;
 control.required = true;
 control.script = './behavior.js';
 control.name = undefined;

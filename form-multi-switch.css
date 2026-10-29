@@ -97,6 +97,9 @@
 		color: GrayText;
 		cursor: not-allowed;
 	}
+	[data-multi-switch-state='ready'] [data-readonly] {
+		cursor: not-allowed;
+	}
 
 	@container multi-switch (inline-size < 20rem) {
 		[data-multi-switch-state='ready'] [data-multi-switch-group] {

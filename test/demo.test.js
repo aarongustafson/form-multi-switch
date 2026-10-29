@@ -232,13 +232,20 @@ describe('demo examples', () => {
 		},
 	);
 
-	it('shows an individually disabled option separately from the basic control', () => {
+	it('distinguishes disabled and read-only groups in the examples', () => {
 		expect(
 			demo.querySelector('#unavailable input[disabled]'),
 		).not.toBeNull();
+		const disabled = demo.querySelector('#disabled');
+		expect(disabled.querySelector('fieldset[disabled]')).not.toBeNull();
 		expect(
-			demo.querySelector('#disabled fieldset[disabled]'),
-		).not.toBeNull();
+			[...disabled.querySelectorAll('input')].some(
+				(input) => input.checked,
+			),
+		).toBe(false);
+		const readOnly = demo.querySelector('#readonly');
+		expect(readOnly.hasAttribute('readonly')).toBe(true);
+		expect(readOnly.querySelector('input[value="zip"]').checked).toBe(true);
 	});
 
 	it('keeps the JavaScript-only action hidden until its control is ready', () => {

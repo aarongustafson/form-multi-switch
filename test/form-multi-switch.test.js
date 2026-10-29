@@ -142,8 +142,10 @@ describe('form-multi-switch', () => {
 		const sync = vi.spyOn(element, '_sync');
 		parent.disabled = true;
 		await vi.waitFor(() => expect(sync).toHaveBeenCalledOnce());
+		expect(element.value).toBeNull();
 		parent.disabled = false;
 		await vi.waitFor(() => expect(sync).toHaveBeenCalledTimes(2));
+		expect(element.value).toBeNull();
 		expect(ready).not.toHaveBeenCalled();
 	});
 
@@ -400,6 +402,32 @@ describe('form-multi-switch', () => {
 		expect(element.querySelectorAll('input')[2].disabled).toBe(true);
 	});
 
+	it('clears disabled-group selections and keeps readonly selections immutable to users', async () => {
+		const form = document.createElement('form');
+		document.body.append(form);
+		const element = authored();
+		element.readOnly = true;
+		await connect(element, form);
+		const compact = element.querySelectorAll('input')[1];
+		compact.click();
+		expect(element.value).toBe('comfortable');
+		expect(new FormData(form).get('density')).toBe('comfortable');
+		element.value = 'compact';
+		expect(element.value).toBe('compact');
+		element.disabled = true;
+		expect(element.value).toBeNull();
+		expect(new FormData(form).has('density')).toBe(false);
+		element.value = 'comfortable';
+		expect(element.value).toBeNull();
+		element.disabled = false;
+		expect(element.value).toBeNull();
+
+		const authoredDisabled = await connect(authored('disabled'));
+		expect(authoredDisabled.value).toBeNull();
+		authoredDisabled.querySelector('fieldset').disabled = false;
+		await vi.waitFor(() => expect(authoredDisabled.value).toBeNull());
+	});
+
 	it('reconciles reset styling and the change baseline after the default-action checkpoint', async () => {
 		const form = document.createElement('form');
 		document.body.append(form);
@@ -639,7 +667,7 @@ describe('form-multi-switch', () => {
 		element.required = true;
 		element.disabled = true;
 		await new Promise((resolve) => setTimeout(resolve, 60));
-		expect(element.value).toBe('comfortable');
+		expect(element.value).toBeNull();
 		expect(initialize).toHaveBeenCalledOnce();
 		expect(element.state).toBe('ready');
 	});
