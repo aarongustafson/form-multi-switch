@@ -663,16 +663,17 @@ control.value = 'compact';</code></pre>
 				<div class="demo-section">
 					<h3>Example: Disabled group</h3>
 					<p>
-						An authored disabled fieldset disables all its radio
-						inputs. The component also exposes a
-						<code>disabled</code> property.
+						A disabled group has no selected option, cannot be
+						changed, and is omitted from form submission. Use
+						<code>readonly</code> instead when the current value
+						should remain selected and submitted.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch&gt;
   &lt;fieldset <mark>disabled</mark>&gt;
     &lt;legend&gt;Unavailable archive formats&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="archive"
-      value="zip" checked&gt;ZIP&lt;/label&gt;
+      value="zip"&gt;ZIP&lt;/label&gt;
     &lt;label&gt;&lt;input type="radio" name="archive"
       value="tar"&gt;TAR&lt;/label&gt;
   &lt;/fieldset&gt;
@@ -686,13 +687,53 @@ control.value = 'compact';</code></pre>
 											type="radio"
 											name="archive"
 											value="zip"
-											checked
 										/>ZIP</label
 									>
 									<label
 										><input
 											type="radio"
 											name="archive"
+											value="tar"
+										/>TAR</label
+									>
+								</fieldset>
+							</form-multi-switch>
+						</div>
+					</div>
+				</div>
+				<div class="demo-section">
+					<h3>Example: Read-only group</h3>
+					<p>
+						A read-only group keeps its selected value, remains
+						enabled, and can be submitted. Users can focus it but
+						cannot change the selection.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;form-multi-switch <mark>readonly</mark>&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Archive format&lt;/legend&gt;
+    &lt;label&gt;&lt;input type="radio" name="archive-readonly"
+      value="zip" checked&gt;ZIP&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="archive-readonly"
+      value="tar"&gt;TAR&lt;/label&gt;
+  &lt;/fieldset&gt;
+&lt;/form-multi-switch&gt;</code></pre>
+						<div class="demo">
+							<form-multi-switch id="readonly" readonly>
+								<fieldset>
+									<legend>Archive format</legend>
+									<label
+										><input
+											type="radio"
+											name="archive-readonly"
+											value="zip"
+											checked
+										/>ZIP</label
+									>
+									<label
+										><input
+											type="radio"
+											name="archive-readonly"
 											value="tar"
 										/>TAR</label
 									>

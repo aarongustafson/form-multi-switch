@@ -9,8 +9,31 @@ const read = (path) => readFileSync(resolve(directory, path), 'utf8');
 const manifest = JSON.parse(read('../custom-elements.json'));
 const declaration = manifest.modules[0].declarations[0];
 const metadata = JSON.parse(read('../package.json'));
+const defaultStyles = read('../form-multi-switch.js').match(
+	/const DEFAULT_STYLES = `([\s\S]*?)`;/,
+)[1];
 
 describe('package metadata', () => {
+	it.each([
+		['enabled', /\[data-multi-switch-choice\]\s*\{([^}]+)\}/, 'pointer'],
+		['disabled', /\[data-disabled\]\s*\{([^}]+)\}/, 'not-allowed'],
+		['read-only', /\[data-readonly\]\s*\{([^}]+)\}/, 'not-allowed'],
+	])(
+		'uses the intended cursor for %s choices in both stylesheets',
+		(_state, selector, cursor) => {
+			for (const styles of [
+				defaultStyles,
+				read('../form-multi-switch.css'),
+			]) {
+				const rule = styles.match(selector);
+				expect(rule).not.toBeNull();
+				expect(rule[1]).toMatch(
+					new RegExp(`cursor:\\s*${cursor}\\s*;`),
+				);
+			}
+		},
+	);
+
 	it('requires native focus-visible for outer focus outlines, including forced colors', () => {
 		const selectors = [
 			...read('../form-multi-switch.css').matchAll(
@@ -29,9 +52,7 @@ describe('package metadata', () => {
 	});
 
 	it('keeps the optional external CSS identical to the automatically installed defaults', () => {
-		const source = read('../form-multi-switch.js');
-		const styles = source.match(/const DEFAULT_STYLES = `([\s\S]*?)`;/)[1];
-		expect(styles.replace(/\s/g, '')).toBe(
+		expect(defaultStyles.replace(/\s/g, '')).toBe(
 			read('../form-multi-switch.css').replace(/\s/g, ''),
 		);
 	});

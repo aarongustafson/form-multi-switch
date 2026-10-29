@@ -12,6 +12,7 @@ export interface MultiSwitchConfiguration {
 	/** Establishes the initial selection and form-reset default. */
 	value?: string | null;
 	disabled?: boolean;
+	readOnly?: boolean;
 	required?: boolean;
 	iconOnly?: boolean;
 }
@@ -52,6 +53,7 @@ export class FormMultiSwitchElement extends HTMLElement {
 	get value(): string | null;
 	set value(value: string | null);
 	disabled: boolean;
+	readOnly: boolean;
 	required: boolean;
 	iconOnly: boolean;
 	get script(): string | null;

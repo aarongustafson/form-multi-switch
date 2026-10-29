@@ -40,7 +40,13 @@
 							"name": "disabled",
 							"fieldName": "disabled",
 							"type": { "text": "boolean" },
-							"description": "Disable the native fieldset."
+							"description": "Disable the native fieldset and clear the group's selection."
+						},
+						{
+							"name": "readonly",
+							"fieldName": "readOnly",
+							"type": { "text": "boolean" },
+							"description": "Keep the group enabled and selected, but prevent users from changing its selection."
 						},
 						{
 							"name": "required",
@@ -83,6 +89,12 @@
 						{
 							"kind": "field",
 							"name": "disabled",
+							"type": { "text": "boolean" },
+							"default": "false"
+						},
+						{
+							"kind": "field",
+							"name": "readOnly",
 							"type": { "text": "boolean" },
 							"default": "false"
 						},
