@@ -318,6 +318,44 @@ test('existing native browser behavior suite passes', async ({ page }) => {
 	);
 });
 
+for (const demo of ['index.html', 'esm.html', 'unpkg.html']) {
+	test(`${demo} leaves ordinary demo controls with browser focus outlines`, async ({
+		page,
+	}) => {
+		await page.goto(`http://component.test/demo/${demo}`);
+		await page.evaluate(() => {
+			document.documentElement.style.colorScheme = getComputedStyle(
+				document.documentElement,
+			).colorScheme;
+		});
+		const controls = await page.locator('a, button').all();
+		const outlines = async () => {
+			const values = [];
+			for (const control of controls) {
+				await control.focus();
+				values.push(
+					await control.evaluate((element) => {
+						const style = getComputedStyle(element);
+						return {
+							style: style.outlineStyle,
+							width: style.outlineWidth,
+							offset: style.outlineOffset,
+						};
+					}),
+				);
+			}
+			return values;
+		};
+		const authored = await outlines();
+		await page.locator('link[rel="stylesheet"]').evaluate((link) => {
+			link.disabled = true;
+		});
+		const native = await outlines();
+		expect(native.some((outline) => outline.style !== 'none')).toBe(true);
+		expect(authored).toEqual(native);
+	});
+}
+
 test('forced colors retain automatic adjustment, markers, and readable icon labels', async ({
 	page,
 	browserName,

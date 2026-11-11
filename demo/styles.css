@@ -56,11 +56,6 @@ a:active {
 	color: LinkText;
 }
 
-:focus-visible {
-	outline: 3px solid CanvasText;
-	outline-offset: 3px;
-}
-
 code {
 	background: ButtonFace;
 	color: ButtonText;
@@ -86,10 +81,6 @@ code {
 .demo-section > p code {
 	background: transparent;
 	color: inherit;
-}
-
-.demo-section > :is(h2, h3, p) :focus-visible {
-	outline-color: currentColor;
 }
 
 .code-demo-pair {
@@ -163,7 +154,6 @@ output {
 	--multi-switch-color: #173f63;
 	--multi-switch-selected-background: #173f63;
 	--multi-switch-selected-color: #fff;
-	--multi-switch-focus-color: CanvasText;
 }
 
 .underline {
