@@ -268,13 +268,20 @@ describe('demo examples', () => {
 		expect(
 			demo.querySelector('#unavailable input[disabled]'),
 		).not.toBeNull();
+		expect(demo.querySelector('#unavailable input[disabled]').checked).toBe(
+			true,
+		);
 		const disabled = demo.querySelector('#disabled');
 		expect(disabled.querySelector('fieldset[disabled]')).not.toBeNull();
 		expect(
 			[...disabled.querySelectorAll('input')].some(
 				(input) => input.checked,
 			),
-		).toBe(false);
+		).toBe(true);
+		expect(
+			disabled.closest('.code-demo-pair').querySelector('code')
+				.textContent,
+		).toContain('value="zip" checked');
 		const readOnly = demo.querySelector('#readonly');
 		expect(readOnly.hasAttribute('readonly')).toBe(true);
 		expect(readOnly.querySelector('input[value="zip"]').checked).toBe(true);

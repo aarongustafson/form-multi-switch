@@ -40,7 +40,7 @@
 							"name": "disabled",
 							"fieldName": "disabled",
 							"type": { "text": "boolean" },
-							"description": "Disable the native fieldset and clear the group's selection."
+							"description": "Disable the native fieldset while preserving its checked selection. Disabled radios are omitted from form submission."
 						},
 						{
 							"name": "readonly",

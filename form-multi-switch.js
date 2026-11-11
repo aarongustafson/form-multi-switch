@@ -777,10 +777,6 @@ export class FormMultiSwitchElement extends HTMLElement {
 	}
 
 	_sync() {
-		if (this._groupDisabled()) {
-			for (const input of this._inputs) input.checked = false;
-			this._previousValue = null;
-		}
 		this._inputs.forEach((input, index) => {
 			const label = this._labels[index];
 			label.toggleAttribute('data-selected', input.checked);
@@ -791,22 +787,6 @@ export class FormMultiSwitchElement extends HTMLElement {
 				input === this.ownerDocument.activeElement,
 			);
 		});
-	}
-
-	_groupDisabled() {
-		if (this.disabled) return true;
-		for (
-			let ancestor = this._fieldset?.parentElement;
-			ancestor;
-			ancestor = ancestor.parentElement
-		) {
-			if (ancestor.tagName !== 'FIELDSET' || !ancestor.disabled) continue;
-			const legend = [...ancestor.children].find(
-				(child) => child.tagName === 'LEGEND',
-			);
-			if (!legend?.contains(this._fieldset)) return true;
-		}
-		return false;
 	}
 
 	_listen() {

@@ -164,7 +164,7 @@ its own script, set the `script` attribute or property separately.
 | `label`     | `label`    | Generated `<legend>` text.                                                                              |
 | `choices`   | —          | Choices as a JSON array. Use `configure()` to change the group’s configuration in one call.             |
 | `value`     | `value`    | Attribute: selection and reset default for generated controls. Property: live selection in either mode. |
-| `disabled`  | `disabled` | Disable the whole group and clear its selection.                                                        |
+| `disabled`  | `disabled` | Disable the whole group without clearing its selection.                                                 |
 | `readonly`  | `readOnly` | Keep the group enabled and selected, but prevent users from changing the selection.                     |
 | `required`  | `required` | Whether the group requires a selection.                                                                 |
 | `icon-only` | `iconOnly` | Visually hide the choice text after enhancement.                                                        |
@@ -180,9 +180,18 @@ selection, and reset defaults also come from your markup. Changing the ignored
 attributes doesn’t change the group or rerun your script.
 
 `disabled`, `readonly`, `required`, `icon-only`, and `script` work with either
-authoring mode. A disabled group has no selection and is omitted from form
-submission. A read-only group remains enabled, keeps its selection, and submits
-its value.
+authoring mode. A disabled group keeps its selection but cannot be changed by
+users and is omitted from form submission. Re-enabling it makes the retained
+value available for submission again. A read-only group remains enabled, keeps
+its selection, and submits its value.
+
+An individually disabled radio can also stay checked, just like a native
+radio. Users can choose another enabled option, but cannot select the disabled
+option again until it is re-enabled. Application code can still change checked
+state through `value`; disabled radios remain excluded from submission.
+
+Earlier versions cleared selection when a group was disabled. The component
+now preserves it. To clear a selection deliberately, set `control.value = null`.
 
 As with other HTML boolean attributes, presence is what counts:
 `disabled="false"` still disables the group. Remove the attribute to turn it off.

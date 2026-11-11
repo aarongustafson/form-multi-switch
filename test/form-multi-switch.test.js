@@ -142,10 +142,10 @@ describe('form-multi-switch', () => {
 		const sync = vi.spyOn(element, '_sync');
 		parent.disabled = true;
 		await vi.waitFor(() => expect(sync).toHaveBeenCalledOnce());
-		expect(element.value).toBeNull();
+		expect(element.value).toBe('comfortable');
 		parent.disabled = false;
 		await vi.waitFor(() => expect(sync).toHaveBeenCalledTimes(2));
-		expect(element.value).toBeNull();
+		expect(element.value).toBe('comfortable');
 		expect(ready).not.toHaveBeenCalled();
 	});
 
@@ -402,31 +402,89 @@ describe('form-multi-switch', () => {
 		expect(element.querySelectorAll('input')[2].disabled).toBe(true);
 	});
 
-	it('clears disabled-group selections and keeps readonly selections immutable to users', async () => {
-		const form = document.createElement('form');
-		document.body.append(form);
-		const element = authored();
-		element.readOnly = true;
-		await connect(element, form);
-		const compact = element.querySelectorAll('input')[1];
-		compact.click();
-		expect(element.value).toBe('comfortable');
-		expect(new FormData(form).get('density')).toBe('comfortable');
-		element.value = 'compact';
-		expect(element.value).toBe('compact');
-		element.disabled = true;
-		expect(element.value).toBeNull();
-		expect(new FormData(form).has('density')).toBe(false);
-		element.value = 'comfortable';
-		expect(element.value).toBeNull();
-		element.disabled = false;
-		expect(element.value).toBeNull();
+	// Browser tests cover inherited :disabled and form exclusion missing in Happy DOM.
+	it.each(['authored', 'generated'])(
+		'%s groups preserve disabled selections and keep readonly selections immutable to users',
+		async (mode) => {
+			const form = document.createElement('form');
+			document.body.append(form);
+			const element =
+				mode === 'authored'
+					? authored()
+					: document.createElement('form-multi-switch');
+			if (mode === 'generated') element.configure(configuration);
+			element.readOnly = true;
+			await connect(element, form);
+			const compact = element.querySelectorAll('input')[1];
+			compact.click();
+			expect(element.value).toBe('comfortable');
+			expect(new FormData(form).get('density')).toBe('comfortable');
+			element.value = 'compact';
+			expect(element.value).toBe('compact');
+			element.disabled = true;
+			expect(element.value).toBe('compact');
+			expect(
+				element.querySelector('[data-selected]')?.dataset.value,
+			).toBe('compact');
+			expect(element.querySelector('fieldset').disabled).toBe(true);
+			element.value = 'comfortable';
+			expect(element.value).toBe('comfortable');
+			element.disabled = false;
+			expect(element.value).toBe('comfortable');
+			expect(new FormData(form).get('density')).toBe('comfortable');
 
-		const authoredDisabled = await connect(authored('disabled'));
-		expect(authoredDisabled.value).toBeNull();
-		authoredDisabled.querySelector('fieldset').disabled = false;
-		await vi.waitFor(() => expect(authoredDisabled.value).toBeNull());
-	});
+			const initiallyDisabled =
+				mode === 'authored'
+					? authored('disabled')
+					: document.createElement('form-multi-switch');
+			if (mode === 'generated')
+				initiallyDisabled.configure({
+					...configuration,
+					disabled: true,
+				});
+			await connect(initiallyDisabled);
+			expect(initiallyDisabled.value).toBe('comfortable');
+			expect(
+				initiallyDisabled.querySelector('[data-selected]')?.dataset
+					.value,
+			).toBe('comfortable');
+			initiallyDisabled.disabled = false;
+			expect(initiallyDisabled.value).toBe('comfortable');
+		},
+	);
+
+	it.each(['authored', 'generated'])(
+		'%s disabled groups preserve live selection and native reset defaults without interaction events',
+		async (mode) => {
+			const form = document.createElement('form');
+			document.body.append(form);
+			const element =
+				mode === 'authored'
+					? authored()
+					: document.createElement('form-multi-switch');
+			if (mode === 'generated') element.configure(configuration);
+			await connect(element, form);
+			const change = vi.fn();
+			const activate = vi.fn();
+			element.addEventListener('form-multi-switch:change', change);
+			element.addEventListener('form-multi-switch:activate', activate);
+			element.value = 'compact';
+			element.disabled = true;
+			expect(element.value).toBe('compact');
+			form.reset();
+			await vi.waitFor(() =>
+				expect(
+					element.querySelector('[data-selected]')?.dataset.value,
+				).toBe('comfortable'),
+			);
+			expect(element.value).toBe('comfortable');
+			expect(element.querySelector('fieldset').disabled).toBe(true);
+			element.disabled = false;
+			expect(new FormData(form).get('density')).toBe('comfortable');
+			expect(change).not.toHaveBeenCalled();
+			expect(activate).not.toHaveBeenCalled();
+		},
+	);
 
 	it('reconciles reset styling and the change baseline after the default-action checkpoint', async () => {
 		const form = document.createElement('form');
@@ -667,7 +725,7 @@ describe('form-multi-switch', () => {
 		element.required = true;
 		element.disabled = true;
 		await new Promise((resolve) => setTimeout(resolve, 60));
-		expect(element.value).toBeNull();
+		expect(element.value).toBe('comfortable');
 		expect(initialize).toHaveBeenCalledOnce();
 		expect(element.state).toBe('ready');
 	});
