@@ -20,12 +20,6 @@
 				for installation and API documentation.
 			</p>
 			<p>
-				You can request a browser-styled ring with
-				<code>outline: auto CanvasText</code> instead. Browsers may use
-				their own painted color for an <code>auto</code> ring, so check
-				its rendered contrast.
-			</p>
-			<p>
 				<strong>Keyboard too:</strong> Use <kbd>Tab</kbd> to reach a
 				group, arrow keys to change its selection, and
 				<kbd>Space</kbd> to select.
@@ -461,18 +455,27 @@ control.value = 'compact';</code></pre>
 				<div class="demo-section">
 					<h3>Example: Customize the keyboard focus ring</h3>
 					<p>
-						The default ring is a solid outline. Here, each radio is
-						inside its label, so
-						<code>label:has(input:focus-visible)</code> lets your
-						stylesheet draw a different ring around that label. The
-						radio still receives focus and handles selection.
+						Set <code>--multi-switch-outline</code> for the whole
+						focus ring and
+						<code>--multi-switch-outline-offset</code>
+						for its distance from the segment. The component maps
+						<code>[data-focus]</code> to the associated label and
+						shows the ring when the radio matches
+						<code>:focus-visible</code>. No extra label selector is
+						needed, and the radio still handles focus and selection.
 					</p>
 					<p>
-						Outline styles don’t inherit from a global
-						<code>:focus-visible</code> rule. Share a custom
-						property with your site’s focus rule, then apply it to
-						the label as shown here. Use Tab to reach the group and
-						arrow keys to change its selection.
+						These properties work with wrapping and separate labels,
+						including in forced colors. You can share a custom
+						property with your site’s focus rule, as shown here. Use
+						Tab to reach the group and arrow keys to change its
+						selection.
+					</p>
+					<p>
+						For a browser-styled ring, set
+						<code>--multi-switch-outline: auto CanvasText</code>.
+						Browsers may use their own painted color for an
+						<code>auto</code> ring, so check its rendered contrast.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch class="custom-focus"&gt;
@@ -491,9 +494,9 @@ control.value = 'compact';</code></pre>
   --demo-focus-ring: 4px dashed CanvasText;
 }
 
-.custom-focus label:has(input:focus-visible) {
-  outline: var(--demo-focus-ring);
-  outline-offset: 4px;
+.custom-focus {
+  --multi-switch-outline: var(--demo-focus-ring);
+  --multi-switch-outline-offset: 4px;
 }</mark></code></pre>
 						<div class="demo">
 							<form-multi-switch

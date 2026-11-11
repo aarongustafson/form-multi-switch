@@ -14,6 +14,22 @@ const defaultStyles = read('../form-multi-switch.js').match(
 )[1];
 
 describe('package metadata', () => {
+	it('documents the full focus outline and offset properties', () => {
+		for (const [name, value] of [
+			[
+				'--multi-switch-outline',
+				'3px solid var(--multi-switch-focus-color, CanvasText)',
+			],
+			['--multi-switch-outline-offset', '3px'],
+		]) {
+			expect(
+				declaration.cssProperties.find(
+					(property) => property.name === name,
+				)?.default,
+			).toBe(value);
+		}
+	});
+
 	it.each([
 		['enabled', /\[data-multi-switch-choice\]\s*\{([^}]+)\}/, 'pointer'],
 		['disabled', /\[data-disabled\]\s*\{([^}]+)\}/, 'not-allowed'],
@@ -37,7 +53,7 @@ describe('package metadata', () => {
 	it('requires native focus-visible for outer focus outlines, including forced colors', () => {
 		const selectors = [
 			...read('../form-multi-switch.css').matchAll(
-				/([^{}]+)\{[^{}]*outline:\s*3px/g,
+				/([^{}]+)\{[^{}]*outline:\s*var\(\s*--multi-switch-outline,/g,
 			),
 		].map((match) => match[1]);
 		expect(selectors).toHaveLength(2);
@@ -75,12 +91,25 @@ describe('package metadata', () => {
 		).toEqual(properties.sort());
 	});
 
-	it('keeps documented color defaults aligned with the actual CSS', () => {
+	it('keeps documented defaults aligned with the actual CSS, including nested fallbacks', () => {
 		const defaults = new Map();
-		for (const [, name, value] of read('../form-multi-switch.css').matchAll(
-			/var\((--multi-switch-[a-z-]+),\s*([^)]+)\)/g,
+		const styles = read('../form-multi-switch.css');
+		for (const match of styles.matchAll(
+			/var\(\s*(--multi-switch-[a-z-]+),\s*/g,
 		)) {
-			if (!defaults.has(name)) defaults.set(name, value.trim());
+			const name = match[1];
+			const start = match.index + match[0].length;
+			let end = start;
+			let depth = 1;
+			while (depth && end < styles.length) {
+				const character = styles[end++];
+				if (character === '(') depth++;
+				else if (character === ')') depth--;
+			}
+			expect(depth, name).toBe(0);
+			if (!defaults.has(name)) {
+				defaults.set(name, styles.slice(start, end - 1).trim());
+			}
 		}
 		for (const property of declaration.cssProperties) {
 			expect(property.default, property.name).toBe(

@@ -229,9 +229,19 @@
 							"description": "Selected text. Defaults to CanvasText in forced colors."
 						},
 						{
+							"name": "--multi-switch-outline",
+							"default": "3px solid var(--multi-switch-focus-color, CanvasText)",
+							"description": "Complete outer outline when the focused radio matches :focus-visible. Overrides --multi-switch-focus-color when set. Applies to wrapping and separate labels, including forced colors. When unset, forced colors use 3px solid CanvasText."
+						},
+						{
+							"name": "--multi-switch-outline-offset",
+							"default": "3px",
+							"description": "Offset of the outer focus outline, including forced colors."
+						},
+						{
 							"name": "--multi-switch-focus-color",
 							"default": "CanvasText",
-							"description": "Color of the solid outer focus ring when the focused radio matches :focus-visible. Forced colors use CanvasText."
+							"description": "Color of the default solid outer focus ring when the focused radio matches :focus-visible. Used only when --multi-switch-outline is unset. Forced colors use CanvasText instead."
 						}
 					]
 				}

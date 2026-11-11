@@ -68,8 +68,8 @@ const DEFAULT_STYLES = `@layer form-multi-switch {
 	}
 	[data-multi-switch-state='ready']:has([data-multi-switch-input]:focus-visible) [data-focus] {
 		z-index: 1;
-		outline: 3px solid var(--multi-switch-focus-color, CanvasText);
-		outline-offset: 3px;
+		outline: var(--multi-switch-outline, 3px solid var(--multi-switch-focus-color, CanvasText));
+		outline-offset: var(--multi-switch-outline-offset, 3px);
 	}
 	[data-multi-switch-state='ready'] [data-disabled] {
 		color: GrayText;
@@ -106,8 +106,8 @@ const DEFAULT_STYLES = `@layer form-multi-switch {
 			pointer-events: none;
 		}
 		[data-multi-switch-state='ready']:has([data-multi-switch-input]:focus-visible) [data-focus] {
-			outline: 3px solid CanvasText;
-			outline-offset: 3px;
+			outline: var(--multi-switch-outline, 3px solid CanvasText);
+			outline-offset: var(--multi-switch-outline-offset, 3px);
 		}
 	}
 }`;

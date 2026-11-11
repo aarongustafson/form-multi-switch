@@ -183,7 +183,7 @@ describe('demo examples', () => {
 		expect(samples).toContain('[data-selected]');
 	});
 
-	it('shows focus customization on authored wrapping labels with matching code and CSS', () => {
+	it('shows focus customization through properties with matching code and CSS', () => {
 		const control = demo.querySelector('#custom-focus');
 		expect(control).not.toBeNull();
 		expect(
@@ -197,11 +197,12 @@ describe('demo examples', () => {
 			'utf8',
 		);
 		for (const source of [code, css]) {
+			expect(source).toContain('.custom-focus {');
 			expect(source).toContain(
-				'.custom-focus label:has(input:focus-visible)',
+				'--multi-switch-outline: var(--demo-focus-ring)',
 			);
-			expect(source).toContain('outline: var(--demo-focus-ring)');
-			expect(source).toContain('outline-offset: 4px');
+			expect(source).toContain('--multi-switch-outline-offset: 4px');
+			expect(source).not.toContain('label:has(input:focus-visible)');
 		}
 	});
 

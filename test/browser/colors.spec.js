@@ -345,6 +345,159 @@ for (const external of [false, true]) {
 	}
 }
 
+for (const external of [false, true]) {
+	for (const separateLabels of [false, true]) {
+		test(`${external ? 'external' : 'installed'} CSS outline properties work with ${separateLabels ? 'separate' : 'wrapping'} labels and preserve the color hook`, async ({
+			page,
+			browserName,
+		}) => {
+			await fixture(page, { external, separateLabels });
+			const control = page.locator('form-multi-switch');
+			const radio = page.getByRole('radio', { name: 'Standard' });
+			const root = page.locator('html');
+			await control.evaluate((element) => {
+				element.style.setProperty(
+					'--multi-switch-focus-color',
+					'rgb(0, 95, 204)',
+				);
+			});
+			await page.keyboard.press(
+				browserName === 'webkit' && process.platform === 'darwin'
+					? 'Alt+Tab'
+					: 'Tab',
+			);
+			await expect(radio).toBeFocused();
+			expect(
+				await control
+					.locator('[data-focus]')
+					.evaluate(
+						(element) => getComputedStyle(element).outlineColor,
+					),
+			).toBe('rgb(0, 95, 204)');
+			await root.evaluate((element) => {
+				element.style.setProperty(
+					'--site-focus-ring',
+					'4px dashed rgb(128, 0, 128)',
+				);
+				element.style.setProperty(
+					'--multi-switch-outline',
+					'var(--site-focus-ring)',
+				);
+				element.style.setProperty(
+					'--multi-switch-outline-offset',
+					'6px',
+				);
+			});
+			let focus = await paint(control.locator('[data-focus]'));
+			expect(focus.focusStyle).toBe('dashed');
+			expect(focus.focusWidth).toBe(4);
+			expect(focus.focusOffset).toBe(6);
+			expect(
+				await control
+					.locator('[data-focus]')
+					.evaluate(
+						(element) => getComputedStyle(element).outlineColor,
+					),
+			).toBe('rgb(128, 0, 128)');
+			await root.evaluate((element) =>
+				element.style.setProperty(
+					'--multi-switch-outline',
+					'auto CanvasText',
+				),
+			);
+			expect(
+				(await paint(control.locator('[data-focus]'))).focusStyle,
+			).toBe('auto');
+			await root.evaluate((element) =>
+				element.style.removeProperty('--multi-switch-outline'),
+			);
+			focus = await paint(control.locator('[data-focus]'));
+			expect(focus.focusStyle).toBe('solid');
+			expect(focus.focusWidth).toBe(3);
+			expect(focus.focusOffset).toBe(6);
+			expect(
+				await control
+					.locator('[data-focus]')
+					.evaluate(
+						(element) => getComputedStyle(element).outlineColor,
+					),
+			).toBe('rgb(0, 95, 204)');
+			await root.evaluate((element) =>
+				element.style.removeProperty('--multi-switch-outline-offset'),
+			);
+			expect(
+				(await paint(control.locator('[data-focus]'))).focusOffset,
+			).toBe(3);
+			await page.keyboard.press('ArrowRight');
+			const nextRadio = page.getByRole('radio', { name: 'Express' });
+			await expect(nextRadio).toBeChecked();
+			await expect(nextRadio).toBeFocused();
+			await expect(control.locator('[data-focus]')).toHaveText('Express');
+			const focusVisible = await nextRadio.evaluate((element) =>
+				element.matches(':focus-visible'),
+			);
+			await expect(control.locator('[data-focus]')).toHaveCSS(
+				'outline-style',
+				focusVisible ? 'solid' : 'none',
+			);
+			await nextRadio.blur();
+			expect(
+				await control
+					.locator('[data-multi-switch-choice]')
+					.evaluateAll((choices) =>
+						choices.map(
+							(choice) => getComputedStyle(choice).outlineStyle,
+						),
+					),
+			).toEqual(['none', 'none', 'none']);
+		});
+	}
+
+	test(`${external ? 'external' : 'installed'} CSS outline overrides work in forced colors with safe unset defaults`, async ({
+		page,
+		browserName,
+	}) => {
+		test.skip(
+			browserName !== 'chromium',
+			'Forced-color emulation is Chromium-only here.',
+		);
+		await page.emulateMedia({ forcedColors: 'active' });
+		await fixture(page, { external, separateLabels: true });
+		const control = page.locator('form-multi-switch');
+		await control.evaluate((element) =>
+			element.style.setProperty('--multi-switch-focus-color', 'red'),
+		);
+		await page.getByRole('radio', { name: 'Standard' }).focus();
+		let focus = await paint(control.locator('[data-focus]'));
+		expect(focus.focusStyle).toBe('solid');
+		expect(focus.focusWidth).toBe(3);
+		expect(focus.focusOffset).toBe(3);
+		expect(focus.focus).toBeGreaterThanOrEqual(3);
+		await control.evaluate((element) => {
+			element.style.setProperty(
+				'--multi-switch-outline',
+				'4px dashed CanvasText',
+			);
+			element.style.setProperty('--multi-switch-outline-offset', '5px');
+		});
+		focus = await paint(control.locator('[data-focus]'));
+		expect(focus.focusStyle).toBe('dashed');
+		expect(focus.focusWidth).toBe(4);
+		expect(focus.focusOffset).toBe(5);
+		expect(focus.focus).toBeGreaterThanOrEqual(3);
+		expect(focus.adjustment).toBe('auto');
+		await control.evaluate((element) => {
+			element.style.removeProperty('--multi-switch-outline');
+			element.style.removeProperty('--multi-switch-outline-offset');
+		});
+		focus = await paint(control.locator('[data-focus]'));
+		expect(focus.focusStyle).toBe('solid');
+		expect(focus.focusWidth).toBe(3);
+		expect(focus.focusOffset).toBe(3);
+		expect(focus.focus).toBeGreaterThanOrEqual(3);
+	});
+}
+
 test('global focus rules do not inherit, but matching author rules override the focus layer', async ({
 	page,
 }) => {
