@@ -76,13 +76,12 @@ describe('package metadata', () => {
 	});
 
 	it('keeps documented color defaults aligned with the actual CSS', () => {
-		const defaults = new Map(
-			[
-				...read('../form-multi-switch.css').matchAll(
-					/var\((--multi-switch-[a-z-]+),\s*([^)]+)\)/g,
-				),
-			].map(([, name, value]) => [name, value.trim()]),
-		);
+		const defaults = new Map();
+		for (const [, name, value] of read('../form-multi-switch.css').matchAll(
+			/var\((--multi-switch-[a-z-]+),\s*([^)]+)\)/g,
+		)) {
+			if (!defaults.has(name)) defaults.set(name, value.trim());
+		}
 		for (const property of declaration.cssProperties) {
 			expect(property.default, property.name).toBe(
 				defaults.get(property.name),

@@ -359,27 +359,30 @@ form-multi-switch {
 
 ### CSS custom properties
 
-| Property                             | Default        | What you control                                       |
-| ------------------------------------ | -------------- | ------------------------------------------------------ |
-| `--multi-switch-radius`              | `0.5rem`       | Rounding at the group’s endpoints.                     |
-| `--multi-switch-padding`             | `0.5em 0.85em` | Padding inside each segment.                           |
-| `--multi-switch-border`              | `currentColor` | Shared segment boundaries.                             |
-| `--multi-switch-background`          | `Canvas`       | Unselected background.                                 |
-| `--multi-switch-color`               | `CanvasText`   | Unselected text.                                       |
-| `--multi-switch-selected-background` | `Canvas`       | Selected background.                                   |
-| `--multi-switch-selected-color`      | `CanvasText`   | Selected text and underline.                           |
-| `--multi-switch-focus-color`         | `CanvasText`   | Outer outline when the radio matches `:focus-visible`. |
+| Property                             | Default        | What you control                                            |
+| ------------------------------------ | -------------- | ----------------------------------------------------------- |
+| `--multi-switch-radius`              | `0.5rem`       | Rounding at the group’s endpoints.                          |
+| `--multi-switch-padding`             | `0.5em 0.85em` | Padding inside each segment.                                |
+| `--multi-switch-border`              | `CanvasText`   | Shared segment boundaries.                                  |
+| `--multi-switch-background`          | `Canvas`       | Unselected background.                                      |
+| `--multi-switch-color`               | `CanvasText`   | Unselected text.                                            |
+| `--multi-switch-selected-background` | `CanvasText`   | Selected background; defaults to `Canvas` in forced colors. |
+| `--multi-switch-selected-color`      | `Canvas`       | Selected text; defaults to `CanvasText` in forced colors.   |
+| `--multi-switch-focus-color`         | `CanvasText`   | Outer outline when the radio matches `:focus-visible`.      |
 
-Both selected and unselected choices use `CanvasText` on `Canvas` by default.
-A three-pixel underline marks the selected choice even when colors flatten.
-The outer focus ring is separate, so you can tell which choice is selected
-and which has keyboard focus.
+Unselected choices use `CanvasText` on `Canvas`. The selected choice reverses
+that pair for a distinct filled segment, with no default underline in ordinary
+color modes. In forced colors, it uses `CanvasText` on `Canvas` and adds a
+three-pixel underline so selection stays visible when fills flatten.
+The outer focus ring is separate from selection.
 
 These defaults replace the previous `HighlightText` / `Highlight` selection
 pair and `Highlight` focus color. Existing custom-property overrides still
 work. Set foreground and background overrides together, and check the
-selection marker against your selected surface. The marker uses the choice’s
-`::after` pseudo-element; keep an equivalent visible cue if you replace it.
+forced-color selection marker against your selected surface. That marker uses
+the choice’s `::after` pseudo-element; keep an equivalent visible cue if you
+replace it. The underline restyling demo is an intentional author override and
+still shows an underline in ordinary color modes.
 
 The focus ring sits outside the choice. If your control sits on a surface
 other than `Canvas`, set `--multi-switch-focus-color` to a color that contrasts

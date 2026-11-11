@@ -207,7 +207,7 @@
 						},
 						{
 							"name": "--multi-switch-border",
-							"default": "currentColor",
+							"default": "CanvasText",
 							"description": "Shared segment boundary color."
 						},
 						{
@@ -220,12 +220,13 @@
 						},
 						{
 							"name": "--multi-switch-selected-background",
-							"default": "Canvas",
-							"description": "Selected surface, paired with --multi-switch-selected-color. Selection also has a persistent currentColor underline."
+							"default": "CanvasText",
+							"description": "Selected surface, paired with --multi-switch-selected-color. Defaults to Canvas in forced colors, with a persistent currentColor underline."
 						},
 						{
 							"name": "--multi-switch-selected-color",
-							"default": "CanvasText"
+							"default": "Canvas",
+							"description": "Selected text. Defaults to CanvasText in forced colors."
 						},
 						{
 							"name": "--multi-switch-focus-color",

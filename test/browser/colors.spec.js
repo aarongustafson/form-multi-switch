@@ -140,6 +140,7 @@ async function paint(label) {
 			element.closest('.demo') ?? document.body,
 		).backgroundColor;
 		return {
+			background: style.backgroundColor,
 			text: ratio(style.color),
 			boundary: ratio(style.borderTopColor),
 			marker: ratio(marker.borderBottomColor),
@@ -154,13 +155,17 @@ async function paint(label) {
 	});
 }
 
-async function expectSelection(label) {
+async function expectSelection(label, { forced = false } = {}) {
 	const result = await paint(label);
 	expect(result.text).toBeGreaterThanOrEqual(4.5);
-	expect(result.markerContent).not.toBe('none');
-	expect(result.markerStyle).toBe('solid');
-	expect(result.markerWidth).toBeGreaterThanOrEqual(3);
-	expect(result.marker).toBeGreaterThanOrEqual(3);
+	if (forced) {
+		expect(result.markerContent).not.toBe('none');
+		expect(result.markerStyle).toBe('solid');
+		expect(result.markerWidth).toBeGreaterThanOrEqual(3);
+		expect(result.marker).toBeGreaterThanOrEqual(3);
+	} else {
+		expect(result.markerContent).toBe('none');
+	}
 }
 
 for (const external of [false, true]) {
@@ -173,7 +178,15 @@ for (const external of [false, true]) {
 			await fixture(page, { external });
 			const selected = page.locator('[data-selected]');
 			await expectSelection(selected);
-			expect((await paint(selected)).boundary).toBeGreaterThanOrEqual(3);
+			const unselected = page.locator(
+				'[data-multi-switch-choice]:not([data-selected]):not([data-disabled])',
+			);
+			expect((await paint(selected)).background).not.toBe(
+				(await paint(unselected)).background,
+			);
+			expect((await paint(unselected)).boundary).toBeGreaterThanOrEqual(
+				3,
+			);
 			await page.keyboard.press(
 				browserName === 'webkit' && process.platform === 'darwin'
 					? 'Alt+Tab'
@@ -320,7 +333,7 @@ test('forced colors retain automatic adjustment, markers, and readable icon labe
 		'ready',
 	);
 	for (const label of await page.locator('[data-selected]').all()) {
-		await expectSelection(label);
+		await expectSelection(label, { forced: true });
 		expect((await paint(label)).adjustment).toBe('auto');
 	}
 	const disabled = page.locator('#shoe-sizes [data-disabled]');
@@ -341,6 +354,10 @@ test('forced colors retain automatic adjustment, markers, and readable icon labe
 	await expect(
 		page.getByRole('radio', { name: 'System', exact: true }),
 	).toHaveCount(1);
+	await page.emulateMedia({ forcedColors: 'none' });
+	for (const label of await page.locator('[data-selected]').all()) {
+		await expectSelection(label);
+	}
 });
 
 test.describe('no JavaScript', () => {
