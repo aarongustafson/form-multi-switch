@@ -1,5 +1,6 @@
 :root {
 	color-scheme: light dark;
+	--demo-focus-ring: 4px dashed CanvasText;
 }
 
 body {
@@ -154,6 +155,11 @@ output {
 	--multi-switch-color: #173f63;
 	--multi-switch-selected-background: #173f63;
 	--multi-switch-selected-color: #fff;
+}
+
+.custom-focus label:has(input:focus-visible) {
+	outline: var(--demo-focus-ring);
+	outline-offset: 4px;
 }
 
 .underline {

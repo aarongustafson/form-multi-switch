@@ -231,7 +231,7 @@
 						{
 							"name": "--multi-switch-focus-color",
 							"default": "CanvasText",
-							"description": "Outer focus ring color when the focused radio matches :focus-visible."
+							"description": "Color of the solid outer focus ring when the focused radio matches :focus-visible. Forced colors use CanvasText."
 						}
 					]
 				}

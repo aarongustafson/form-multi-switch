@@ -49,7 +49,10 @@ test.beforeEach(async ({ page }) => {
 	});
 });
 
-async function fixture(page, { external = false, palette } = {}) {
+async function fixture(
+	page,
+	{ external = false, palette, separateLabels = false } = {},
+) {
 	if (palette) {
 		await page.route('**/form-multi-switch.*', async (route) => {
 			const path = new URL(route.request().url()).pathname;
@@ -76,9 +79,19 @@ async function fixture(page, { external = false, palette } = {}) {
 		${external ? '<link id="form-multi-switch-styles" rel="stylesheet" href="/form-multi-switch.css">' : ''}
 		</head><body><form>
 		<form-multi-switch><fieldset><legend>Delivery speed</legend>
+			${
+				separateLabels
+					? `
+			<input id="standard" type="radio" name="delivery" value="standard" checked><label for="standard">Standard</label>
+			<input id="express" type="radio" name="delivery" value="express"><label for="express">Express</label>
+			<input id="overnight" type="radio" name="delivery" value="overnight" disabled><label for="overnight">Overnight</label>
+			`
+					: `
 			<label><input type="radio" name="delivery" value="standard" checked>Standard</label>
 			<label><input type="radio" name="delivery" value="express">Express</label>
 			<label><input type="radio" name="delivery" value="overnight" disabled>Overnight</label>
+			`
+			}
 		</fieldset></form-multi-switch>
 		<button type="reset">Reset</button></form>
 		<script type="module" src="/define.js"></script></body></html>`,
@@ -148,6 +161,7 @@ async function paint(label) {
 			markerStyle: marker.borderBottomStyle,
 			markerContent: marker.content,
 			focus: ratio(style.outlineColor, surround),
+			focusStyle: style.outlineStyle,
 			focusWidth: parseFloat(style.outlineWidth),
 			focusOffset: parseFloat(style.outlineOffset),
 			adjustment: style.forcedColorAdjust,
@@ -196,6 +210,7 @@ for (const external of [false, true]) {
 				page.getByRole('radio', { name: 'Standard' }),
 			).toBeFocused();
 			const focus = await paint(page.locator('[data-focus]'));
+			expect(focus.focusStyle).toBe('solid');
 			expect(focus.focusWidth).toBeGreaterThanOrEqual(3);
 			expect(focus.focusOffset).toBeGreaterThan(0);
 			expect(focus.focus).toBeGreaterThanOrEqual(3);
@@ -232,6 +247,101 @@ for (const external of [false, true]) {
 			await expectSelection(page.locator('[data-selected]'));
 		});
 	}
+}
+
+test('global focus rules do not inherit, but matching author rules override the focus layer', async ({
+	page,
+}) => {
+	await fixture(page);
+	const radio = page.getByRole('radio', { name: 'Standard' });
+	await page.addStyleTag({
+		content: ':focus-visible { outline: 7px dotted CanvasText; }',
+	});
+	await radio.focus();
+	expect(
+		await radio.evaluate(
+			(element) => getComputedStyle(element).outlineStyle,
+		),
+	).toBe('dotted');
+	expect((await paint(page.locator('[data-focus]'))).focusStyle).toBe(
+		'solid',
+	);
+	await page.locator('form-multi-switch').evaluate((element) => {
+		element.style.setProperty(
+			'--multi-switch-focus-color',
+			'rgb(0, 95, 204)',
+		);
+	});
+	expect(
+		await page
+			.locator('[data-focus]')
+			.evaluate((element) => getComputedStyle(element).outlineColor),
+	).toBe('rgb(0, 95, 204)');
+	const browserStyle = await page.addStyleTag({
+		content:
+			'form-multi-switch label:has(input:focus-visible) { outline: auto CanvasText; }',
+	});
+	expect((await paint(page.locator('[data-focus]'))).focusStyle).toBe('auto');
+	await browserStyle.evaluate((element) => element.remove());
+	const shared = await page.addStyleTag({
+		content: `:root { --site-focus-ring: 4px dashed CanvasText; }
+			form-multi-switch label:has(input:focus-visible) {
+				outline: var(--site-focus-ring); outline-offset: 4px;
+			}`,
+	});
+	await shared.evaluate((element) => document.head.prepend(element));
+	const focus = await paint(page.locator('[data-focus]'));
+	expect(focus.focusStyle).toBe('dashed');
+	expect(focus.focusWidth).toBe(4);
+	expect(focus.focusOffset).toBe(4);
+});
+
+test('separate for/id labels still receive the mapped focus ring', async ({
+	page,
+}) => {
+	await fixture(page, { separateLabels: true });
+	await page.getByRole('radio', { name: 'Standard' }).focus();
+	await expect(page.locator('[data-focus]')).toHaveAttribute(
+		'for',
+		'standard',
+	);
+	expect((await paint(page.locator('[data-focus]'))).focusStyle).toBe(
+		'solid',
+	);
+	await page.keyboard.press('ArrowRight');
+	await expect(page.getByRole('radio', { name: 'Express' })).toBeChecked();
+	await expect(page.locator('[data-focus]')).toHaveAttribute(
+		'for',
+		'express',
+	);
+});
+
+for (const scheme of ['light', 'dark']) {
+	test(`${scheme} custom focus demo uses an author-defined ring without changing native radios`, async ({
+		page,
+	}) => {
+		await page.emulateMedia({ colorScheme: scheme });
+		await page.goto('http://component.test/demo/index.html');
+		const control = page.locator('#custom-focus');
+		await expect(control).toHaveAttribute(
+			'data-multi-switch-state',
+			'ready',
+		);
+		const radio = control.getByRole('radio', {
+			name: 'Recommended',
+			exact: true,
+		});
+		await radio.focus();
+		const focus = await paint(control.locator('[data-focus]'));
+		expect(focus.focusStyle).toBe('dashed');
+		expect(focus.focusWidth).toBe(4);
+		expect(focus.focusOffset).toBe(4);
+		expect(focus.focus).toBeGreaterThanOrEqual(3);
+		await page.keyboard.press('ArrowRight');
+		await expect(
+			control.getByRole('radio', { name: 'Newest', exact: true }),
+		).toBeChecked();
+	});
 }
 
 // Nine Canvas pairs represent all 62 study observations, not 62 OS setups.

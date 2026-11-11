@@ -20,6 +20,12 @@
 				for installation and API documentation.
 			</p>
 			<p>
+				You can request a browser-styled ring with
+				<code>outline: auto CanvasText</code> instead. Browsers may use
+				their own painted color for an <code>auto</code> ring, so check
+				its rendered contrast.
+			</p>
+			<p>
 				<strong>Keyboard too:</strong> Use <kbd>Tab</kbd> to reach a
 				group, arrow keys to change its selection, and
 				<kbd>Space</kbd> to select.
@@ -449,6 +455,77 @@ control.value = 'compact';</code></pre>
 								choices='[{"label":"Day","value":"day"},{"label":"Week","value":"week"},{"label":"Month","value":"month"}]'
 								value="week"
 							></form-multi-switch>
+						</div>
+					</div>
+				</div>
+				<div class="demo-section">
+					<h3>Example: Customize the keyboard focus ring</h3>
+					<p>
+						The default ring is a solid outline. Here, each radio is
+						inside its label, so
+						<code>label:has(input:focus-visible)</code> lets your
+						stylesheet draw a different ring around that label. The
+						radio still receives focus and handles selection.
+					</p>
+					<p>
+						Outline styles don’t inherit from a global
+						<code>:focus-visible</code> rule. Share a custom
+						property with your site’s focus rule, then apply it to
+						the label as shown here. Use Tab to reach the group and
+						arrow keys to change its selection.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;form-multi-switch class="custom-focus"&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Result order&lt;/legend&gt;
+    &lt;label&gt;&lt;input type="radio" name="result-order"
+      value="recommended" checked&gt;Recommended&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="result-order"
+      value="newest"&gt;Newest&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="result-order"
+      value="oldest"&gt;Oldest&lt;/label&gt;
+  &lt;/fieldset&gt;
+&lt;/form-multi-switch&gt;
+
+<mark>:root {
+  --demo-focus-ring: 4px dashed CanvasText;
+}
+
+.custom-focus label:has(input:focus-visible) {
+  outline: var(--demo-focus-ring);
+  outline-offset: 4px;
+}</mark></code></pre>
+						<div class="demo">
+							<form-multi-switch
+								id="custom-focus"
+								class="custom-focus"
+							>
+								<fieldset>
+									<legend>Result order</legend>
+									<label
+										><input
+											type="radio"
+											name="result-order"
+											value="recommended"
+											checked
+										/>Recommended</label
+									>
+									<label
+										><input
+											type="radio"
+											name="result-order"
+											value="newest"
+										/>Newest</label
+									>
+									<label
+										><input
+											type="radio"
+											name="result-order"
+											value="oldest"
+										/>Oldest</label
+									>
+								</fieldset>
+							</form-multi-switch>
 						</div>
 					</div>
 				</div>

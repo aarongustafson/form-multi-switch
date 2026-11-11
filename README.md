@@ -359,16 +359,16 @@ form-multi-switch {
 
 ### CSS custom properties
 
-| Property                             | Default        | What you control                                            |
-| ------------------------------------ | -------------- | ----------------------------------------------------------- |
-| `--multi-switch-radius`              | `0.5rem`       | Rounding at the group’s endpoints.                          |
-| `--multi-switch-padding`             | `0.5em 0.85em` | Padding inside each segment.                                |
-| `--multi-switch-border`              | `CanvasText`   | Shared segment boundaries.                                  |
-| `--multi-switch-background`          | `Canvas`       | Unselected background.                                      |
-| `--multi-switch-color`               | `CanvasText`   | Unselected text.                                            |
-| `--multi-switch-selected-background` | `CanvasText`   | Selected background; defaults to `Canvas` in forced colors. |
-| `--multi-switch-selected-color`      | `Canvas`       | Selected text; defaults to `CanvasText` in forced colors.   |
-| `--multi-switch-focus-color`         | `CanvasText`   | Outer outline when the radio matches `:focus-visible`.      |
+| Property                             | Default        | What you control                                             |
+| ------------------------------------ | -------------- | ------------------------------------------------------------ |
+| `--multi-switch-radius`              | `0.5rem`       | Rounding at the group’s endpoints.                           |
+| `--multi-switch-padding`             | `0.5em 0.85em` | Padding inside each segment.                                 |
+| `--multi-switch-border`              | `CanvasText`   | Shared segment boundaries.                                   |
+| `--multi-switch-background`          | `Canvas`       | Unselected background.                                       |
+| `--multi-switch-color`               | `CanvasText`   | Unselected text.                                             |
+| `--multi-switch-selected-background` | `CanvasText`   | Selected background; defaults to `Canvas` in forced colors.  |
+| `--multi-switch-selected-color`      | `Canvas`       | Selected text; defaults to `CanvasText` in forced colors.    |
+| `--multi-switch-focus-color`         | `CanvasText`   | Outer outline color when the radio matches `:focus-visible`. |
 
 Unselected choices use `CanvasText` on `Canvas`. The selected choice reverses
 that pair for a distinct filled segment, with no default underline in ordinary
@@ -384,10 +384,54 @@ the choice’s `::after` pseudo-element; keep an equivalent visible cue if you
 replace it. The underline restyling demo is an intentional author override and
 still shows an underline in ordinary color modes.
 
-The focus ring sits outside the choice. If your control sits on a surface
-other than `Canvas`, set `--multi-switch-focus-color` to a color that contrasts
-with that surround. Forced colors use `CanvasText` for this ring and leave
-automatic browser color adjustment enabled.
+The solid three-pixel focus ring sits outside the choice, with a three-pixel
+offset. If your control sits on a surface other than `Canvas`, set
+`--multi-switch-focus-color` to a color that contrasts with that surround.
+Forced colors use `CanvasText` for this ring and leave automatic browser
+color adjustment enabled.
+
+### Customize the focus ring
+
+`auto` doesn’t inherit an author’s global focus styles. Outlines aren’t
+inherited, and `:focus-visible` matches the focused radio, not its label.
+Matching author rules still take part in the cascade: your unlayered stylesheet
+can override the component’s layered defaults without `!important`.
+
+When each radio is inside its label, use `label:has(input:focus-visible)`.
+You can share an author-defined token with your site’s focus rule:
+
+```css
+:root {
+  --site-focus-ring: 4px dashed CanvasText;
+}
+
+:focus-visible {
+  outline: var(--site-focus-ring);
+}
+
+form-multi-switch label:has(input:focus-visible) {
+  outline: var(--site-focus-ring);
+  outline-offset: 4px;
+}
+```
+
+For a separate `label[for]`, the label doesn’t contain the focused radio.
+Use `form-multi-switch:has([data-multi-switch-input]:focus-visible) [data-focus]`
+as the selector instead. The component maps focus to the associated label in
+either markup pattern. Don’t move focus to the label or give it a tab stop.
+
+You can request a [browser-styled ring](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/outline-style#auto)
+with `outline: auto CanvasText` in your rule. This isn’t inheritance, and it doesn’t promise the exact ring painted
+on a native button. There’s no standard focus-ring system color:
+`SelectedItem` describes selection, not keyboard focus. Browsers may use their
+own painted color for an `auto` outline, even when you specify `CanvasText`.
+The component keeps a solid default because browser-styled rings can have
+insufficient contrast on these surfaces.
+
+See the [custom focus demo](https://aarongustafson.github.io/form-multi-switch/demo/#custom-focus)
+for a code/live example. Check your ring against its surrounding surface in
+light, dark, and forced-color modes. Computed outline colors don’t prove the
+painted contrast of a browser-styled `auto` ring.
 
 ### Layout and styling hooks
 

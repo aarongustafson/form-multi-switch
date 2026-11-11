@@ -183,6 +183,28 @@ describe('demo examples', () => {
 		expect(samples).toContain('[data-selected]');
 	});
 
+	it('shows focus customization on authored wrapping labels with matching code and CSS', () => {
+		const control = demo.querySelector('#custom-focus');
+		expect(control).not.toBeNull();
+		expect(
+			control.querySelectorAll('label > input[type="radio"]'),
+		).toHaveLength(3);
+		const code = control
+			.closest('.code-demo-pair')
+			.querySelector('code').textContent;
+		const css = readFileSync(
+			resolve(directory, '../demo/styles.css'),
+			'utf8',
+		);
+		for (const source of [code, css]) {
+			expect(source).toContain(
+				'.custom-focus label:has(input:focus-visible)',
+			);
+			expect(source).toContain('outline: var(--demo-focus-ring)');
+			expect(source).toContain('outline-offset: 4px');
+		}
+	});
+
 	it('shows a CSS-only sliding highlight with reduced-motion support', () => {
 		const control = demo.querySelector('#sliding-highlight');
 		expect(control).not.toBeNull();
