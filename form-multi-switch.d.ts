@@ -52,6 +52,7 @@ export class FormMultiSwitchElement extends HTMLElement {
 	set label(value: string | null | undefined);
 	get value(): string | null;
 	set value(value: string | null);
+	/** Disable the native fieldset without clearing its selection; disabled radios are not submitted. */
 	disabled: boolean;
 	readOnly: boolean;
 	required: boolean;

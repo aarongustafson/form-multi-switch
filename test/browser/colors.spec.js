@@ -109,6 +109,246 @@ async function fixture(
 	);
 }
 
+async function addNativeBaseline(page) {
+	await page.locator('form-multi-switch').evaluate((control) => {
+		const baseline = control.querySelector('fieldset').cloneNode(true);
+		baseline.id = 'native-baseline';
+		for (const element of [baseline, ...baseline.querySelectorAll('*')]) {
+			for (const name of element.getAttributeNames()) {
+				if (name.startsWith('data-')) element.removeAttribute(name);
+			}
+		}
+		for (const input of baseline.querySelectorAll('input'))
+			input.name = 'native-delivery';
+		control.after(baseline);
+	});
+}
+
+async function expectDisabledSelection(label, { forced = false } = {}) {
+	await expect(label.getByRole('radio')).toBeChecked();
+	await expect(label.getByRole('radio')).toBeDisabled();
+	await expect(label).toHaveAttribute('data-disabled', '');
+	const colors = await label.evaluate((element) => {
+		const sample = document.createElement('span');
+		sample.style.color = 'GrayText';
+		document.body.append(sample);
+		const gray = getComputedStyle(sample).color;
+		sample.remove();
+		return { actual: getComputedStyle(element).color, gray };
+	});
+	// Forced colors can replace authored text colors according to native semantics.
+	if (!forced) expect(colors.actual).toBe(colors.gray);
+}
+
+for (const external of [false, true]) {
+	for (const mode of ['host', 'fieldset', 'ancestor']) {
+		test(`${external ? 'external' : 'installed'} CSS: ${mode} disabled groups match native selection, submission, and reset`, async ({
+			page,
+		}) => {
+			await fixture(page, { external });
+			await addNativeBaseline(page);
+			const control = page.locator('form-multi-switch');
+			const native = page.locator('#native-baseline');
+			if (mode === 'ancestor') {
+				await control.evaluate((element) => {
+					const wrapper = document.createElement('fieldset');
+					const legend = document.createElement('legend');
+					legend.textContent = 'Shipping controls';
+					wrapper.append(legend);
+					element.before(wrapper);
+					wrapper.append(
+						element,
+						document.querySelector('#native-baseline'),
+					);
+				});
+				await expect(control).toHaveAttribute(
+					'data-multi-switch-state',
+					'ready',
+				);
+			}
+			const setDisabled = async (disabled) =>
+				control.evaluate(
+					(element, { mode, disabled }) => {
+						const target =
+							mode === 'ancestor'
+								? element.parentElement
+								: mode === 'fieldset'
+									? element.querySelector('fieldset')
+									: element;
+						target.disabled = disabled;
+						if (mode !== 'ancestor')
+							document.querySelector(
+								'#native-baseline',
+							).disabled = disabled;
+					},
+					{ mode, disabled },
+				);
+			const expectState = async (value, disabled) => {
+				const state = await page.locator('form').evaluate((form) => ({
+					value: form.querySelector('form-multi-switch').value,
+					native:
+						form.querySelector('#native-baseline input:checked')
+							?.value ?? null,
+					entries: [...new FormData(form)],
+				}));
+				expect(state.value).toBe(state.native);
+				expect(state.value).toBe(value);
+				expect(state.entries).toEqual(
+					disabled
+						? []
+						: [
+								['delivery', value],
+								['native-delivery', value],
+							],
+				);
+			};
+			await control.locator('[data-value="express"]').click();
+			await native.getByRole('radio', { name: 'Express' }).click();
+			await control.evaluate((element) =>
+				element.addEventListener(
+					'form-multi-switch:change',
+					(event) => {
+						element.dataset.lastChange = JSON.stringify(
+							event.detail,
+						);
+					},
+				),
+			);
+			await setDisabled(true);
+			await expectState('express', true);
+			await expectDisabledSelection(control.locator('[data-selected]'));
+			await expect(
+				native.getByRole('radio', { name: 'Express' }),
+			).toBeChecked();
+			await expect(
+				native.getByRole('radio', { name: 'Express' }),
+			).toBeDisabled();
+			await setDisabled(false);
+			await expectState('express', false);
+			await expect(control).not.toHaveAttribute('data-last-change');
+			await control.locator('[data-value="standard"]').click();
+			await native.getByRole('radio', { name: 'Standard' }).click();
+			await expect(control).toHaveAttribute(
+				'data-last-change',
+				JSON.stringify({
+					value: 'standard',
+					previousValue: 'express',
+					index: 0,
+				}),
+			);
+			await control.evaluate((element) => {
+				element.value = 'express';
+			});
+			await native
+				.getByRole('radio', { name: 'Express' })
+				.evaluate((input) => {
+					input.checked = true;
+				});
+			await setDisabled(true);
+			await page.locator('form').evaluate((form) => form.reset());
+			await expect(control.locator('[data-selected]')).toHaveAttribute(
+				'data-value',
+				'standard',
+			);
+			await expectState('standard', true);
+			await expectDisabledSelection(control.locator('[data-selected]'));
+			await setDisabled(false);
+			await expectState('standard', false);
+			await expect(control).toHaveAttribute(
+				'data-last-change',
+				JSON.stringify({
+					value: 'standard',
+					previousValue: 'express',
+					index: 0,
+				}),
+			);
+		});
+	}
+
+	test(`${external ? 'external' : 'installed'} CSS: a disabled checked choice can be left but not reselected by users`, async ({
+		page,
+	}) => {
+		await fixture(page, { external });
+		await addNativeBaseline(page);
+		const control = page.locator('form-multi-switch');
+		const native = page.locator('#native-baseline');
+		await page.locator('form').evaluate((form) => {
+			for (const input of form.querySelectorAll(
+				'input[value="standard"]',
+			))
+				input.disabled = true;
+			for (const input of form.querySelectorAll(
+				'input[value="overnight"]',
+			))
+				input.disabled = false;
+		});
+		await expectDisabledSelection(control.locator('[data-selected]'));
+		await expect(
+			native.getByRole('radio', { name: 'Standard' }),
+		).toBeChecked();
+		expect(
+			await page
+				.locator('form')
+				.evaluate((form) => [...new FormData(form)]),
+		).toEqual([]);
+		await native.getByRole('radio', { name: 'Express' }).click();
+		await page.keyboard.press('ArrowLeft');
+		const expected = await native.locator('input:checked').inputValue();
+		await control.locator('[data-value="express"]').click();
+		await page.keyboard.press('ArrowLeft');
+		expect(await control.evaluate((element) => element.value)).toBe(
+			expected,
+		);
+		expect(expected).not.toBe('standard');
+		// Skip Playwright's enabled check, not the browser's disabled behavior.
+		await native
+			.getByRole('radio', { name: 'Standard' })
+			.locator('..')
+			.click({ force: true });
+		await control.locator('[data-value="standard"]').click({ force: true });
+		expect(await native.locator('input:checked').inputValue()).toBe(
+			expected,
+		);
+		expect(await control.evaluate((element) => element.value)).toBe(
+			expected,
+		);
+		await control.evaluate((element) => {
+			element.value = 'standard';
+		});
+		await native
+			.getByRole('radio', { name: 'Standard' })
+			.evaluate((input) => {
+				input.checked = true;
+			});
+		await expectDisabledSelection(control.locator('[data-selected]'));
+		expect(
+			await page
+				.locator('form')
+				.evaluate((form) => [...new FormData(form)]),
+		).toEqual([]);
+		await page.locator('form').evaluate((form) => {
+			for (const input of form.querySelectorAll(
+				'input[value="standard"]',
+			))
+				input.disabled = false;
+		});
+		await expect(
+			control.getByRole('radio', { name: 'Standard' }),
+		).toBeChecked();
+		await expect(
+			control.getByRole('radio', { name: 'Standard' }),
+		).toBeEnabled();
+		expect(
+			await page
+				.locator('form')
+				.evaluate((form) => [...new FormData(form)]),
+		).toEqual([
+			['delivery', 'standard'],
+			['native-delivery', 'standard'],
+		]);
+	});
+}
+
 for (const external of [false, true]) {
 	for (const wrapped of [false, true]) {
 		test(`${external ? 'external' : 'installed'} CSS preserves actual label padding ${wrapped ? 'with wrappers' : 'without wrappers'}`, async ({
@@ -679,13 +919,20 @@ for (const demo of ['index.html', 'esm.html', 'unpkg.html']) {
 			await expect(
 				page.locator('form-multi-switch').first(),
 			).toHaveAttribute('data-multi-switch-state', 'ready');
-			for (const choice of await page.locator('[data-selected]').all()) {
+			for (const choice of await page
+				.locator('[data-selected]:not([data-disabled])')
+				.all()) {
 				await expectSelection(choice);
 				const input = choice.getByRole('radio');
 				await input.focus();
 				const result = await paint(choice);
 				expect(result.focusWidth).toBeGreaterThanOrEqual(3);
 				expect(result.focus).toBeGreaterThanOrEqual(3);
+			}
+			for (const choice of await page
+				.locator('[data-selected][data-disabled]')
+				.all()) {
+				await expectDisabledSelection(choice);
 			}
 		});
 	}
@@ -781,9 +1028,20 @@ test('forced colors retain automatic adjustment, markers, and readable icon labe
 		'data-multi-switch-state',
 		'ready',
 	);
-	for (const label of await page.locator('[data-selected]').all()) {
+	for (const label of await page
+		.locator('[data-selected]:not([data-disabled])')
+		.all()) {
 		await expectSelection(label, { forced: true });
 		expect((await paint(label)).adjustment).toBe('auto');
+	}
+	for (const label of await page
+		.locator('[data-selected][data-disabled]')
+		.all()) {
+		await expectDisabledSelection(label, { forced: true });
+		const result = await paint(label);
+		expect(result.markerStyle).toBe('solid');
+		expect(result.markerWidth).toBeGreaterThanOrEqual(3);
+		expect(result.adjustment).toBe('auto');
 	}
 	const disabled = page.locator('#shoe-sizes [data-disabled]');
 	expect(
@@ -804,7 +1062,9 @@ test('forced colors retain automatic adjustment, markers, and readable icon labe
 		page.getByRole('radio', { name: 'System', exact: true }),
 	).toHaveCount(1);
 	await page.emulateMedia({ forcedColors: 'none' });
-	for (const label of await page.locator('[data-selected]').all()) {
+	for (const label of await page
+		.locator('[data-selected]:not([data-disabled])')
+		.all()) {
 		await expectSelection(label);
 	}
 });

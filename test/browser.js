@@ -243,9 +243,17 @@ const tests = [
 				!new FormData(form).has('speed'),
 				'Disabled ancestor controls were submitted.',
 			);
+			assert(
+				control.value === 'standard' && inputs[0].checked,
+				'Disabling an ancestor cleared its checked radio.',
+			);
 			ancestor.disabled = false;
 			await until(
 				() => control.querySelectorAll('[data-disabled]').length === 1,
+			);
+			assert(
+				new FormData(form).get('speed') === 'standard',
+				'Re-enabling the ancestor did not preserve the submitted selection.',
 			);
 			const external = document.createElement('form');
 			external.id = 'external-owner';
