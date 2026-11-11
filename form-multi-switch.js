@@ -16,7 +16,7 @@ const DEFAULT_STYLES = `@layer form-multi-switch {
 	}
 	[data-multi-switch-state='ready'] [data-multi-switch-group] > :not(legend, [data-multi-switch-input], [data-multi-switch-choice]) {
 		display: flex;
-		flex: 1 1 0;
+		flex: 1 1 auto;
 		min-inline-size: 0;
 	}
 	[data-multi-switch-state='ready'] [data-multi-switch-group] > legend {
@@ -39,7 +39,7 @@ const DEFAULT_STYLES = `@layer form-multi-switch {
 	[data-multi-switch-state='ready'] [data-multi-switch-choice] {
 		position: relative;
 		display: inline-flex;
-		flex: 1 1 0;
+		flex: 1 1 auto;
 		align-items: center;
 		justify-content: center;
 		gap: 0.5em;
@@ -47,6 +47,7 @@ const DEFAULT_STYLES = `@layer form-multi-switch {
 		min-block-size: 2.75rem;
 		box-sizing: border-box;
 		padding: var(--multi-switch-padding, 0.5em 0.85em);
+		overflow-wrap: anywhere;
 		border: 1px solid var(--multi-switch-border, CanvasText);
 		background: var(--multi-switch-background, Canvas);
 		color: var(--multi-switch-color, CanvasText);

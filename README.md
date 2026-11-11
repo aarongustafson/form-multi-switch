@@ -440,6 +440,12 @@ Below that, they stack into a column. This follows the space available to the
 component, not the width of your viewport. The component uses a size container
 named `multi-switch` for this layout.
 
+In a row, the default styles size choices based on their content and share the
+remaining space. Longer labels get wider segments rather than crowding into
+the padding of equal-width segments. Use `--multi-switch-padding` to adjust the
+padding inside each choice. If space is still tight, text can wrap within the
+segment rather than spill into its padding.
+
 See [the restyling demos](https://aarongustafson.github.io/form-multi-switch/demo/#restyling) for a branded pill and an
 underline treatment, with CSS beside each live example. Put your own styles in
 your page’s stylesheet. The defaults use a cascade layer named

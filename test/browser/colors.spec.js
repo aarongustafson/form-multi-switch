@@ -51,7 +51,12 @@ test.beforeEach(async ({ page }) => {
 
 async function fixture(
 	page,
-	{ external = false, palette, separateLabels = false } = {},
+	{
+		external = false,
+		palette,
+		separateLabels = false,
+		firstLabel = 'Standard',
+	} = {},
 ) {
 	if (palette) {
 		await page.route('**/form-multi-switch.*', async (route) => {
@@ -82,12 +87,12 @@ async function fixture(
 			${
 				separateLabels
 					? `
-			<input id="standard" type="radio" name="delivery" value="standard" checked><label for="standard">Standard</label>
+			<input id="standard" type="radio" name="delivery" value="standard" checked><label for="standard">${firstLabel}</label>
 			<input id="express" type="radio" name="delivery" value="express"><label for="express">Express</label>
 			<input id="overnight" type="radio" name="delivery" value="overnight" disabled><label for="overnight">Overnight</label>
 			`
 					: `
-			<label><input type="radio" name="delivery" value="standard" checked>Standard</label>
+			<label><input type="radio" name="delivery" value="standard" checked>${firstLabel}</label>
 			<label><input type="radio" name="delivery" value="express">Express</label>
 			<label><input type="radio" name="delivery" value="overnight" disabled>Overnight</label>
 			`
@@ -102,6 +107,97 @@ async function fixture(
 		'data-multi-switch-state',
 		'ready',
 	);
+}
+
+for (const external of [false, true]) {
+	for (const wrapped of [false, true]) {
+		test(`${external ? 'external' : 'installed'} CSS preserves actual label padding ${wrapped ? 'with wrappers' : 'without wrappers'}`, async ({
+			page,
+		}) => {
+			await fixture(page, { external, firstLabel: 'Recommended' });
+			const control = page.locator('form-multi-switch');
+			if (wrapped) {
+				await control.evaluate((element) => {
+					for (const label of element.querySelectorAll('label')) {
+						const wrapper = document.createElement('div');
+						label.before(wrapper);
+						wrapper.append(label);
+					}
+				});
+			}
+			for (const direction of ['ltr', 'rtl']) {
+				for (const [width, padding] of [
+					[320, null],
+					[336, null],
+					[336, '0.5em 1.5em'],
+					[384, '0.5em 1.5em'],
+					[672, null],
+					[240, null],
+				]) {
+					await control.evaluate(
+						(element, { width, padding, direction }) => {
+							element.style.inlineSize = `${width}px`;
+							element.style.fontFamily = 'system-ui';
+							element.dir = direction;
+							if (padding)
+								element.style.setProperty(
+									'--multi-switch-padding',
+									padding,
+								);
+							else
+								element.style.removeProperty(
+									'--multi-switch-padding',
+								);
+						},
+						{ width, padding, direction },
+					);
+					const insets = await control
+						.locator('[data-multi-switch-choice]')
+						.evaluateAll((labels) =>
+							labels.map((label) => {
+								const box = label.getBoundingClientRect();
+								const range = document.createRange();
+								range.selectNodeContents(
+									label.querySelector(
+										'[data-multi-switch-label]',
+									),
+								);
+								const text = range.getBoundingClientRect();
+								const style = getComputedStyle(label);
+								return {
+									left:
+										text.left -
+										box.left -
+										parseFloat(style.borderLeftWidth),
+									right:
+										box.right -
+										text.right -
+										parseFloat(style.borderRightWidth),
+									paddingLeft: parseFloat(style.paddingLeft),
+									paddingRight: parseFloat(
+										style.paddingRight,
+									),
+								};
+							}),
+						);
+					for (const inset of insets) {
+						expect(inset.left).toBeGreaterThanOrEqual(
+							inset.paddingLeft - 0.5,
+						);
+						expect(inset.right).toBeGreaterThanOrEqual(
+							inset.paddingRight - 0.5,
+						);
+					}
+					expect(
+						await control.evaluate(
+							(element) =>
+								element.scrollWidth <= element.clientWidth,
+						),
+					).toBe(true);
+				}
+			}
+		});
+	}
 }
 
 async function paint(label) {
