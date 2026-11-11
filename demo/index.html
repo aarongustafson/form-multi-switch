@@ -162,7 +162,8 @@
 						Use your own grid for a longer list. Each size has its
 						own border and rounded corners rather than pretending
 						the wrapped rows form one continuous switch. A diagonal
-						line marks disabled sizes as unavailable.
+						line marks disabled sizes as unavailable. Smaller
+						horizontal padding keeps decimal sizes on one line.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch class="size-grid"&gt;
@@ -180,6 +181,7 @@
   &lt;/fieldset&gt;
 &lt;/form-multi-switch&gt;
 
+.size-grid { --multi-switch-padding: 0.5em 0.25em; }
 .size-grid [data-multi-switch-group] { display: block; }
 .size-grid ul {
   display: grid;
@@ -197,13 +199,12 @@
 .size-grid [data-disabled]::after {
   content: '';
   position: absolute;
-  inset: 0.25rem;
+  inset-inline-start: 0.25rem;
+  inset-block-start: 50%;
+  inline-size: calc(100% - 0.5rem);
+  border-block-start: 2px solid currentColor;
+  transform: rotate(-35deg);
   pointer-events: none;
-  background: linear-gradient(135deg,
-    transparent calc(50% - 1px),
-    currentColor calc(50% - 1px),
-    currentColor calc(50% + 1px),
-    transparent calc(50% + 1px));
 }</code></pre>
 						<div class="demo">
 							<form-multi-switch
@@ -440,7 +441,6 @@ control.value = 'compact';</code></pre>
   --multi-switch-color: #173f63;
   --multi-switch-selected-background: #173f63;
   --multi-switch-selected-color: #fff;
-  --multi-switch-focus-color: #173f63;
 }</mark></code></pre>
 						<div class="demo">
 							<form-multi-switch
@@ -451,6 +451,86 @@ control.value = 'compact';</code></pre>
 								choices='[{"label":"Day","value":"day"},{"label":"Week","value":"week"},{"label":"Month","value":"month"}]'
 								value="week"
 							></form-multi-switch>
+						</div>
+					</div>
+				</div>
+				<div class="demo-section">
+					<h3>Example: Customize the keyboard focus ring</h3>
+					<p>
+						Set <code>--multi-switch-outline</code> for the whole
+						focus ring and
+						<code>--multi-switch-outline-offset</code>
+						for its distance from the segment. The component maps
+						<code>[data-focus]</code> to the associated label and
+						shows the ring when the radio matches
+						<code>:focus-visible</code>. No extra label selector is
+						needed, and the radio still handles focus and selection.
+					</p>
+					<p>
+						These properties work with wrapping and separate labels,
+						including in forced colors. You can share a custom
+						property with your site’s focus rule, as shown here. Use
+						Tab to reach the group and arrow keys to change its
+						selection.
+					</p>
+					<p>
+						For a browser-styled ring, set
+						<code>--multi-switch-outline: auto CanvasText</code>.
+						Browsers may use their own painted color for an
+						<code>auto</code> ring, so check its rendered contrast.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;form-multi-switch class="custom-focus"&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Result order&lt;/legend&gt;
+    &lt;label&gt;&lt;input type="radio" name="result-order"
+      value="recommended" checked&gt;Recommended&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="result-order"
+      value="newest"&gt;Newest&lt;/label&gt;
+    &lt;label&gt;&lt;input type="radio" name="result-order"
+      value="oldest"&gt;Oldest&lt;/label&gt;
+  &lt;/fieldset&gt;
+&lt;/form-multi-switch&gt;
+
+<mark>:root {
+  --demo-focus-ring: 4px dashed CanvasText;
+}
+
+.custom-focus {
+  --multi-switch-outline: var(--demo-focus-ring);
+  --multi-switch-outline-offset: 4px;
+}</mark></code></pre>
+						<div class="demo">
+							<form-multi-switch
+								id="custom-focus"
+								class="custom-focus"
+							>
+								<fieldset>
+									<legend>Result order</legend>
+									<label
+										><input
+											type="radio"
+											name="result-order"
+											value="recommended"
+											checked
+										/>Recommended</label
+									>
+									<label
+										><input
+											type="radio"
+											name="result-order"
+											value="newest"
+										/>Newest</label
+									>
+									<label
+										><input
+											type="radio"
+											name="result-order"
+											value="oldest"
+										/>Oldest</label
+									>
+								</fieldset>
+							</form-multi-switch>
 						</div>
 					</div>
 				</div>
@@ -475,7 +555,7 @@ control.value = 'compact';</code></pre>
 }
 
 .underline [data-multi-switch-choice] {
-  border-block-end: 2px solid GrayText;
+  border-block-end: 2px solid currentColor;
 }
 
 .underline [data-multi-switch-choice][data-selected] {
@@ -498,9 +578,10 @@ control.value = 'compact';</code></pre>
 				<div class="demo-section">
 					<h3>Example: A highlight that slides between choices</h3>
 					<p>
-						A CSS-only highlight follows the selected radio. Choose
+						A CSS-only outline follows the selected radio. Choose
 						another option to see it slide; reduced-motion
-						preferences disable the transition.
+						preferences disable the transition. In forced colors,
+						the selected choice also keeps an underline.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch class="sliding-highlight"
@@ -526,7 +607,9 @@ control.value = 'compact';</code></pre>
   grid-area: 2 / 1;
   z-index: 0;
   border-radius: var(--multi-switch-radius, 0.5rem);
-  background: var(--multi-switch-selected-background, Highlight);
+  box-sizing: border-box;
+  border: 2px solid var(--multi-switch-selected-color, CanvasText);
+  background: var(--multi-switch-selected-background, Canvas);
   content: "";
   transition: transform 300ms ease;
 }
@@ -537,7 +620,12 @@ control.value = 'compact';</code></pre>
   margin: 0;
   border-color: transparent;
   background: transparent;
+  color: var(--multi-switch-color, CanvasText);
   box-shadow: none;
+}
+
+.sliding-highlight [data-multi-switch-choice][data-selected] {
+  color: var(--multi-switch-selected-color, CanvasText);
 }
 
 .sliding-highlight [data-value="list"] { grid-column: 1; }
@@ -595,7 +683,8 @@ control.value = 'compact';</code></pre>
 						Keep a text label for every radio and add decorative CSS
 						masks. <code>icon-only</code> visually hides the text
 						after enhancement; assistive technology can still read
-						each label.
+						each label. In forced colors, this demo shows the text
+						instead of the masked icons.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch class="icons pill"
@@ -624,6 +713,19 @@ control.value = 'compact';</code></pre>
 }
 .icons [data-value="dark"] {
   --choice-icon: url("./moon.svg");
+}
+
+@media (forced-colors: active) {
+  .icons [data-multi-switch-choice]::before { display: none; }
+  .icons[icon-only] [data-multi-switch-label] {
+    position: static;
+    inline-size: auto;
+    block-size: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
 }</mark></code></pre>
 						<div class="demo">
 							<form-multi-switch

@@ -16,7 +16,7 @@ const DEFAULT_STYLES = `@layer form-multi-switch {
 	}
 	[data-multi-switch-state='ready'] [data-multi-switch-group] > :not(legend, [data-multi-switch-input], [data-multi-switch-choice]) {
 		display: flex;
-		flex: 1 1 0;
+		flex: 1 1 auto;
 		min-inline-size: 0;
 	}
 	[data-multi-switch-state='ready'] [data-multi-switch-group] > legend {
@@ -39,7 +39,7 @@ const DEFAULT_STYLES = `@layer form-multi-switch {
 	[data-multi-switch-state='ready'] [data-multi-switch-choice] {
 		position: relative;
 		display: inline-flex;
-		flex: 1 1 0;
+		flex: 1 1 auto;
 		align-items: center;
 		justify-content: center;
 		gap: 0.5em;
@@ -47,7 +47,8 @@ const DEFAULT_STYLES = `@layer form-multi-switch {
 		min-block-size: 2.75rem;
 		box-sizing: border-box;
 		padding: var(--multi-switch-padding, 0.5em 0.85em);
-		border: 1px solid var(--multi-switch-border, ButtonBorder);
+		overflow-wrap: anywhere;
+		border: 1px solid var(--multi-switch-border, CanvasText);
 		background: var(--multi-switch-background, Canvas);
 		color: var(--multi-switch-color, CanvasText);
 		cursor: pointer;
@@ -62,14 +63,13 @@ const DEFAULT_STYLES = `@layer form-multi-switch {
 		border-end-end-radius: var(--multi-switch-radius, 0.5rem);
 	}
 	[data-multi-switch-state='ready'] [data-selected] {
-		background: var(--multi-switch-selected-background, Highlight);
-		color: var(--multi-switch-selected-color, HighlightText);
-		box-shadow: inset 0 0 0 1px var(--multi-switch-border, ButtonBorder);
+		background: var(--multi-switch-selected-background, CanvasText);
+		color: var(--multi-switch-selected-color, Canvas);
 	}
 	[data-multi-switch-state='ready']:has([data-multi-switch-input]:focus-visible) [data-focus] {
 		z-index: 1;
-		outline: 3px solid var(--multi-switch-focus-color, Highlight);
-		outline-offset: 3px;
+		outline: var(--multi-switch-outline, 3px solid var(--multi-switch-focus-color, CanvasText));
+		outline-offset: var(--multi-switch-outline-offset, 3px);
 	}
 	[data-multi-switch-state='ready'] [data-disabled] {
 		color: GrayText;
@@ -94,12 +94,20 @@ const DEFAULT_STYLES = `@layer form-multi-switch {
 	}
 	@media (forced-colors: active) {
 		[data-multi-switch-state='ready'] [data-selected] {
-			outline: 2px solid Highlight;
-			outline-offset: -4px;
+			background: var(--multi-switch-selected-background, Canvas);
+			color: var(--multi-switch-selected-color, CanvasText);
+		}
+		[data-multi-switch-state='ready'] [data-selected]::after {
+			content: '';
+			position: absolute;
+			inset-inline: 0.5rem;
+			inset-block-end: 0.2rem;
+			border-block-end: 3px solid currentColor;
+			pointer-events: none;
 		}
 		[data-multi-switch-state='ready']:has([data-multi-switch-input]:focus-visible) [data-focus] {
-			outline: 3px solid CanvasText;
-			outline-offset: 3px;
+			outline: var(--multi-switch-outline, 3px solid CanvasText);
+			outline-offset: var(--multi-switch-outline-offset, 3px);
 		}
 	}
 }`;

@@ -78,6 +78,14 @@ describe('demo examples', () => {
 			.closest('.code-demo-pair')
 			.querySelector('code').textContent;
 		expect(code).toContain('grid-template-columns');
+		const css = readFileSync(
+			resolve(directory, '../demo/styles.css'),
+			'utf8',
+		);
+		for (const source of [code, css]) {
+			expect(source).toContain('.size-grid {');
+			expect(source).toContain('--multi-switch-padding: 0.5em 0.25em;');
+		}
 	});
 
 	it('keeps unavailable shoe-size text accessible but visually hidden', () => {
@@ -92,7 +100,8 @@ describe('demo examples', () => {
 			'utf8',
 		);
 		expect(css).toContain('.size-grid [data-disabled]::after');
-		expect(css).toMatch(/linear-gradient\(\s*135deg/);
+		expect(css).toMatch(/border-block-start:\s*2px solid currentColor/);
+		expect(css).not.toContain('forced-color-adjust: none');
 	});
 
 	it('keeps just the README link in the introduction', () => {
@@ -180,6 +189,29 @@ describe('demo examples', () => {
 		expect(samples).toContain('--multi-switch-radius');
 		expect(samples).toContain('--multi-switch-border');
 		expect(samples).toContain('[data-selected]');
+	});
+
+	it('shows focus customization through properties with matching code and CSS', () => {
+		const control = demo.querySelector('#custom-focus');
+		expect(control).not.toBeNull();
+		expect(
+			control.querySelectorAll('label > input[type="radio"]'),
+		).toHaveLength(3);
+		const code = control
+			.closest('.code-demo-pair')
+			.querySelector('code').textContent;
+		const css = readFileSync(
+			resolve(directory, '../demo/styles.css'),
+			'utf8',
+		);
+		for (const source of [code, css]) {
+			expect(source).toContain('.custom-focus {');
+			expect(source).toContain(
+				'--multi-switch-outline: var(--demo-focus-ring)',
+			);
+			expect(source).toContain('--multi-switch-outline-offset: 4px');
+			expect(source).not.toContain('label:has(input:focus-visible)');
+		}
 	});
 
 	it('shows a CSS-only sliding highlight with reduced-motion support', () => {

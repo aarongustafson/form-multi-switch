@@ -359,18 +359,78 @@ form-multi-switch {
 
 ### CSS custom properties
 
-| Property                             | Default         | What you control                                         |
-| ------------------------------------ | --------------- | -------------------------------------------------------- |
-| `--multi-switch-radius`              | `0.5rem`        | Rounding at the group’s endpoints.                       |
-| `--multi-switch-padding`             | `0.5em 0.85em`  | Padding inside each segment.                             |
-| `--multi-switch-border`              | `ButtonBorder`  | Shared borders and the selected segment’s inset outline. |
-| `--multi-switch-background`          | `Canvas`        | Unselected background.                                   |
-| `--multi-switch-color`               | `CanvasText`    | Unselected text.                                         |
-| `--multi-switch-selected-background` | `Highlight`     | Selected background.                                     |
-| `--multi-switch-selected-color`      | `HighlightText` | Selected text.                                           |
-| `--multi-switch-focus-color`         | `Highlight`     | Outer outline when the radio matches `:focus-visible`.   |
+| Property                             | Default                | What you control                                                                         |
+| ------------------------------------ | ---------------------- | ---------------------------------------------------------------------------------------- |
+| `--multi-switch-radius`              | `0.5rem`               | Rounding at the group’s endpoints.                                                       |
+| `--multi-switch-padding`             | `0.5em 0.85em`         | Padding inside each segment.                                                             |
+| `--multi-switch-border`              | `CanvasText`           | Shared segment boundaries.                                                               |
+| `--multi-switch-background`          | `Canvas`               | Unselected background.                                                                   |
+| `--multi-switch-color`               | `CanvasText`           | Unselected text.                                                                         |
+| `--multi-switch-selected-background` | `CanvasText`           | Selected background; defaults to `Canvas` in forced colors.                              |
+| `--multi-switch-selected-color`      | `Canvas`               | Selected text; defaults to `CanvasText` in forced colors.                                |
+| `--multi-switch-outline`             | `3px solid CanvasText` | Complete outer focus outline; the default color comes from `--multi-switch-focus-color`. |
+| `--multi-switch-outline-offset`      | `3px`                  | Distance between the focus outline and the segment.                                      |
+| `--multi-switch-focus-color`         | `CanvasText`           | Default outline color, used when `--multi-switch-outline` is unset.                      |
 
-The default colors come from the browser’s system colors.
+Unselected choices use `CanvasText` on `Canvas`. The selected choice reverses
+that pair for a distinct filled segment, with no default underline in ordinary
+color modes. In forced colors, it uses `CanvasText` on `Canvas` and adds a
+three-pixel underline so selection stays visible when fills flatten.
+The outer focus ring is separate from selection.
+
+These defaults replace the previous `HighlightText` / `Highlight` selection
+pair and `Highlight` focus color. Existing custom-property overrides still
+work. Set foreground and background overrides together, and check the
+forced-color selection marker against your selected surface. That marker uses
+the choice’s `::after` pseudo-element; keep an equivalent visible cue if you
+replace it. The underline restyling demo is an intentional author override and
+still shows an underline in ordinary color modes.
+
+The default focus ring is a solid three-pixel outline with a three-pixel
+offset. Its color comes from `--multi-switch-focus-color`. In forced colors,
+the default uses `CanvasText` instead. Setting `--multi-switch-outline`
+replaces the whole outline, including its color; it takes precedence over
+the existing color hook. Both outline properties also apply in forced colors,
+with automatic browser color adjustment still enabled.
+
+### Customize the focus ring
+
+Set the outline properties on the component or an ancestor. The component
+maps `[data-focus]` to the associated label and draws its ring only when the
+radio matches `:focus-visible`. This works with wrapping and separate labels;
+you don’t need selectors for each markup pattern. The radio keeps focus, so
+don’t give the label a tab stop.
+
+Outlines don’t inherit from a global `:focus-visible` rule, but you can share
+a custom property with your site’s focus styles:
+
+```css
+:root {
+  --site-focus-ring: 4px dashed CanvasText;
+}
+
+:focus-visible {
+  outline: var(--site-focus-ring);
+}
+
+form-multi-switch {
+  --multi-switch-outline: var(--site-focus-ring);
+  --multi-switch-outline-offset: 4px;
+}
+```
+
+You can request a [browser-styled ring](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/outline-style#auto)
+with `--multi-switch-outline: auto CanvasText`. This doesn’t promise the exact ring painted
+on a native button. There’s no standard focus-ring system color:
+`SelectedItem` describes selection, not keyboard focus. Browsers may use their
+own painted color for an `auto` outline, even when you specify `CanvasText`.
+The component keeps a solid default because browser-styled rings can have
+insufficient contrast on these surfaces.
+
+See the [custom focus demo](https://aarongustafson.github.io/form-multi-switch/demo/#custom-focus)
+for a code/live example. Check your ring against its surrounding surface in
+light, dark, and forced-color modes. Computed outline colors don’t prove the
+painted contrast of a browser-styled `auto` ring.
 
 ### Layout and styling hooks
 
@@ -378,6 +438,12 @@ The choices sit in a row when the component has at least `20rem` of space.
 Below that, they stack into a column. This follows the space available to the
 component, not the width of your viewport. The component uses a size container
 named `multi-switch` for this layout.
+
+In a row, the default styles size choices based on their content and share the
+remaining space. Longer labels get wider segments rather than crowding into
+the padding of equal-width segments. Use `--multi-switch-padding` to adjust the
+padding inside each choice. If space is still tight, text can wrap within the
+segment rather than spill into its padding.
 
 See [the restyling demos](https://aarongustafson.github.io/form-multi-switch/demo/#restyling) for a branded pill and an
 underline treatment, with CSS beside each live example. Put your own styles in
@@ -477,6 +543,29 @@ Leave the text label available to assistive technology: don’t use `display: no
 `hidden`, or `aria-hidden` on it. The component’s styles hide it visually once
 the switch is ready, while keeping it as the radio’s accessible name.
 
+CSS-mask icons can disappear in forced colors. The demo keeps automatic color
+adjustment and shows the text labels instead:
+
+```css
+@media (forced-colors: active) {
+  form-multi-switch[icon-only] [data-multi-switch-choice]::before {
+    display: none;
+  }
+  form-multi-switch[icon-only] [data-multi-switch-label] {
+    position: static;
+    inline-size: auto;
+    block-size: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
+}
+```
+
+This example assumes the icons use `::before`, as above. Check your own icon
+markup and any downstream theme overrides in forced colors, too.
+
 ## Accessibility and progressive enhancement
 
 - Keep a meaningful `<legend>` for the group and `<label>` text for every choice.
@@ -513,6 +602,8 @@ npm install
 npm run test:run
 npm run test:coverage
 npm run test:types
+npx playwright install chromium firefox webkit
+npm run test:browser
 npm run lint
 npm run format
 ```
@@ -520,16 +611,23 @@ npm run format
 Serve the repository over HTTP to try the demos and browser tests:
 
 ```sh
-python3 -m http.server 8765
+npx serve .
 ```
 
-Open [the demos](http://localhost:8765/demo/) or
-[the browser tests](http://localhost:8765/test/browser.html). The browser tests
+Open [the demos](http://localhost:3000/demo/) or
+[the browser tests](http://localhost:3000/test/browser.html), using the port
+reported by the server. The browser tests
 cover native validation, cancellation, focus, and submission.
 Add `?native-reset` to the browser-test URL and activate **Reset delivery** when
 it appears to check native reset-button timing.
 
-The unit suite uses Happy DOM. The browser page covers native behavior that a DOM
+The unit suite uses Happy DOM. The Playwright suite runs the existing browser
+page and checks rendered colors, selection cues, keyboard interaction, and demo
+layouts in Chromium, Firefox, and WebKit. It serves local fixtures through
+request routing, so it doesn’t need a running server. Forced-color emulation
+checks run in Chromium only; they don’t replace real platform testing.
+
+The browser page covers native behavior that a DOM
 emulator can’t reliably reproduce. Also test real keyboard navigation and
 screen-reader interaction with your target browsers and assistive technologies.
 

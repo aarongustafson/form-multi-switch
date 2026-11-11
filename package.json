@@ -57,6 +57,7 @@
 		"test": "vitest",
 		"test:ui": "vitest --ui",
 		"test:run": "vitest run",
+		"test:browser": "playwright test",
 		"test:coverage": "vitest run --coverage",
 		"test:types": "tsc --noEmit --strict --target es2022 --module nodenext --moduleResolution nodenext test/types.ts",
 		"lint": "npm run lint:eslint && npm run lint:prettier",
@@ -69,6 +70,7 @@
 		"postversion": "git push --follow-tags"
 	},
 	"devDependencies": {
+		"@playwright/test": "^1.65.0",
 		"@open-wc/eslint-config": "^13.1.0",
 		"@testing-library/dom": "^10.4.2",
 		"@testing-library/user-event": "^14.6.7",

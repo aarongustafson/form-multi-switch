@@ -207,7 +207,8 @@
 						},
 						{
 							"name": "--multi-switch-border",
-							"default": "ButtonBorder"
+							"default": "CanvasText",
+							"description": "Shared segment boundary color."
 						},
 						{
 							"name": "--multi-switch-background",
@@ -219,16 +220,28 @@
 						},
 						{
 							"name": "--multi-switch-selected-background",
-							"default": "Highlight"
+							"default": "CanvasText",
+							"description": "Selected surface, paired with --multi-switch-selected-color. Defaults to Canvas in forced colors, with a persistent currentColor underline."
 						},
 						{
 							"name": "--multi-switch-selected-color",
-							"default": "HighlightText"
+							"default": "Canvas",
+							"description": "Selected text. Defaults to CanvasText in forced colors."
+						},
+						{
+							"name": "--multi-switch-outline",
+							"default": "3px solid var(--multi-switch-focus-color, CanvasText)",
+							"description": "Complete outer outline when the focused radio matches :focus-visible. Overrides --multi-switch-focus-color when set. Applies to wrapping and separate labels, including forced colors. When unset, forced colors use 3px solid CanvasText."
+						},
+						{
+							"name": "--multi-switch-outline-offset",
+							"default": "3px",
+							"description": "Offset of the outer focus outline, including forced colors."
 						},
 						{
 							"name": "--multi-switch-focus-color",
-							"default": "Highlight",
-							"description": "Outer focus ring color when the focused radio matches :focus-visible."
+							"default": "CanvasText",
+							"description": "Color of the default solid outer focus ring when the focused radio matches :focus-visible. Used only when --multi-switch-outline is unset. Forced colors use CanvasText instead."
 						}
 					]
 				}
