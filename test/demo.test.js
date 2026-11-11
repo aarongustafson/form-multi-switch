@@ -92,7 +92,8 @@ describe('demo examples', () => {
 			'utf8',
 		);
 		expect(css).toContain('.size-grid [data-disabled]::after');
-		expect(css).toMatch(/linear-gradient\(\s*135deg/);
+		expect(css).toMatch(/border-block-start:\s*2px solid currentColor/);
+		expect(css).not.toContain('forced-color-adjust: none');
 	});
 
 	it('keeps just the README link in the introduction', () => {

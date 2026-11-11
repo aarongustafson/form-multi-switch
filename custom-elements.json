@@ -207,7 +207,8 @@
 						},
 						{
 							"name": "--multi-switch-border",
-							"default": "ButtonBorder"
+							"default": "currentColor",
+							"description": "Shared segment boundary color."
 						},
 						{
 							"name": "--multi-switch-background",
@@ -219,15 +220,16 @@
 						},
 						{
 							"name": "--multi-switch-selected-background",
-							"default": "Highlight"
+							"default": "Canvas",
+							"description": "Selected surface, paired with --multi-switch-selected-color. Selection also has a persistent currentColor underline."
 						},
 						{
 							"name": "--multi-switch-selected-color",
-							"default": "HighlightText"
+							"default": "CanvasText"
 						},
 						{
 							"name": "--multi-switch-focus-color",
-							"default": "Highlight",
+							"default": "CanvasText",
 							"description": "Outer focus ring color when the focused radio matches :focus-visible."
 						}
 					]

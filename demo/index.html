@@ -197,13 +197,12 @@
 .size-grid [data-disabled]::after {
   content: '';
   position: absolute;
-  inset: 0.25rem;
+  inset-inline-start: 0.25rem;
+  inset-block-start: 50%;
+  inline-size: calc(100% - 0.5rem);
+  border-block-start: 2px solid currentColor;
+  transform: rotate(-35deg);
   pointer-events: none;
-  background: linear-gradient(135deg,
-    transparent calc(50% - 1px),
-    currentColor calc(50% - 1px),
-    currentColor calc(50% + 1px),
-    transparent calc(50% + 1px));
 }</code></pre>
 						<div class="demo">
 							<form-multi-switch
@@ -440,7 +439,7 @@ control.value = 'compact';</code></pre>
   --multi-switch-color: #173f63;
   --multi-switch-selected-background: #173f63;
   --multi-switch-selected-color: #fff;
-  --multi-switch-focus-color: #173f63;
+  --multi-switch-focus-color: CanvasText;
 }</mark></code></pre>
 						<div class="demo">
 							<form-multi-switch
@@ -475,7 +474,7 @@ control.value = 'compact';</code></pre>
 }
 
 .underline [data-multi-switch-choice] {
-  border-block-end: 2px solid GrayText;
+  border-block-end: 2px solid currentColor;
 }
 
 .underline [data-multi-switch-choice][data-selected] {
@@ -498,9 +497,10 @@ control.value = 'compact';</code></pre>
 				<div class="demo-section">
 					<h3>Example: A highlight that slides between choices</h3>
 					<p>
-						A CSS-only highlight follows the selected radio. Choose
+						A CSS-only outline follows the selected radio. Choose
 						another option to see it slide; reduced-motion
-						preferences disable the transition.
+						preferences disable the transition. The selected choice
+						keeps its underline during the animation.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch class="sliding-highlight"
@@ -526,7 +526,9 @@ control.value = 'compact';</code></pre>
   grid-area: 2 / 1;
   z-index: 0;
   border-radius: var(--multi-switch-radius, 0.5rem);
-  background: var(--multi-switch-selected-background, Highlight);
+  box-sizing: border-box;
+  border: 2px solid var(--multi-switch-selected-color, CanvasText);
+  background: var(--multi-switch-selected-background, Canvas);
   content: "";
   transition: transform 300ms ease;
 }
@@ -537,7 +539,12 @@ control.value = 'compact';</code></pre>
   margin: 0;
   border-color: transparent;
   background: transparent;
+  color: var(--multi-switch-color, CanvasText);
   box-shadow: none;
+}
+
+.sliding-highlight [data-multi-switch-choice][data-selected] {
+  color: var(--multi-switch-selected-color, CanvasText);
 }
 
 .sliding-highlight [data-value="list"] { grid-column: 1; }
@@ -595,7 +602,8 @@ control.value = 'compact';</code></pre>
 						Keep a text label for every radio and add decorative CSS
 						masks. <code>icon-only</code> visually hides the text
 						after enhancement; assistive technology can still read
-						each label.
+						each label. In forced colors, this demo shows the text
+						instead of the masked icons.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch class="icons pill"
@@ -624,6 +632,19 @@ control.value = 'compact';</code></pre>
 }
 .icons [data-value="dark"] {
   --choice-icon: url("./moon.svg");
+}
+
+@media (forced-colors: active) {
+  .icons [data-multi-switch-choice]::before { display: none; }
+  .icons[icon-only] [data-multi-switch-label] {
+    position: static;
+    inline-size: auto;
+    block-size: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
 }</mark></code></pre>
 						<div class="demo">
 							<form-multi-switch
