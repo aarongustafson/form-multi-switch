@@ -162,7 +162,8 @@
 						Use your own grid for a longer list. Each size has its
 						own border and rounded corners rather than pretending
 						the wrapped rows form one continuous switch. A diagonal
-						line marks disabled sizes as unavailable.
+						line marks disabled sizes as unavailable. Smaller
+						horizontal padding keeps decimal sizes on one line.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form-multi-switch class="size-grid"&gt;
@@ -180,6 +181,7 @@
   &lt;/fieldset&gt;
 &lt;/form-multi-switch&gt;
 
+.size-grid { --multi-switch-padding: 0.5em 0.25em; }
 .size-grid [data-multi-switch-group] { display: block; }
 .size-grid ul {
   display: grid;

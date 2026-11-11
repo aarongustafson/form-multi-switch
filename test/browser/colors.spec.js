@@ -278,6 +278,58 @@ async function expectSelection(label, { forced = false } = {}) {
 	}
 }
 
+for (const width of [1280, 320]) {
+	test(`${width}px shoe grid keeps decimal sizes on one line with visible padding`, async ({
+		page,
+	}) => {
+		await page.setViewportSize({ width, height: 900 });
+		await page.goto('http://component.test/demo/index.html');
+		const control = page.locator('#shoe-sizes');
+		await expect(control).toHaveAttribute(
+			'data-multi-switch-state',
+			'ready',
+		);
+		await control.evaluate((element) => {
+			element.style.maxInlineSize = '14.5rem';
+		});
+		const geometry = await control
+			.locator('[data-value="10.5"]')
+			.evaluate((label) => {
+				const range = document.createRange();
+				range.selectNodeContents(
+					label.querySelector('[data-multi-switch-label]'),
+				);
+				const text = range.getBoundingClientRect();
+				const box = label.getBoundingClientRect();
+				const style = getComputedStyle(label);
+				return {
+					lines: range.getClientRects().length,
+					width: box.width,
+					height: box.height,
+					left:
+						text.left -
+						box.left -
+						parseFloat(style.borderLeftWidth),
+					right:
+						box.right -
+						text.right -
+						parseFloat(style.borderRightWidth),
+					paddingLeft: parseFloat(style.paddingLeft),
+					paddingRight: parseFloat(style.paddingRight),
+				};
+			});
+		expect(geometry.lines).toBe(1);
+		expect(geometry.left).toBeGreaterThanOrEqual(
+			geometry.paddingLeft - 0.5,
+		);
+		expect(geometry.right).toBeGreaterThanOrEqual(
+			geometry.paddingRight - 0.5,
+		);
+		expect(geometry.width).toBeGreaterThanOrEqual(44);
+		expect(geometry.height).toBeGreaterThanOrEqual(44);
+	});
+}
+
 for (const external of [false, true]) {
 	for (const scheme of ['light', 'dark']) {
 		test(`${external ? 'external' : 'installed'} CSS: ${scheme} selection and keyboard focus are independent`, async ({

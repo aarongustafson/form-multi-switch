@@ -275,6 +275,10 @@ output {
 	--choice-icon: url('./moon.svg');
 }
 
+.size-grid {
+	--multi-switch-padding: 0.5em 0.25em;
+}
+
 .size-grid [data-multi-switch-group] {
 	display: block;
 }

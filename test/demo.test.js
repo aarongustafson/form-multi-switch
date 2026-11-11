@@ -78,6 +78,14 @@ describe('demo examples', () => {
 			.closest('.code-demo-pair')
 			.querySelector('code').textContent;
 		expect(code).toContain('grid-template-columns');
+		const css = readFileSync(
+			resolve(directory, '../demo/styles.css'),
+			'utf8',
+		);
+		for (const source of [code, css]) {
+			expect(source).toContain('.size-grid {');
+			expect(source).toContain('--multi-switch-padding: 0.5em 0.25em;');
+		}
 	});
 
 	it('keeps unavailable shoe-size text accessible but visually hidden', () => {
