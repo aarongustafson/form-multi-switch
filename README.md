@@ -1,6 +1,10 @@
 # `<form-multi-switch>` Web Component
 
-[![npm version](https://img.shields.io/npm/v/@aarongustafson/form-multi-switch.svg)](https://www.npmjs.com/package/@aarongustafson/form-multi-switch) [![Build Status](https://img.shields.io/github/actions/workflow/status/aarongustafson/form-multi-switch/ci.yml?branch=main)](https://github.com/aarongustafson/form-multi-switch/actions)
+[![npm version](https://img.shields.io/npm/v/@aarongustafson/form-multi-switch.svg)](https://www.npmjs.com/package/@aarongustafson/form-multi-switch)
+[![CI status](https://img.shields.io/github/actions/workflow/status/aarongustafson/form-multi-switch/ci.yml?branch=main&label=CI)](https://github.com/aarongustafson/form-multi-switch/actions/workflows/ci.yml)
+[![Minified + gzipped size](https://img.shields.io/bundlejs/size/@aarongustafson/form-multi-switch?format=minzip&label=min%2Bgzip)](https://bundlejs.com/?q=@aarongustafson/form-multi-switch)
+[![License](https://img.shields.io/npm/l/@aarongustafson/form-multi-switch)](https://github.com/aarongustafson/form-multi-switch/blob/main/LICENSE)
+[![Type definitions](https://img.shields.io/npm/types/@aarongustafson/form-multi-switch)](https://github.com/aarongustafson/form-multi-switch/blob/main/form-multi-switch.d.ts)
 
 Use `<form-multi-switch>` to give a group of radio buttons a segmented appearance.
 Your `<fieldset>`, `<legend>`, `<label>` elements, and radio controls stay in light
