@@ -110,7 +110,7 @@
 						native radios work before JavaScript loads, too.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch&gt;
+						<pre><code><mark>&lt;form-multi-switch&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;T-shirt size&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="shirt-size" value="S"&gt;S&lt;/label&gt;
@@ -118,7 +118,7 @@
     &lt;label&gt;&lt;input type="radio" name="shirt-size" value="L"&gt;L&lt;/label&gt;
     &lt;label&gt;&lt;input type="radio" name="shirt-size" value="XL"&gt;XL&lt;/label&gt;
   &lt;/fieldset&gt;
-&lt;/form-multi-switch&gt;</code></pre>
+<mark>&lt;/form-multi-switch&gt;</mark></code></pre>
 						<div class="demo">
 							<form-multi-switch id="clothing-sizes">
 								<fieldset>
@@ -166,7 +166,7 @@
 						horizontal padding keeps decimal sizes on one line.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch class="size-grid"&gt;
+						<pre><code><mark>&lt;form-multi-switch class="size-grid"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Shoe size (US women’s)&lt;/legend&gt;
     &lt;ul&gt;
@@ -179,7 +179,7 @@
       &lt;!-- Repeat for the available sizes. --&gt;
     &lt;/ul&gt;
   &lt;/fieldset&gt;
-&lt;/form-multi-switch&gt;
+<mark>&lt;/form-multi-switch&gt;</mark>
 
 .size-grid { --multi-switch-padding: 0.5em 0.25em; }
 .size-grid [data-multi-switch-group] { display: block; }
@@ -338,16 +338,16 @@
 						<code>&lt;input&gt;</code> elements.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch
+						<pre><code><mark>&lt;form-multi-switch
   name="billing"
   label="Billing frequency"
-  <mark>choices='[
+  choices='[
     {"label":"Monthly","value":"monthly"},
     {"label":"Quarterly","value":"quarterly"},
     {"label":"Annually","value":"annual"}
-  ]'</mark>
+  ]'
   value="quarterly"
-&gt;&lt;/form-multi-switch&gt;</code></pre>
+&gt;</mark><mark>&lt;/form-multi-switch&gt;</mark></code></pre>
 						<div class="demo">
 							<form-multi-switch
 								id="billing"
@@ -374,8 +374,8 @@
 						configured.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch id="js-density"&gt;
-&lt;/form-multi-switch&gt;
+						<pre><code><mark>&lt;form-multi-switch id="js-density"&gt;</mark>
+<mark>&lt;/form-multi-switch&gt;</mark>
 
 const control = document.querySelector('#js-density');
 <mark>control.configure({
@@ -421,7 +421,7 @@ control.value = 'compact';</code></pre>
 				<div class="demo-section">
 					<h3>Example: Different colors and a pill outline</h3>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch class="branded pill"
+						<pre><code><mark>&lt;form-multi-switch class="branded pill"
   name="report-period" label="Report period"
   choices='[
     {"label":"Day","value":"day"},
@@ -429,7 +429,7 @@ control.value = 'compact';</code></pre>
     {"label":"Month","value":"month"}
   ]'
   value="week"
-&gt;&lt;/form-multi-switch&gt;
+&gt;</mark><mark>&lt;/form-multi-switch&gt;</mark>
 
 <mark>.pill {
   --multi-switch-radius: 999px;
@@ -480,7 +480,7 @@ control.value = 'compact';</code></pre>
 						<code>auto</code> ring, so check its rendered contrast.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch class="custom-focus"&gt;
+						<pre><code><mark>&lt;form-multi-switch class="custom-focus"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Result order&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="result-order"
@@ -490,7 +490,7 @@ control.value = 'compact';</code></pre>
     &lt;label&gt;&lt;input type="radio" name="result-order"
       value="oldest"&gt;Oldest&lt;/label&gt;
   &lt;/fieldset&gt;
-&lt;/form-multi-switch&gt;
+<mark>&lt;/form-multi-switch&gt;</mark>
 
 <mark>:root {
   --demo-focus-ring: 4px dashed CanvasText;
@@ -537,7 +537,7 @@ control.value = 'compact';</code></pre>
 				<div class="demo-section">
 					<h3>Example: Underlined instead of a filled segment</h3>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch class="underline"
+						<pre><code><mark>&lt;form-multi-switch class="underline"
   name="results" label="Show results"
   choices='[
     {"label":"All","value":"all"},
@@ -545,7 +545,7 @@ control.value = 'compact';</code></pre>
     {"label":"Saved","value":"saved"}
   ]'
   value="unread"
-&gt;&lt;/form-multi-switch&gt;
+&gt;</mark><mark>&lt;/form-multi-switch&gt;</mark>
 
 <mark>.underline {
   --multi-switch-radius: 0;
@@ -584,7 +584,7 @@ control.value = 'compact';</code></pre>
 						the selected choice also keeps an underline.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch class="sliding-highlight"
+						<pre><code><mark>&lt;form-multi-switch class="sliding-highlight"
   name="layout" label="Reading layout"
   choices='[
     {"label":"List","value":"list"},
@@ -592,7 +592,7 @@ control.value = 'compact';</code></pre>
     {"label":"Table","value":"table"}
   ]'
   value="grid"
-&gt;&lt;/form-multi-switch&gt;
+&gt;</mark><mark>&lt;/form-multi-switch&gt;</mark>
 
 <mark>.sliding-highlight [data-multi-switch-group] {
   display: grid;
@@ -687,15 +687,15 @@ control.value = 'compact';</code></pre>
 						instead of the masked icons.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch class="icons pill"
+						<pre><code><mark>&lt;form-multi-switch class="icons pill"
   name="appearance" label="Appearance preview"
   choices='[
     {"label":"System","value":"system"},
     {"label":"Light","value":"light"},
     {"label":"Dark","value":"dark"}
   ]'
-  value="system" <mark>icon-only</mark>
-&gt;&lt;/form-multi-switch&gt;
+  value="system" icon-only
+&gt;</mark><mark>&lt;/form-multi-switch&gt;</mark>
 
 .icons [data-multi-switch-choice]::before {
   content: "";
@@ -752,7 +752,7 @@ control.value = 'compact';</code></pre>
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;form&gt;
-  &lt;form-multi-switch <mark>required</mark>&gt;
+  <mark>&lt;form-multi-switch required&gt;</mark>
     &lt;fieldset&gt;
       &lt;legend&gt;Contact preference (required)&lt;/legend&gt;
       &lt;label&gt;&lt;input type="radio" name="contact"
@@ -760,7 +760,7 @@ control.value = 'compact';</code></pre>
       &lt;label&gt;&lt;input type="radio" name="contact"
         value="phone" required&gt;Phone&lt;/label&gt;
     &lt;/fieldset&gt;
-  &lt;/form-multi-switch&gt;
+  <mark>&lt;/form-multi-switch&gt;</mark>
   &lt;button&gt;Validate preference&lt;/button&gt;
 &lt;/form&gt;</code></pre>
 						<div class="demo">
@@ -810,7 +810,7 @@ control.value = 'compact';</code></pre>
 						prevents users from returning to it.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch&gt;
+						<pre><code><mark>&lt;form-multi-switch&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Export format&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="export"
@@ -820,7 +820,7 @@ control.value = 'compact';</code></pre>
     &lt;label&gt;&lt;input type="radio" name="export"
       value="pdf" <mark>disabled checked</mark>&gt;PDF&lt;/label&gt;
   &lt;/fieldset&gt;
-&lt;/form-multi-switch&gt;</code></pre>
+<mark>&lt;/form-multi-switch&gt;</mark></code></pre>
 						<div class="demo">
 							<form-multi-switch id="unavailable">
 								<fieldset>
@@ -863,7 +863,7 @@ control.value = 'compact';</code></pre>
 						current value should remain enabled and submitted.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch&gt;
+						<pre><code><mark>&lt;form-multi-switch&gt;</mark>
   &lt;fieldset <mark>disabled</mark>&gt;
     &lt;legend&gt;Unavailable archive formats&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="archive"
@@ -871,7 +871,7 @@ control.value = 'compact';</code></pre>
     &lt;label&gt;&lt;input type="radio" name="archive"
       value="tar"&gt;TAR&lt;/label&gt;
   &lt;/fieldset&gt;
-&lt;/form-multi-switch&gt;</code></pre>
+<mark>&lt;/form-multi-switch&gt;</mark></code></pre>
 						<div class="demo">
 							<form-multi-switch id="disabled">
 								<fieldset disabled>
@@ -904,7 +904,7 @@ control.value = 'compact';</code></pre>
 						cannot change the selection.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch <mark>readonly</mark>&gt;
+						<pre><code><mark>&lt;form-multi-switch readonly&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Archive format&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="archive-readonly"
@@ -912,7 +912,7 @@ control.value = 'compact';</code></pre>
     &lt;label&gt;&lt;input type="radio" name="archive-readonly"
       value="tar"&gt;TAR&lt;/label&gt;
   &lt;/fieldset&gt;
-&lt;/form-multi-switch&gt;</code></pre>
+<mark>&lt;/form-multi-switch&gt;</mark></code></pre>
 						<div class="demo">
 							<form-multi-switch id="readonly" readonly>
 								<fieldset>
@@ -948,7 +948,7 @@ control.value = 'compact';</code></pre>
 						text directions.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch <mark>lang="fr"</mark>
+						<pre><code><mark>&lt;form-multi-switch lang="fr"
   name="densite" label="Densité"
   choices='[
     {"label":"Aérée","value":"comfortable"},
@@ -956,9 +956,9 @@ control.value = 'compact';</code></pre>
     {"label":"Condensée","value":"condensed"}
   ]'
   value="comfortable"
-&gt;&lt;/form-multi-switch&gt;
+&gt;</mark><mark>&lt;/form-multi-switch&gt;</mark>
 
-&lt;form-multi-switch <mark>dir="rtl" lang="ar"</mark> class="pill"&gt;
+<mark>&lt;form-multi-switch dir="rtl" lang="ar" class="pill"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;حجم النص&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="text-size"
@@ -968,7 +968,7 @@ control.value = 'compact';</code></pre>
     &lt;label&gt;&lt;input type="radio" name="text-size"
       value="large"&gt;كبير&lt;/label&gt;
   &lt;/fieldset&gt;
-&lt;/form-multi-switch&gt;</code></pre>
+<mark>&lt;/form-multi-switch&gt;</mark></code></pre>
 						<div class="demo">
 							<form-multi-switch
 								id="translated"
@@ -1033,7 +1033,7 @@ control.value = 'compact';</code></pre>
 						<code>&lt;script&gt;</code> element to load it.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch <mark>script="./view-behavior.js"</mark>&gt;
+						<pre><code><mark>&lt;form-multi-switch script="./view-behavior.js"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Saved reports view&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="reports-view"
@@ -1041,7 +1041,7 @@ control.value = 'compact';</code></pre>
     &lt;label&gt;&lt;input type="radio" name="reports-view"
       value="grid"&gt;Grid&lt;/label&gt;
   &lt;/fieldset&gt;
-&lt;/form-multi-switch&gt;
+<mark>&lt;/form-multi-switch&gt;</mark>
 &lt;ul data-view-preview&gt;
   &lt;li&gt;Weekly sales&lt;/li&gt;
   &lt;li&gt;Stock levels&lt;/li&gt;
@@ -1116,7 +1116,7 @@ export function initialize(control, { signal }) {
 						multi-switch.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch <mark>script="./density-behavior.js"</mark>&gt;
+						<pre><code><mark>&lt;form-multi-switch script="./density-behavior.js"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Preview spacing&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="preview-density"
@@ -1124,7 +1124,7 @@ export function initialize(control, { signal }) {
     &lt;label&gt;&lt;input type="radio" name="preview-density"
       value="compact"&gt;Compact&lt;/label&gt;
   &lt;/fieldset&gt;
-&lt;/form-multi-switch&gt;
+<mark>&lt;/form-multi-switch&gt;</mark>
 &lt;ul data-preview&gt;
   &lt;li&gt;First saved report&lt;/li&gt;
   &lt;li&gt;Second saved report&lt;/li&gt;
@@ -1194,7 +1194,7 @@ export function initialize(control, { signal }) {
 						appears below (and in the console).
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form-multi-switch <mark>script="./failing-behavior.js"</mark>&gt;
+						<pre><code><mark>&lt;form-multi-switch script="./failing-behavior.js"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Results per page&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="page-size"
@@ -1202,7 +1202,7 @@ export function initialize(control, { signal }) {
     &lt;label&gt;&lt;input type="radio" name="page-size"
       value="25"&gt;25&lt;/label&gt;
   &lt;/fieldset&gt;
-&lt;/form-multi-switch&gt;
+<mark>&lt;/form-multi-switch&gt;</mark>
 
 // failing-behavior.js:
 export function initialize() {

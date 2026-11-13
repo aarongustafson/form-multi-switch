@@ -15,7 +15,7 @@
 		<div class="demo-section">
 			<h2>Import without automatic registration</h2>
 			<div class="code-demo-pair">
-				<pre><code>&lt;form-multi-switch&gt;
+				<pre><code><mark>&lt;form-multi-switch&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Reading layout&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="layout"
@@ -25,9 +25,9 @@
     &lt;label&gt;&lt;input type="radio" name="layout"
       value="table"&gt;Table&lt;/label&gt;
   &lt;/fieldset&gt;
-&lt;/form-multi-switch&gt;
+<mark>&lt;/form-multi-switch&gt;</mark>
 
-import { FormMultiSwitchElement } from '../form-multi-switch.js';
+<mark>import { FormMultiSwitchElement } from '../form-multi-switch.js';</mark>
 <mark>customElements.define('form-multi-switch', FormMultiSwitchElement);</mark></code></pre>
 				<div class="demo">
 					<form-multi-switch>
@@ -64,8 +64,8 @@ import { FormMultiSwitchElement } from '../form-multi-switch.js';
 			To use esm.sh on your own site, pin the CDN import. The component
 			installs its default styles automatically:
 		</p>
-		<pre><code>import { FormMultiSwitchElement } from
-  'https://esm.sh/@aarongustafson/form-multi-switch@1.0.0/form-multi-switch.js';</code></pre>
+		<pre><code><mark>import { FormMultiSwitchElement } from
+  'https://esm.sh/@aarongustafson/form-multi-switch@1.0.0/form-multi-switch.js';</mark></code></pre>
 		<p><a href="./index.html">All examples</a></p>
 		<script type="module">
 			import { FormMultiSwitchElement } from '../form-multi-switch.js';

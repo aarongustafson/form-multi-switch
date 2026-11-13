@@ -15,7 +15,7 @@
 		<div class="demo-section">
 			<h2>Import the guarded definition helper</h2>
 			<div class="code-demo-pair">
-				<pre><code>&lt;form-multi-switch
+				<pre><code><mark>&lt;form-multi-switch
   name="view" label="View"
   choices='[
     {"label":"List","value":"list"},
@@ -23,7 +23,7 @@
     {"label":"Table","value":"table"}
   ]'
   value="list"
-&gt;&lt;/form-multi-switch&gt;
+&gt;</mark><mark>&lt;/form-multi-switch&gt;</mark>
 
 <mark>import { defineFormMultiSwitch } from '../define.js';
 defineFormMultiSwitch();</mark></code></pre>
@@ -41,7 +41,7 @@ defineFormMultiSwitch();</mark></code></pre>
 			To use unpkg on your own site, pin the registration module. The
 			component installs its default styles automatically:
 		</p>
-		<pre><code>import 'https://unpkg.com/@aarongustafson/form-multi-switch@0.0.1/define.js';</code></pre>
+		<pre><code><mark>import 'https://unpkg.com/@aarongustafson/form-multi-switch@0.0.1/define.js';</mark></code></pre>
 		<p><a href="./index.html">All examples</a></p>
 		<script type="module">
 			import { defineFormMultiSwitch } from '../define.js';
