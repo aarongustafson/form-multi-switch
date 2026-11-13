@@ -986,6 +986,9 @@ for (const demo of ['index.html', 'esm.html', 'unpkg.html']) {
 				document.documentElement,
 			).colorScheme;
 		});
+		if (demo === 'index.html') {
+			await expect(page.locator('#set-density')).toBeVisible();
+		}
 		const controls = await page.locator('a, button').all();
 		const outlines = async () => {
 			const values = [];
