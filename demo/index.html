@@ -5,12 +5,15 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>&lt;form-multi-switch&gt; Web Component Demo</title>
 		<link rel="stylesheet" href="./styles.css" />
+		<link rel="stylesheet" href="./demo-shell.css" />
 		<script type="module" src="./demo.js"></script>
 	</head>
-	<body>
+	<body data-syntax-theme="github">
+		<a class="skip-link" href="#main">Skip to examples</a>
 		<header>
+			<p class="eyebrow">Web component / Examples</p>
 			<h1>&lt;form-multi-switch&gt;</h1>
-			<p>
+			<p class="lede">
 				Present a native radio group as a segmented control without
 				replacing its inputs. See the
 				<a
@@ -31,8 +34,26 @@
 					unavailable.
 				</p>
 			</noscript>
+			<nav aria-label="Component resources">
+				<a
+					href="https://github.com/aarongustafson/form-multi-switch/blob/main/README.md"
+					>Read the README</a
+				>
+				<a href="https://github.com/aarongustafson/form-multi-switch"
+					>View on GitHub</a
+				>
+				<a href="./esm.html">esm.sh example</a>
+				<a href="./unpkg.html">unpkg example</a>
+			</nav>
 		</header>
-		<main>
+		<main id="main" tabindex="-1">
+			<p
+				id="microlighter-status"
+				class="enhancement-status"
+				role="status"
+				hidden
+			></p>
+
 			<section>
 				<h2>Enhance your existing radios</h2>
 				<div class="demo-section">
@@ -45,7 +66,16 @@
 						(restoring “Standard” shipping).
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Default styling example: Shipping choices code 1"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Delivery speed&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="delivery"
@@ -56,6 +86,7 @@
       value="overnight"&gt;Overnight&lt;/label&gt;
   &lt;/fieldset&gt;
 <mark>&lt;/form-multi-switch&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form id="delivery-form">
 								<form-multi-switch id="delivery">
@@ -110,7 +141,16 @@
 						native radios work before JavaScript loads, too.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Clothing sizes code 2"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;T-shirt size&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="shirt-size" value="S"&gt;S&lt;/label&gt;
@@ -119,6 +159,7 @@
     &lt;label&gt;&lt;input type="radio" name="shirt-size" value="XL"&gt;XL&lt;/label&gt;
   &lt;/fieldset&gt;
 <mark>&lt;/form-multi-switch&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch id="clothing-sizes">
 								<fieldset>
@@ -166,7 +207,16 @@
 						horizontal padding keeps decimal sizes on one line.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch class="size-grid"&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Wrapping group: Shoe sizes code 3"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch class="size-grid"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Shoe size (US women’s)&lt;/legend&gt;
     &lt;ul&gt;
@@ -206,6 +256,7 @@
   transform: rotate(-35deg);
   pointer-events: none;
 }</code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch
 								id="shoe-sizes"
@@ -338,7 +389,16 @@
 						<code>&lt;input&gt;</code> elements.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Generate a group from attributes code 4"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch
   name="billing"
   label="Billing frequency"
   choices='[
@@ -348,6 +408,7 @@
   ]'
   value="quarterly"
 &gt;</mark><mark>&lt;/form-multi-switch&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch
 								id="billing"
@@ -374,7 +435,16 @@
 						configured.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch id="js-density"&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Pure JS example: Generate a multi-switch from application data code 5"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch id="js-density"&gt;</mark>
 <mark>&lt;/form-multi-switch&gt;</mark>
 
 const control = document.querySelector('#js-density');
@@ -390,6 +460,7 @@ const control = document.querySelector('#js-density');
 });</mark>
 
 control.value = 'compact';</code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch
 								id="js-density"
@@ -421,7 +492,16 @@ control.value = 'compact';</code></pre>
 				<div class="demo-section">
 					<h3>Example: Different colors and a pill outline</h3>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch class="branded pill"
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Example: Different colors and a pill outline code 6"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch class="branded pill"
   name="report-period" label="Report period"
   choices='[
     {"label":"Day","value":"day"},
@@ -442,6 +522,7 @@ control.value = 'compact';</code></pre>
   --multi-switch-selected-background: #173f63;
   --multi-switch-selected-color: #fff;
 }</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch
 								id="branded"
@@ -480,7 +561,16 @@ control.value = 'compact';</code></pre>
 						<code>auto</code> ring, so check its rendered contrast.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch class="custom-focus"&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Example: Customize the keyboard focus ring code 7"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch class="custom-focus"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Result order&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="result-order"
@@ -500,6 +590,7 @@ control.value = 'compact';</code></pre>
   --multi-switch-outline: var(--demo-focus-ring);
   --multi-switch-outline-offset: 4px;
 }</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch
 								id="custom-focus"
@@ -537,7 +628,16 @@ control.value = 'compact';</code></pre>
 				<div class="demo-section">
 					<h3>Example: Underlined instead of a filled segment</h3>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch class="underline"
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Example: Underlined instead of a filled segment code 8"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch class="underline"
   name="results" label="Show results"
   choices='[
     {"label":"All","value":"all"},
@@ -563,6 +663,7 @@ control.value = 'compact';</code></pre>
   box-shadow: none;
   font-weight: 700;
 }</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch
 								id="underline"
@@ -584,7 +685,16 @@ control.value = 'compact';</code></pre>
 						the selected choice also keeps an underline.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch class="sliding-highlight"
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Example: A highlight that slides between choices code 9"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch class="sliding-highlight"
   name="layout" label="Reading layout"
   choices='[
     {"label":"List","value":"list"},
@@ -661,6 +771,7 @@ control.value = 'compact';</code></pre>
     transition: none;
   }
 }</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch
 								id="sliding-highlight"
@@ -687,7 +798,16 @@ control.value = 'compact';</code></pre>
 						instead of the masked icons.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch class="icons pill"
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Example: System, light, and dark choices code 10"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch class="icons pill"
   name="appearance" label="Appearance preview"
   choices='[
     {"label":"System","value":"system"},
@@ -727,6 +847,7 @@ control.value = 'compact';</code></pre>
     white-space: normal;
   }
 }</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch
 								id="icons"
@@ -751,7 +872,16 @@ control.value = 'compact';</code></pre>
 						validation in play.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form&gt;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Example: Selection required code 11"
+								tabindex="0"
+							><code>&lt;form&gt;
   <mark>&lt;form-multi-switch required&gt;</mark>
     &lt;fieldset&gt;
       &lt;legend&gt;Contact preference (required)&lt;/legend&gt;
@@ -763,6 +893,7 @@ control.value = 'compact';</code></pre>
   <mark>&lt;/form-multi-switch&gt;</mark>
   &lt;button&gt;Validate preference&lt;/button&gt;
 &lt;/form&gt;</code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form id="required-form">
 								<form-multi-switch id="required" required>
@@ -810,7 +941,16 @@ control.value = 'compact';</code></pre>
 						prevents users from returning to it.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Example: Disabled choice code 12"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Export format&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="export"
@@ -821,6 +961,7 @@ control.value = 'compact';</code></pre>
       value="pdf" <mark>disabled checked</mark>&gt;PDF&lt;/label&gt;
   &lt;/fieldset&gt;
 <mark>&lt;/form-multi-switch&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch id="unavailable">
 								<fieldset>
@@ -863,7 +1004,16 @@ control.value = 'compact';</code></pre>
 						current value should remain enabled and submitted.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Example: Disabled group code 13"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch&gt;</mark>
   &lt;fieldset <mark>disabled</mark>&gt;
     &lt;legend&gt;Unavailable archive formats&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="archive"
@@ -872,6 +1022,7 @@ control.value = 'compact';</code></pre>
       value="tar"&gt;TAR&lt;/label&gt;
   &lt;/fieldset&gt;
 <mark>&lt;/form-multi-switch&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch id="disabled">
 								<fieldset disabled>
@@ -904,7 +1055,16 @@ control.value = 'compact';</code></pre>
 						cannot change the selection.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch readonly&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Example: Read-only group code 14"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch readonly&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Archive format&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="archive-readonly"
@@ -913,6 +1073,7 @@ control.value = 'compact';</code></pre>
       value="tar"&gt;TAR&lt;/label&gt;
   &lt;/fieldset&gt;
 <mark>&lt;/form-multi-switch&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch id="readonly" readonly>
 								<fieldset>
@@ -948,7 +1109,16 @@ control.value = 'compact';</code></pre>
 						text directions.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch lang="fr"
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Examples: French &amp; Arabic code 15"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch lang="fr"
   name="densite" label="Densité"
   choices='[
     {"label":"Aérée","value":"comfortable"},
@@ -969,6 +1139,7 @@ control.value = 'compact';</code></pre>
       value="large"&gt;كبير&lt;/label&gt;
   &lt;/fieldset&gt;
 <mark>&lt;/form-multi-switch&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch
 								id="translated"
@@ -1033,7 +1204,16 @@ control.value = 'compact';</code></pre>
 						<code>&lt;script&gt;</code> element to load it.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch script="./view-behavior.js"&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Example: Switch between a list and a grid code 16"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch script="./view-behavior.js"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Saved reports view&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="reports-view"
@@ -1067,6 +1247,7 @@ export function initialize(control, { signal }) {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.5rem;
 }</code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch
 								id="script-example"
@@ -1116,7 +1297,16 @@ export function initialize(control, { signal }) {
 						multi-switch.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch script="./density-behavior.js"&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Example: Ordinary radios remain available while loading code 17"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch script="./density-behavior.js"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Preview spacing&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="preview-density"
@@ -1143,6 +1333,7 @@ export function initialize(control, { signal }) {
     updatePreview, { signal });
   updatePreview();
 }</code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch
 								id="behavior"
@@ -1194,7 +1385,16 @@ export function initialize(control, { signal }) {
 						appears below (and in the console).
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-multi-switch script="./failing-behavior.js"&gt;</mark>
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Example: A deliberately failing JavaScript enhancement code 18"
+								tabindex="0"
+							><code><mark>&lt;form-multi-switch script="./failing-behavior.js"&gt;</mark>
   &lt;fieldset&gt;
     &lt;legend&gt;Results per page&lt;/legend&gt;
     &lt;label&gt;&lt;input type="radio" name="page-size"
@@ -1208,6 +1408,7 @@ export function initialize(control, { signal }) {
 export function initialize() {
   throw new Error('Demo initialization failure.');
 }</code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form-multi-switch
 								id="failure"
@@ -1250,7 +1451,16 @@ export function initialize() {
 						multi-switch controls on this page.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>document.addEventListener(
+						<micro-lighter
+							class="code-panel"
+							language="javascript"
+							controls="copy"
+							data-label="JavaScript"
+						>
+							<pre
+								aria-label="Example: Interaction events from this page code 19"
+								tabindex="0"
+							><code>document.addEventListener(
   <mark>'form-multi-switch:change'</mark>,
   (event) => {
     const { value, previousValue, index } = event.detail;
@@ -1262,6 +1472,7 @@ document.addEventListener(
   <mark>'form-multi-switch:activate'</mark>,
   (event) => console.log(event.detail)
 );</code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<pre id="event-log" role="log" aria-live="polite">
 Interact with a control to inspect its events.</pre>
@@ -1276,5 +1487,6 @@ Interact with a control to inspect its events.</pre>
 				<a href="https://github.com/aarongustafson">Aaron Gustafson</a>.
 			</p>
 		</footer>
+		<script type="module" src="./code-examples.js"></script>
 	</body>
 </html>

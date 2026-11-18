@@ -11,6 +11,8 @@ const paths = [
 	'demo/esm.html',
 	'demo/unpkg.html',
 	'demo/styles.css',
+	'demo/demo-shell.css',
+	'demo/code-examples.js',
 	'demo/demo.js',
 	'demo/view-behavior.js',
 	'demo/density-behavior.js',
@@ -948,7 +950,9 @@ for (const demo of ['index.html', 'esm.html', 'unpkg.html']) {
 				),
 			).toBe(true);
 			for (const pair of await page.locator('.code-demo-pair').all()) {
-				const code = await pair.locator(':scope > pre').boundingBox();
+				const code = await pair
+					.locator(':scope > micro-lighter')
+					.boundingBox();
 				const live = await pair.locator('.demo').boundingBox();
 				expect(code).not.toBeNull();
 				expect(live).not.toBeNull();
@@ -977,7 +981,7 @@ test('existing native browser behavior suite passes', async ({ page }) => {
 });
 
 for (const demo of ['index.html', 'esm.html', 'unpkg.html']) {
-	test(`${demo} leaves ordinary demo controls with browser focus outlines`, async ({
+	test(`${demo} keeps ordinary demo controls visibly focused with and without demo styles`, async ({
 		page,
 	}) => {
 		await page.goto(`http://component.test/demo/${demo}`);
@@ -989,11 +993,13 @@ for (const demo of ['index.html', 'esm.html', 'unpkg.html']) {
 		if (demo === 'index.html') {
 			await expect(page.locator('#set-density')).toBeVisible();
 		}
+		await page.keyboard.press('Tab');
 		const controls = await page.locator('a, button').all();
 		const outlines = async () => {
 			const values = [];
 			for (const control of controls) {
 				await control.focus();
+				await expect(control).toBeFocused();
 				values.push(
 					await control.evaluate((element) => {
 						const style = getComputedStyle(element);
@@ -1008,12 +1014,17 @@ for (const demo of ['index.html', 'esm.html', 'unpkg.html']) {
 			return values;
 		};
 		const authored = await outlines();
-		await page.locator('link[rel="stylesheet"]').evaluate((link) => {
-			link.disabled = true;
+		await page.locator('link[rel="stylesheet"]').evaluateAll((links) => {
+			for (const link of links) link.disabled = true;
 		});
 		const native = await outlines();
 		expect(native.some((outline) => outline.style !== 'none')).toBe(true);
-		expect(authored).toEqual(native);
+		expect(
+			authored.every(
+				(outline) =>
+					outline.style !== 'none' && parseFloat(outline.width) >= 2,
+			),
+		).toBe(true);
 	});
 }
 

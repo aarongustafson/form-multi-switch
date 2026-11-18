@@ -104,13 +104,16 @@ describe('demo examples', () => {
 		expect(css).not.toContain('forced-color-adjust: none');
 	});
 
-	it('keeps just the README link in the introduction', () => {
-		const links = [...demo.querySelectorAll('header a')];
+	it('keeps the README link in the introduction alongside resource navigation', () => {
+		const links = [...demo.querySelectorAll('header > p a')];
 		expect(links).toHaveLength(1);
 		expect(links[0].textContent.trim()).toBe('README');
 		expect(links[0].getAttribute('href')).toBe(
 			'https://github.com/aarongustafson/form-multi-switch/blob/main/README.md',
 		);
+		expect(
+			demo.querySelector('header nav[aria-label="Component resources"]'),
+		).not.toBeNull();
 	});
 
 	it('ends with the shared author credit instead of repository navigation', () => {
@@ -131,7 +134,10 @@ describe('demo examples', () => {
 		for (const section of sections) {
 			const pair = section.querySelector('.code-demo-pair');
 			expect(pair, section.textContent).not.toBeNull();
-			expect(pair.firstElementChild.tagName).toBe('PRE');
+			expect(pair.firstElementChild.tagName).toBe('MICRO-LIGHTER');
+			expect(
+				pair.firstElementChild.querySelector(':scope > pre > code'),
+			).not.toBeNull();
 			expect(pair.lastElementChild.classList.contains('demo')).toBe(true);
 		}
 		for (const control of demo.querySelectorAll('form-multi-switch')) {
@@ -160,7 +166,10 @@ describe('demo examples', () => {
 			);
 			const pair = page.content.querySelector('.code-demo-pair');
 			expect(pair).not.toBeNull();
-			expect(pair.firstElementChild.tagName).toBe('PRE');
+			expect(pair.firstElementChild.tagName).toBe('MICRO-LIGHTER');
+			expect(
+				pair.firstElementChild.querySelector(':scope > pre > code'),
+			).not.toBeNull();
 			expect(
 				pair.lastElementChild.querySelector('form-multi-switch'),
 			).not.toBeNull();
