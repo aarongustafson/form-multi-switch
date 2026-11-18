@@ -12,6 +12,7 @@ const paths = [
 	'demo/unpkg.html',
 	'demo/styles.css',
 	'demo/demo-shell.css',
+	'demo/code-examples.js',
 	'demo/demo.js',
 	'demo/view-behavior.js',
 	'demo/density-behavior.js',
