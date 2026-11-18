@@ -1,13 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { test, expect } from '@playwright/test';
 
-test.beforeEach(async ({ page }) => {
-	await page.route(
-		'https://cdn.jsdelivr.net/npm/microlighter@2.2.0/dist/**',
-		(route) => route.abort(),
-	);
-});
-
 const paths = [
 	'form-multi-switch.js',
 	'form-multi-switch.css',
@@ -18,6 +11,7 @@ const paths = [
 	'demo/esm.html',
 	'demo/unpkg.html',
 	'demo/styles.css',
+	'demo/demo-shell.css',
 	'demo/demo.js',
 	'demo/view-behavior.js',
 	'demo/density-behavior.js',
@@ -998,11 +992,13 @@ for (const demo of ['index.html', 'esm.html', 'unpkg.html']) {
 		if (demo === 'index.html') {
 			await expect(page.locator('#set-density')).toBeVisible();
 		}
+		await page.keyboard.press('Tab');
 		const controls = await page.locator('a, button').all();
 		const outlines = async () => {
 			const values = [];
 			for (const control of controls) {
 				await control.focus();
+				await expect(control).toBeFocused();
 				values.push(
 					await control.evaluate((element) => {
 						const style = getComputedStyle(element);
