@@ -10,6 +10,16 @@ template.innerHTML = html;
 const demo = template.content;
 
 describe('demo examples', () => {
+	it('trims block-edge margins inside demo sections', () => {
+		const styles = readFileSync(
+			resolve(directory, '../demo/demo-shell.css'),
+			'utf8',
+		);
+		expect(styles).toMatch(
+			/\.demo-section(?:,\s*\.api-reference)?\s*\{[^}]*\bmargin-trim:\s*block;/,
+		);
+	});
+
 	it('leaves shared-border overlap margins to the component defaults', () => {
 		const css = readFileSync(
 			resolve(directory, '../demo/styles.css'),

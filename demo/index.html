@@ -4,11 +4,11 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>&lt;form-multi-switch&gt; Web Component Demo</title>
-		<link rel="stylesheet" href="./styles.css" />
 		<link rel="stylesheet" href="./demo-shell.css" />
+		<link rel="stylesheet" href="./styles.css" />
 		<script type="module" src="./demo.js"></script>
 	</head>
-	<body data-syntax-theme="github">
+	<body data-demo-page="full" data-syntax-theme="github">
 		<a class="skip-link" href="#main">Skip to examples</a>
 		<header>
 			<p class="eyebrow">Web component / Examples</p>
@@ -51,6 +51,9 @@
 				id="microlighter-status"
 				class="enhancement-status"
 				role="status"
+				data-loading-message="Loading optional code highlighting and Copy controls."
+				data-failure-message="MicroLighter could not load. Code remains readable and selectable; the component loads independently."
+				data-theme-failure-message="Code highlighting and Copy controls are available, but the syntax theme could not load. The component loads independently."
 				hidden
 			></p>
 
@@ -87,7 +90,7 @@
   &lt;/fieldset&gt;
 <mark>&lt;/form-multi-switch&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form id="delivery-form">
 								<form-multi-switch id="delivery">
 									<fieldset>
@@ -160,7 +163,7 @@
   &lt;/fieldset&gt;
 <mark>&lt;/form-multi-switch&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch id="clothing-sizes">
 								<fieldset>
 									<legend>T-shirt size</legend>
@@ -257,7 +260,7 @@
   pointer-events: none;
 }</code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch
 								id="shoe-sizes"
 								class="size-grid"
@@ -409,7 +412,7 @@
   value="quarterly"
 &gt;</mark><mark>&lt;/form-multi-switch&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch
 								id="billing"
 								name="billing"
@@ -461,7 +464,7 @@ const control = document.querySelector('#js-density');
 
 control.value = 'compact';</code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch
 								id="js-density"
 							></form-multi-switch>
@@ -523,7 +526,7 @@ control.value = 'compact';</code></pre>
   --multi-switch-selected-color: #fff;
 }</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch
 								id="branded"
 								class="branded pill"
@@ -591,7 +594,7 @@ control.value = 'compact';</code></pre>
   --multi-switch-outline-offset: 4px;
 }</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch
 								id="custom-focus"
 								class="custom-focus"
@@ -664,7 +667,7 @@ control.value = 'compact';</code></pre>
   font-weight: 700;
 }</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch
 								id="underline"
 								class="underline"
@@ -772,7 +775,7 @@ control.value = 'compact';</code></pre>
   }
 }</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch
 								id="sliding-highlight"
 								class="sliding-highlight"
@@ -848,7 +851,7 @@ control.value = 'compact';</code></pre>
   }
 }</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch
 								id="icons"
 								class="icons pill"
@@ -894,7 +897,7 @@ control.value = 'compact';</code></pre>
   &lt;button&gt;Validate preference&lt;/button&gt;
 &lt;/form&gt;</code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form id="required-form">
 								<form-multi-switch id="required" required>
 									<fieldset>
@@ -962,7 +965,7 @@ control.value = 'compact';</code></pre>
   &lt;/fieldset&gt;
 <mark>&lt;/form-multi-switch&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch id="unavailable">
 								<fieldset>
 									<legend>Export format</legend>
@@ -1023,7 +1026,7 @@ control.value = 'compact';</code></pre>
   &lt;/fieldset&gt;
 <mark>&lt;/form-multi-switch&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch id="disabled">
 								<fieldset disabled>
 									<legend>Unavailable archive formats</legend>
@@ -1074,7 +1077,7 @@ control.value = 'compact';</code></pre>
   &lt;/fieldset&gt;
 <mark>&lt;/form-multi-switch&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch id="readonly" readonly>
 								<fieldset>
 									<legend>Archive format</legend>
@@ -1140,7 +1143,7 @@ control.value = 'compact';</code></pre>
   &lt;/fieldset&gt;
 <mark>&lt;/form-multi-switch&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch
 								id="translated"
 								lang="fr"
@@ -1248,7 +1251,7 @@ export function initialize(control, { signal }) {
   gap: 0.5rem;
 }</code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch
 								id="script-example"
 								script="./view-behavior.js"
@@ -1334,7 +1337,7 @@ export function initialize(control, { signal }) {
   updatePreview();
 }</code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch
 								id="behavior"
 								script="./density-behavior.js"
@@ -1409,7 +1412,7 @@ export function initialize() {
   throw new Error('Demo initialization failure.');
 }</code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form-multi-switch
 								id="failure"
 								script="./failing-behavior.js"
@@ -1473,7 +1476,7 @@ document.addEventListener(
   (event) => console.log(event.detail)
 );</code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<pre id="event-log" role="log" aria-live="polite">
 Interact with a control to inspect its events.</pre>
 						</div>
