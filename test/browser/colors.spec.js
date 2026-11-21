@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { test, expect } from '@playwright/test';
+import { expectNativeFocus } from './demo-fixture.js';
 
 const paths = [
 	'form-multi-switch.js',
@@ -950,18 +951,22 @@ for (const demo of ['index.html', 'esm.html', 'unpkg.html']) {
 				),
 			).toBe(true);
 			for (const pair of await page.locator('.code-demo-pair').all()) {
-				const code = await pair
-					.locator(':scope > micro-lighter')
-					.boundingBox();
-				const live = await pair.locator('.demo').boundingBox();
-				expect(code).not.toBeNull();
-				expect(live).not.toBeNull();
-				if (width === 1280) {
-					expect(live.x).toBeGreaterThan(code.x);
-					expect(Math.abs(live.y - code.y)).toBeLessThan(1);
-				} else {
-					expect(live.y).toBeGreaterThanOrEqual(code.y + code.height);
-				}
+				await expect
+					.poll(() =>
+						pair.evaluate((element) => {
+							const code = element
+								.querySelector(':scope > micro-lighter')
+								.getBoundingClientRect();
+							const live = element
+								.querySelector(':scope > .demo')
+								.getBoundingClientRect();
+							return innerWidth === 1280
+								? live.x > code.x &&
+										Math.abs(live.y - code.y) < 1
+								: live.y >= code.y + code.height;
+						}),
+					)
+					.toBe(true);
 			}
 		}
 	});
@@ -995,38 +1000,48 @@ for (const demo of ['index.html', 'esm.html', 'unpkg.html']) {
 		}
 		await page.keyboard.press('Tab');
 		const controls = await page.locator('a, button').all();
-		const outlines = async () => {
-			const values = [];
-			for (const control of controls) {
-				await control.focus();
-				await expect(control).toBeFocused();
-				values.push(
-					await control.evaluate((element) => {
-						const style = getComputedStyle(element);
-						return {
-							style: style.outlineStyle,
-							width: style.outlineWidth,
-							offset: style.outlineOffset,
-						};
-					}),
-				);
-			}
-			return values;
-		};
-		const authored = await outlines();
+		for (const control of controls) await expectNativeFocus(control);
 		await page.locator('link[rel="stylesheet"]').evaluateAll((links) => {
 			for (const link of links) link.disabled = true;
 		});
-		const native = await outlines();
-		expect(native.some((outline) => outline.style !== 'none')).toBe(true);
-		expect(
-			authored.every(
-				(outline) =>
-					outline.style !== 'none' && parseFloat(outline.width) >= 2,
-			),
-		).toBe(true);
+		for (const control of controls) await expectNativeFocus(control);
 	});
 }
+
+test.describe('demo header spacing', () => {
+	test.use({ javaScriptEnabled: false });
+
+	for (const file of ['index.html', 'esm.html', 'unpkg.html']) {
+		test(`${file}: content clears the header border without JavaScript`, async ({
+			page,
+		}) => {
+			await page.goto(`http://component.test/demo/${file}`);
+			for (const width of [320, 1400]) {
+				await page.setViewportSize({ width, height: 900 });
+				const gap = await page.locator('main').evaluate((main) => {
+					const header = document.querySelector('body > header');
+					const walker = document.createTreeWalker(
+						main,
+						NodeFilter.SHOW_TEXT,
+					);
+					let text;
+					while ((text = walker.nextNode())) {
+						if (!text.textContent.trim()) continue;
+						const range = document.createRange();
+						range.selectNodeContents(text);
+						const rect = range.getBoundingClientRect();
+						if (rect.width && rect.height)
+							return (
+								rect.top - header.getBoundingClientRect().bottom
+							);
+					}
+					throw new Error('Demo has no visible main content.');
+				});
+				expect(gap, `${file} at ${width}px`).toBeGreaterThanOrEqual(32);
+			}
+		});
+	}
+});
 
 test('forced colors retain automatic adjustment, markers, and readable icon labels', async ({
 	page,

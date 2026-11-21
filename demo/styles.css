@@ -1,146 +1,8 @@
-@font-face {
-	font-family: 'system-monospace';
-	src:
-		local('SFMono-Regular'), local('Menlo'), local('Monaco'),
-		local('Consolas'), local('Liberation Mono'), local('Courier New'),
-		local('monospace');
-}
-
-:root {
-	color-scheme: light dark;
-	--demo-focus-ring: 4px dashed CanvasText;
-}
-
-body {
-	font-family:
-		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-		Cantarell, sans-serif;
-	line-height: 1.6;
-	color: CanvasText;
-	background: Canvas;
-	max-width: 1400px;
-	margin: 0 auto;
-	padding: 1rem;
-}
-
-h1 {
-	font-size: 2rem;
-	margin-block: 0 0.5rem;
-}
-
-h2 {
-	font-size: 1.5rem;
-	margin-block: 2rem 1rem;
-	border-bottom: 2px solid;
-	padding-bottom: 0.5rem;
-}
-
-h3 {
-	font-size: 1.25rem;
-	margin-block: 0 0.5rem;
-}
-
-p {
-	margin-block: 0.5rem;
-}
-
-header {
-	margin-block-end: 2rem;
-}
-
-header p {
-	font-size: 1.1rem;
-}
-
-a {
-	color: LinkText;
-	text-decoration-skip-ink: auto;
-}
-
-a:visited {
-	color: VisitedText;
-}
-
-a:active {
-	color: LinkText;
-}
-
-code {
-	background: ButtonFace;
-	color: ButtonText;
-	padding: 0.125rem 0.25rem;
-	border-radius: 3px;
-	font-family: system-monospace, monospace;
-	font-size: 0.9em;
-}
-
-.demo-section {
-	margin-trim: block;
-	margin-block: 2rem;
-	padding: 1.5rem;
-	border: 1px solid ButtonBorder;
-	border-radius: 8px;
-}
-
-.demo-section > p {
-	margin-block-end: 1rem;
-}
-
-.demo-section > p code {
-	background: transparent;
-	color: inherit;
-}
-
-.code-demo-pair {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr);
-	gap: 1rem;
-	align-items: start;
-	margin-block: 1rem;
-}
-
-.code-demo-pair > * {
-	min-inline-size: 0;
-}
-
-pre {
-	background-color: Canvas;
-	background-image: linear-gradient(Field, Field);
-	color: FieldText;
-	padding: 1rem;
-	border-radius: 6px;
-	overflow: auto;
-	margin: 0;
-	font-size: 0.875rem;
-	line-height: 1.4;
-}
-
-pre code {
-	background: none;
-	color: inherit;
-	padding: 0;
-	font-size: inherit;
-}
-
-pre code mark {
-	background: Mark;
-	color: MarkText;
-	border-radius: 2px;
-}
-
-.demo {
-	background: Canvas;
-	color: CanvasText;
-	padding: 1rem;
-	border: 1px solid ButtonBorder;
-	border-radius: 6px;
-}
-
 form-multi-switch {
 	margin-block: 1rem;
 }
 
-button {
+#set-density {
 	font: inherit;
 	min-block-size: 2.75rem;
 	padding: 0.35em 0.8em;
@@ -165,6 +27,7 @@ output {
 }
 
 .custom-focus {
+	--demo-focus-ring: 4px dashed CanvasText;
 	--multi-switch-outline: var(--demo-focus-ring);
 	--multi-switch-outline-offset: 4px;
 }
@@ -354,33 +217,4 @@ output {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 0.5rem;
-}
-
-footer {
-	margin-block-start: 3rem;
-	padding-block-start: 2rem;
-	border-top: 2px solid ButtonBorder;
-	color: CanvasText;
-}
-
-@supports (color: color-mix(in srgb, CanvasText 80%, Canvas)) {
-	footer {
-		color: color-mix(in srgb, CanvasText 80%, Canvas);
-	}
-}
-
-@media (min-width: 48rem) {
-	.code-demo-pair {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-}
-
-@media (max-width: 30rem) {
-	body {
-		padding: 0.5rem;
-	}
-
-	.demo-section {
-		padding: 0.75rem;
-	}
 }
