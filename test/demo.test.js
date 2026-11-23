@@ -30,7 +30,7 @@ describe('demo examples', () => {
 		);
 	});
 
-	it('introduces script loading with a working example before the loading and failure demos', () => {
+	it('introduces script loading with a working view example', () => {
 		const intro = demo.querySelector('#script-loading');
 		expect(intro).not.toBeNull();
 		const first = demo.querySelector('form-multi-switch[script]');

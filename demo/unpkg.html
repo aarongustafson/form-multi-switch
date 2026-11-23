@@ -38,9 +38,11 @@
 			<p>
 				This preview imports the local definition helper, which
 				registers the element automatically. Calling the helper again is
-				safe.
+				safe unless a different class owns the element name. The live
+				preview does not use the CDN. Its attribute-configured group has
+				no controls without JavaScript.
 			</p>
-			<div class="demo-section">
+			<div class="demo-section" id="automatic-registration">
 				<h2>Import the guarded definition helper</h2>
 				<div class="code-demo-pair">
 					<micro-lighter
@@ -75,21 +77,27 @@ defineFormMultiSwitch();</mark></code></pre>
 					</div>
 				</div>
 			</div>
-			<p>
-				To use unpkg on your own site, pin the registration module. The
-				component installs its default styles automatically:
-			</p>
-			<micro-lighter
-				class="code-panel"
-				language="javascript"
-				controls="copy"
-				data-label="JavaScript"
-			>
-				<pre
-					aria-label="Example code 2"
-					tabindex="0"
-				><code><mark>import 'https://unpkg.com/@aarongustafson/form-multi-switch@0.0.1/define.js';</mark></code></pre>
-			</micro-lighter>
+			<section id="unpkg-cdn-import">
+				<h2>Import a published version from unpkg</h2>
+				<p>
+					On your own site, pin the registration module. This URL
+					targets version <code>1.0.1</code>; verify that the version
+					is published before using it. The local preview above
+					doesn’t establish CDN availability. The component supplies
+					its default styles.
+				</p>
+				<micro-lighter
+					class="code-panel"
+					language="javascript"
+					controls="copy"
+					data-label="JavaScript"
+				>
+					<pre
+						aria-label="Example code 2"
+						tabindex="0"
+					><code><mark>import 'https://unpkg.com/@aarongustafson/form-multi-switch@1.0.1/define.js';</mark></code></pre>
+				</micro-lighter>
+			</section>
 			<p><a href="./index.html">All examples</a></p>
 		</main>
 		<footer>

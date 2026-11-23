@@ -20,9 +20,12 @@ start with the radio markup.
 Read the [documentation on GitHub Pages](https://aarongustafson.github.io/form-multi-switch/)
 or try the examples:
 
-- [All examples](https://aarongustafson.github.io/form-multi-switch/demo/): shipping choices, clothing and shoe sizes, custom styles, icons, languages, and scripts.
-- [Manual registration](https://aarongustafson.github.io/form-multi-switch/demo/esm.html): import the class and register it yourself, with an esm.sh import example.
-- [Automatic registration](https://aarongustafson.github.io/form-multi-switch/demo/unpkg.html): use the definition helper, with an unpkg import example.
+- [All examples](https://aarongustafson.github.io/form-multi-switch/demo/) ([source](./demo/index.html)): shipping choices, clothing and shoe sizes, native forms, languages, scripts, and styling.
+- [Manual registration](https://aarongustafson.github.io/form-multi-switch/demo/esm.html) ([source](./demo/esm.html)): import the class and register it yourself, with an esm.sh import example.
+- [Automatic registration](https://aarongustafson.github.io/form-multi-switch/demo/unpkg.html) ([source](./demo/unpkg.html)): use the definition helper, with an unpkg import example.
+
+The registration pages run local source, not the displayed CDN imports. Verify
+that your chosen package version is published before using a CDN URL.
 
 To run the demos locally, follow the [development instructions](#development).
 
@@ -32,7 +35,7 @@ To run the demos locally, follow the [development instructions](#development).
 npm install @aarongustafson/form-multi-switch
 ```
 
-Import the `class`, then register the element:
+Import the class, then register the element:
 
 ```js
 import { FormMultiSwitchElement } from '@aarongustafson/form-multi-switch';
@@ -48,8 +51,10 @@ import '@aarongustafson/form-multi-switch/define.js';
 
 The package root and `form-multi-switch.js` leave registration to you.
 `define.js` also exports a `defineFormMultiSwitch()` helper you can call yourself.
-Calling it again is fine, as long as another `class` hasn’t claimed the element
-name.
+Calling it again is fine, as long as another class hasn’t claimed the element
+name. The helper returns `true` when a registry is available, `false` when it
+isn’t, and throws if a different class already owns the name. Import the package
+in a browser environment; the element class extends `HTMLElement`.
 
 If you serve the installed files directly, load the registration module from
 HTML instead:
@@ -112,7 +117,9 @@ attributes instead:
 ></form-multi-switch>
 ```
 
-Give `choices` a JSON array with a text `label` and `value` for each choice.
+Give `choices` a nonempty JSON array. Each choice needs a nonempty text `label`.
+Its optional `value` defaults to that label; values must be unique strings.
+The group’s `name` and `label` must also be nonempty strings.
 
 Add `"disabled": true` to make a choice unavailable. Use JSON booleans (`true`
 or `false`), not strings.
@@ -120,7 +127,7 @@ or `false`), not strings.
 If you translate the labels, give each choice an explicit value so changing
 the language doesn’t change what your form submits.
 
-The component creates the markup for you. Labels only support plain text, not
+Labels only support plain text, not
 HTML. If you’ve already supplied a `<fieldset>`, its markup takes precedence:
 the component ignores the `choices`, `name`, `label`, and `value` attributes.
 
@@ -160,6 +167,20 @@ Leave out `value`, or use `null`, to start without a selection. `disabled`,
 `readOnly`, `required`, and `iconOnly` default to `false`. If the control needs
 its own script, set the `script` attribute or property separately.
 
+## Behavior
+
+The browser keeps responsibility for radio focus, keyboard selection, form
+validation, submission, and reset. The component adds segmented styling and
+interaction events after it validates the group and finishes any behavior module.
+Authored radios remain native controls before upgrade or if enhancement fails.
+An empty element configured through attributes or JavaScript has no native
+fallback until JavaScript creates its radios.
+
+Disconnecting the element aborts its behavior signal, releases listeners and
+observers, runs any synchronous module cleanup, and removes the styling hooks.
+It retains the radios and their checked state. Reconnecting starts a new setup
+attempt.
+
 ## Attributes and properties
 
 | Attribute   | Property   | What you control                                                                                        |
@@ -174,7 +195,7 @@ its own script, set the `script` attribute or property separately.
 | `icon-only` | `iconOnly` | Visually hide the choice text after enhancement.                                                        |
 | `script`    | `script`   | URL of a JavaScript module to load before showing the segmented control.                                |
 | —           | `state`    | Read-only status: `pending`, `loading`, `ready`, or `error`.                                            |
-| —           | `ready`    | Promise that resolves when the current setup attempt finishes.                                          |
+| —           | `ready`    | `Promise<void>` for the current setup attempt; resolves on success, rejects on failure or cancellation. |
 
 Use `name` and `label` to configure a group the component creates. For radios
 you’ve written yourself, change the `<input>` names and `<legend>` in your markup.
@@ -187,15 +208,15 @@ attributes doesn’t change the group or rerun your script.
 authoring mode. A disabled group keeps its selection but cannot be changed by
 users and is omitted from form submission. Re-enabling it makes the retained
 value available for submission again. A read-only group remains enabled, keeps
-its selection, and submits its value.
+its selection, and submits its value. Radios have no native read-only state:
+the component prevents user changes only after enhancement.
 
 An individually disabled radio can also stay checked, just like a native
 radio. Users can choose another enabled option, but cannot select the disabled
 option again until it is re-enabled. Application code can still change checked
 state through `value`; disabled radios remain excluded from submission.
 
-Earlier versions cleared selection when a group was disabled. The component
-now preserves it. To clear a selection deliberately, set `control.value = null`.
+To clear a selection deliberately, set `control.value = null`.
 
 As with other HTML boolean attributes, presence is what counts:
 `disabled="false"` still disables the group. Remove the attribute to turn it off.
@@ -212,7 +233,10 @@ to change the selection without changing what a form reset will restore. This
 doesn’t fire interaction events.
 
 Use a string that matches one of your choices, or `null` to clear the selection.
-An unknown value throws a `RangeError`; other types throw a `TypeError`.
+Once the group exists, an unknown value throws a `RangeError`; other types
+throw a `TypeError`. Before setup, the component retains a string or `null`
+until it can check the choices. An unknown pending value then fails setup and
+rejects `ready`.
 
 For generated controls, setting the `value` **attribute** changes both the
 selection and its reset default. With your own `<fieldset>`, the component ignores
@@ -243,6 +267,20 @@ Setting `input.checked` is different: it changes a property, not an attribute,
 so a MutationObserver won’t see it. Use `control.value` to change the selection,
 or dispatch an `input` event after changing the input property to update the
 styling.
+
+## Methods
+
+| Method                     | Result          | Use                                                                                                                                     |
+| -------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `configure(configuration)` | `void`          | Validate a generated group’s configuration, then schedule setup if connected. Throws for invalid configuration or an authored fieldset. |
+| `refresh()`                | `Promise<void>` | Revalidate and rerun setup, including the behavior initializer. Throws `InvalidStateError` if disconnected.                             |
+
+`configure()` requires `name`, `label`, and `choices`; it accepts `value`,
+`disabled`, `readOnly`, `required`, and `iconOnly`. The booleans default to
+`false`, and `value` defaults to no selection. See
+[the configuration example](#generate-controls-with-javascript).
+Calling it again replaces generated choices and their reset defaults, not
+authored markup. Configure `script` separately.
 
 ### Retry or refresh explicitly
 
@@ -323,7 +361,11 @@ Use the signal to cancel your work when the switch leaves the document or needs
 to set up again. You can also return a cleanup function (directly or through the
 promise) for anything the signal doesn’t handle. The cleanup function itself
 must be synchronous. The browser caches the module, but each switch gets its
-own call to `initialize()`.
+own call to `initialize()`. Aborting the signal doesn’t cancel the browser’s
+module download or undo module-level side effects. Keep per-control work in
+`initialize()`, check the signal after asynchronous work, and release resources
+when it aborts. If a superseded initializer eventually returns cleanup, the
+component runs it rather than retaining that attempt.
 
 Relative URLs resolve against your document’s base URL. Only load scripts you
 trust, using HTTP or HTTPS and a URL your Content Security Policy permits.
@@ -354,7 +396,9 @@ If something goes wrong, you’ll get an error event and a message in the consol
 Radios you’ve written stay usable without the segmented styling. Fixing invalid
 markup or configuration triggers another attempt. For a failed script, call
 `refresh()` to retry, or remove `script` to use the control without it.
-Refreshing doesn’t bypass the browser’s module cache.
+Refreshing doesn’t bypass the browser’s module cache. It can rerun a cached
+module’s initializer, but it doesn’t guarantee another network request or recovery
+from a cached import failure. Use a corrected URL or reload when necessary.
 
 ## Styling
 
@@ -391,9 +435,7 @@ color modes. In forced colors, it uses `CanvasText` on `Canvas` and adds a
 three-pixel underline so selection stays visible when fills flatten.
 The outer focus ring is separate from selection.
 
-These defaults replace the previous `HighlightText` / `Highlight` selection
-pair and `Highlight` focus color. Existing custom-property overrides still
-work. Set foreground and background overrides together, and check the
+Set foreground and background overrides together, and check the
 forced-color selection marker against your selected surface. That marker uses
 the choice’s `::after` pseudo-element; keep an equivalent visible cue if you
 replace it. The underline restyling demo is an intentional author override and
@@ -499,42 +541,9 @@ the component.
 
 ### Use icons without losing names
 
-To show icons instead of text, keep your labels and add `icon-only`:
-
-```html
-<form-multi-switch
-  name="appearance"
-  label="Appearance"
-  choices='[
-    {"label":"Light","value":"light"},
-    {"label":"Dark","value":"dark"}
-  ]'
-  value="light"
-  icon-only
-></form-multi-switch>
-```
-
-Use each choice’s `data-value` to give it an icon:
-
-```css
-form-multi-switch[icon-only] [data-multi-switch-choice]::before {
-  content: '';
-  inline-size: 1.25em;
-  block-size: 1.25em;
-  background-color: currentColor;
-  mask: var(--choice-icon) center / contain no-repeat;
-}
-
-form-multi-switch [data-value='light'] {
-  --choice-icon: url('/icons/sun.svg');
-}
-
-form-multi-switch [data-value='dark'] {
-  --choice-icon: url('/icons/moon.svg');
-}
-```
-
-If you’re calling `configure()`, use `iconOnly: true` with the same CSS. Give
+To show icons instead of text, keep your labels and add `icon-only`. Use
+`data-value` to select each choice in your CSS. If you’re calling `configure()`,
+use `iconOnly: true`. Give
 every choice an icon before turning on icon-only presentation. If the icons
 aren’t likely to be familiar, keep the text visible.
 
@@ -556,28 +565,11 @@ Leave the text label available to assistive technology: don’t use `display: no
 `hidden`, or `aria-hidden` on it. The component’s styles hide it visually once
 the switch is ready, while keeping it as the radio’s accessible name.
 
-CSS-mask icons can disappear in forced colors. The demo keeps automatic color
-adjustment and shows the text labels instead:
-
-```css
-@media (forced-colors: active) {
-  form-multi-switch[icon-only] [data-multi-switch-choice]::before {
-    display: none;
-  }
-  form-multi-switch[icon-only] [data-multi-switch-label] {
-    position: static;
-    inline-size: auto;
-    block-size: auto;
-    margin: 0;
-    overflow: visible;
-    clip-path: none;
-    white-space: normal;
-  }
-}
-```
-
-This example assumes the icons use `::before`, as above. Check your own icon
-markup and any downstream theme overrides in forced colors, too.
+CSS-mask icons can disappear in forced colors. The
+[icon demo](https://aarongustafson.github.io/form-multi-switch/demo/#appearance-icons)
+shows the CSS for decorative masks and restores visible text in forced colors.
+Check your own icon markup and downstream theme overrides, too. If you add
+animation, respect `prefers-reduced-motion`; the default styles don’t animate.
 
 ## Accessibility and progressive enhancement
 
@@ -591,6 +583,9 @@ markup and any downstream theme overrides in forced colors, too.
   whether people will understand your icons.
 - Write your own radios when the control needs to work without JavaScript.
   Groups created from attributes or `configure()` need JavaScript to exist.
+- Put native `disabled` and `required` attributes on your fieldset or radios
+  when those states must apply before enhancement. Attributes on the custom
+  element alone need JavaScript.
 
 ### Translation
 

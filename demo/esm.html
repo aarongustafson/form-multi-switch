@@ -37,9 +37,10 @@
 
 			<p>
 				This example imports the local class module and registers the
-				element explicitly. You can also import the class from a CDN.
+				element explicitly. The live preview does not use the CDN.
+				Without JavaScript, its authored radios still work.
 			</p>
-			<div class="demo-section">
+			<div class="demo-section" id="manual-registration">
 				<h2>Import without automatic registration</h2>
 				<div class="code-demo-pair">
 					<micro-lighter
@@ -97,22 +98,29 @@
 					</div>
 				</div>
 			</div>
-			<p>
-				To use esm.sh on your own site, pin the CDN import. The
-				component installs its default styles automatically:
-			</p>
-			<micro-lighter
-				class="code-panel"
-				language="javascript"
-				controls="copy"
-				data-label="JavaScript"
-			>
-				<pre
-					aria-label="Example code 2"
-					tabindex="0"
-				><code><mark>import { FormMultiSwitchElement } from
-  'https://esm.sh/@aarongustafson/form-multi-switch@1.0.1/form-multi-switch.js';</mark></code></pre>
-			</micro-lighter>
+			<section id="esm-cdn-import">
+				<h2>Import a published version from esm.sh</h2>
+				<p>
+					On your own site, pin the CDN import and register the class.
+					This URL targets version <code>1.0.1</code>; verify that the
+					version is published before using it. The local preview
+					above doesn’t establish CDN availability. The component
+					supplies its default styles.
+				</p>
+				<micro-lighter
+					class="code-panel"
+					language="javascript"
+					controls="copy"
+					data-label="JavaScript"
+				>
+					<pre
+						aria-label="Example code 2"
+						tabindex="0"
+					><code><mark>import { FormMultiSwitchElement } from
+  'https://esm.sh/@aarongustafson/form-multi-switch@1.0.1/form-multi-switch.js';
+customElements.define('form-multi-switch', FormMultiSwitchElement);</mark></code></pre>
+				</micro-lighter>
+			</section>
 			<p><a href="./index.html">All examples</a></p>
 		</main>
 		<footer>

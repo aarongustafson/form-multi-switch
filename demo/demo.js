@@ -27,35 +27,31 @@ configured.ready.then(
 	},
 );
 
-for (const form of document.querySelectorAll('form')) {
-	form.addEventListener('submit', (event) => {
-		event.preventDefault();
-		form.querySelector('output').textContent = JSON.stringify(
-			Object.fromEntries(new FormData(form)),
-		);
-	});
-}
-
-const entries = [];
-for (const name of ['activate', 'change']) {
-	document.addEventListener(`form-multi-switch:${name}`, (event) => {
-		entries.unshift(
-			`${event.target.id}: ${name} ${JSON.stringify(event.detail)}`,
-		);
-		entries.length = Math.min(entries.length, 6);
-		document.querySelector('#event-log').textContent = entries.join('\n');
-	});
-}
-
-document.addEventListener('form-multi-switch:ready', (event) => {
-	const status = event.target
-		.closest('section')
-		.querySelector('[data-status]');
-	if (status) status.textContent = 'The preview behavior is ready.';
+const form = document.querySelector('#required-form');
+form.addEventListener('submit', (event) => {
+	event.preventDefault();
+	form.querySelector('output').textContent = JSON.stringify(
+		Object.fromEntries(new FormData(form)),
+	);
 });
 
-document.addEventListener('form-multi-switch:error', (event) => {
-	const section = event.target.closest('section');
-	const status = section.querySelector('[data-status]');
-	if (status) status.textContent = section.dataset.errorMessage;
+const control = document.querySelector('#event-view');
+const output = document.querySelector('#event-log');
+const entries = [];
+for (const name of ['activate', 'change']) {
+	control.addEventListener(`form-multi-switch:${name}`, (event) => {
+		entries.unshift(`${name} ${JSON.stringify(event.detail)}`);
+		entries.length = Math.min(entries.length, 6);
+		output.textContent = entries.join('\n');
+	});
+}
+
+const behavior = document.querySelector('#behavior');
+const section = behavior.closest('section');
+const status = section.querySelector('[data-status]');
+behavior.addEventListener('form-multi-switch:ready', () => {
+	status.textContent = 'The preview behavior is ready.';
+});
+behavior.addEventListener('form-multi-switch:error', () => {
+	status.textContent = section.dataset.errorMessage;
 });
